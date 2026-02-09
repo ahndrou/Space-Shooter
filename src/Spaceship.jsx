@@ -9,8 +9,8 @@ export default function Spaceship() {
 
     const [ subToKeys, getKeys ] = useKeyboardControls()
 
-    const [cameraPosition] = useState(() => new Vector3(0, 0, 0))
-    const [cameraTarget] = useState(() => new Vector3(0, 0, 0))
+    const [smoothedCameraPosition] = useState(() => new Vector3(0, 0, 0))
+    const [smoothedCameraTarget] = useState(() => new Vector3(0, 0, 0))
 
     useFrame(() => {
         const keysState = getKeys()
@@ -38,10 +38,13 @@ export default function Spaceship() {
     })
 
     // CAMERA HANDLING
-    useFrame((state) => {
+    useFrame((state, delta) => {
+        const cameraPosition = new Vector3()
+        const cameraTarget = new Vector3()
+
         cameraPosition.copy(rb.current.translation())
         cameraTarget.copy(rb.current.translation())
-        
+ 
         let positionTransform = new Vector3(0, 2, 6)
         let targetTransform = new Vector3(0, 0, -6)
         
@@ -58,8 +61,11 @@ export default function Spaceship() {
         cameraPosition.add(positionTransform)
         cameraTarget.add(targetTransform)
 
-        state.camera.position.copy(cameraPosition)
-        state.camera.lookAt(cameraTarget)
+        smoothedCameraPosition.lerp(cameraPosition, 8 * delta)
+        smoothedCameraTarget.lerp(cameraTarget, 8 * delta)
+
+        state.camera.position.copy(smoothedCameraPosition)
+        state.camera.lookAt(smoothedCameraTarget)
     })
 
     return (
