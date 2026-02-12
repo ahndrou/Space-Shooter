@@ -5,6 +5,11 @@ import { useRef, useState } from "react";
 import { Quaternion, Vector3 } from "three";
 
 export default function Spaceship() {
+    const LINEAR_IMPULSE_STR = 0.4
+    const ANGULAR_IMPULSE_STR = 0.2
+    const LINEAR_DAMPING = 0.4
+    const ANGULAR_DAMPING = 0.6
+
     const rb = useRef()
 
     const [ subToKeys, getKeys ] = useKeyboardControls()
@@ -16,7 +21,7 @@ export default function Spaceship() {
         const keysState = getKeys()
 
         if (keysState.forward) {
-            const localSpaceImpulse = new Vector3(0, 0, -0.75)
+            const localSpaceImpulse = new Vector3(0, 0, -LINEAR_IMPULSE_STR)
 
             const worldSpaceOrientation = new Quaternion(
                 rb.current.rotation().x,
@@ -29,11 +34,11 @@ export default function Spaceship() {
         }
 
         if (keysState.leftward) {
-            rb.current.applyTorqueImpulse({ x: 0, y: 0.4, z: 0})
+            rb.current.applyTorqueImpulse({ x: 0, y: ANGULAR_IMPULSE_STR, z: 0})
         }
         
         if (keysState.rightward) {
-            rb.current.applyTorqueImpulse({ x: 0, y: -0.4, z: 0})
+            rb.current.applyTorqueImpulse({ x: 0, y: -ANGULAR_IMPULSE_STR, z: 0})
         }
     })
 
@@ -69,9 +74,14 @@ export default function Spaceship() {
     })
 
     return (
-        <RigidBody ref={rb} position={[0, 4, 0]}>
+        <RigidBody 
+            ref={rb} 
+            position={[0, 4, 0]} 
+            linearDamping={LINEAR_DAMPING} 
+            angularDamping={ANGULAR_DAMPING}
+        >
             <mesh castShadow>
-                <boxGeometry args={[2,2,2]} />
+                <boxGeometry args={[1, 1, 4]} />
                 <meshStandardMaterial color="red" />
             </mesh>
         </RigidBody>

@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import Spaceship from "./Spaceship";
 import { Physics } from "@react-three/rapier";
 import Level from "./Level";
-import { KeyboardControls, OrbitControls } from "@react-three/drei";
+import { KeyboardControls } from "@react-three/drei";
 import Lights from "./Lights";
 
 export default function Experience() {
@@ -15,10 +15,8 @@ export default function Experience() {
                     {name: 'rightward', keys: ['ArrowRight', 'KeyD']}
                 ]}>
                 <Canvas shadows>
-                    <OrbitControls />
-
                     <Lights />
-                    <Physics debug>
+                    <Physics debug gravity={[0, 0, 0]}>
                         <Spaceship />
                         <Level />
                     </Physics>
