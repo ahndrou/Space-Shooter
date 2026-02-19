@@ -2,7 +2,9 @@ import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
 import { useRef } from "react";
-import { Quaternion, Vector3 } from "three";
+import { Euler, Quaternion, Vector3 } from "three";
+
+
 
 export default function Spaceship() {
     const ANGULAR_SPEED_FACTOR = 1
@@ -12,63 +14,48 @@ export default function Spaceship() {
     const rb = useRef()
 
     const [ , getKeys ] = useKeyboardControls()
-
-    const smoothedCameraPosition = new Vector3(0, 0, 0)
-    const smoothedCameraTarget = new Vector3(0, 0, 0)
-
-    const yaw = useRef(0)
-    const pitch = useRef(0)
-    const roll = useRef(0)
+    
+    const cameraOffset = new Vector3()
+    const worldSpaceRotation = new Quaternion()
+    const angularVelocity = new Vector3(0, 0, 0)
 
     useFrame((state, delta) => {
         const keys = getKeys()
 
-        // INPUT HANDLING
-        yaw.current   += -state.pointer.x * ANGULAR_SPEED_FACTOR * delta
-        pitch.current +=  state.pointer.y * ANGULAR_SPEED_FACTOR * delta
-        roll.current  += ((keys.leftward ? 1 : 0) - (keys.rightward ? 1 : 0)) * ANGULAR_SPEED_FACTOR * delta
+        // rb.current.rotation() returns a plain object, not an instance
+        // of the quaternion class.
+        worldSpaceRotation.set(
+            rb.current.rotation().x,
+            rb.current.rotation().y,
+            rb.current.rotation().z,
+            rb.current.rotation().w,
+        )
 
-        // Build rotation quaternion
-        const qYaw   = new Quaternion().setFromAxisAngle(new Vector3(0,1,0), yaw.current)
-        const qPitch = new Quaternion().setFromAxisAngle(new Vector3(1,0,0), pitch.current)
-        const qRoll  = new Quaternion().setFromAxisAngle(new Vector3(0,0,1), roll.current)
-        const finalRotation = new Quaternion()
-            .multiply(qYaw)
-            .multiply(qPitch)
-            .multiply(qRoll)
-
-        rb.current.setNextKinematicRotation(finalRotation)
-
-        // CAMERA HANDLING
-        const cameraPosition = new Vector3()
-        const cameraTarget = new Vector3()
-
-        cameraPosition.copy(rb.current.translation())
-        cameraTarget.copy(rb.current.translation())
- 
-        let positionTransform = new Vector3(0, 2, 6)
-        let targetTransform = new Vector3(0, 0, -6)
+        // CAMERA SETUP
+        cameraOffset.set(0, 3, 6)
+        cameraOffset.applyQuaternion(worldSpaceRotation)
         
-        // Transform to ship's local space
-        positionTransform.applyQuaternion(rb.current.rotation())
-        targetTransform.applyQuaternion(rb.current.rotation())
+        state.camera.position.copy(rb.current.translation())
+        state.camera.position.add(cameraOffset)
 
-        cameraPosition.add(positionTransform)
-        cameraTarget.add(targetTransform)
+        state.camera.rotation.setFromQuaternion(worldSpaceRotation)
 
-        smoothedCameraPosition.lerp(cameraPosition, 8 * delta)
-        smoothedCameraTarget.lerp(cameraTarget, 8 * delta)
+        // INPUT HANDLING
+        const yawSpeed = ((keys.leftward ? 1 : 0) + (keys.rightward ? -1 : 0)) * 2
+        const pitchSpeed = ((keys.forward ? 1 : 0) + (keys.backward ? -1 : 0)) * 2
+        const rollSpeed = (keys.space ? 1 : 0) * 2
 
-        state.camera.position.copy(smoothedCameraPosition)
-        state.camera.lookAt(smoothedCameraTarget)
+        angularVelocity.set(pitchSpeed, yawSpeed, rollSpeed)
+        angularVelocity.applyQuaternion(worldSpaceRotation)
 
+        rb.current.setAngvel(angularVelocity, true)
     })
 
     return (
         <RigidBody 
             ref={rb} 
             position={[0, 4, 0]}
-            type="kinematicPosition"
+            type="kinematicVelocity"
             linearDamping={LINEAR_DAMPING} 
             angularDamping={ANGULAR_DAMPING}
         >
