@@ -20,7 +20,7 @@ export default function Experience() {
                 <Canvas shadows>
                     <OrbitControls />
                     <Lights />
-                    <Physics debug gravity={[0, 0, 0]}>
+                    <Physics gravity={[0, 0, 0]}>
                         <Spaceship />
                         <Level />
                     </Physics>

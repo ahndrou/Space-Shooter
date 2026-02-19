@@ -11,6 +11,8 @@ export default function Spaceship() {
     const POINTER_UPPER_BOUND = 0.99
     const LINEAR_DAMPING = 0.4
     const ANGULAR_DAMPING = 0.6
+    const ANGULAR_ACCELERATION = 2
+    const LINEAR_ACCELERATION = 2
 
     const rb = useRef()
 
@@ -18,10 +20,13 @@ export default function Spaceship() {
     
     const cameraOffset = new Vector3()
     const worldSpaceRotation = new Quaternion()
-    const angularVelocity = new Vector3(0, 0, 0)
-    const linearVelocity = new Vector3(0, 0, 0)
+    const angularVelocityTarget = new Vector3(0, 0, 0)
+    const linearVelocityTarget = new Vector3(0, 0, 0)
 
-    useFrame((state) => {
+    const smoothedLinearVelocity = new Vector3(0, 0, 0)
+    const smoothedAngularVelocity = new Vector3(0, 0, 0)
+
+    useFrame((state, delta) => {
         const keys = getKeys()
 
         // rb.current.rotation() returns a plain object, not an instance
@@ -35,6 +40,7 @@ export default function Spaceship() {
 
         // CAMERA SETUP
         cameraOffset.set(0, 1, 7)
+        // Quaternion transforms from local space to world space.
         cameraOffset.applyQuaternion(worldSpaceRotation)
         
         state.camera.position.copy(rb.current.translation())
@@ -48,26 +54,23 @@ export default function Spaceship() {
         if (Math.abs(state.pointer.x) > POINTER_LOWER_BOUND && Math.abs(state.pointer.x) < POINTER_UPPER_BOUND) {
             yawSpeed = -state.pointer.x * ANGULAR_SPEED_FACTOR
         }
-        
         let pitchSpeed = 0
         if (Math.abs(state.pointer.y) > POINTER_LOWER_BOUND && Math.abs(state.pointer.y) < POINTER_UPPER_BOUND) {
             pitchSpeed = state.pointer.y * ANGULAR_SPEED_FACTOR
         }
-
         const rollSpeed = ((keys.leftward ? 1 : 0) + (keys.rightward ? -1 : 0)) * ANGULAR_SPEED_FACTOR
 
-        angularVelocity.set(pitchSpeed, yawSpeed, rollSpeed)
-        angularVelocity.applyQuaternion(worldSpaceRotation)
+        angularVelocityTarget.set(pitchSpeed, yawSpeed, rollSpeed)
+        angularVelocityTarget.applyQuaternion(worldSpaceRotation)
 
-        rb.current.setAngvel(angularVelocity, true)
+        linearVelocityTarget.set(0, 0, keys.forward ? -LINEAR_SPEED_FACTOR : 0)
+        linearVelocityTarget.applyQuaternion(worldSpaceRotation)
 
-        linearVelocity.set(
-            0,
-            0,
-            keys.forward ? -LINEAR_SPEED_FACTOR : 0
-        )
-        linearVelocity.applyQuaternion(worldSpaceRotation)
-        rb.current.setLinvel(linearVelocity)
+        smoothedAngularVelocity.lerp(angularVelocityTarget, ANGULAR_ACCELERATION * delta)
+        smoothedLinearVelocity.lerp(linearVelocityTarget, LINEAR_ACCELERATION * delta)
+
+        rb.current.setAngvel(smoothedAngularVelocity, true)
+        rb.current.setLinvel(smoothedLinearVelocity, true)
 
     })
 
