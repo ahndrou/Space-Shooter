@@ -4,11 +4,13 @@ import { Physics } from "@react-three/rapier";
 import Level from "./Level";
 import { KeyboardControls, OrbitControls } from "@react-three/drei";
 import Lights from "./Lights";
+import { useState } from "react";
 
 export default function Experience() {
+    const [pointerActive, setPointerActive] = useState(true)
+
     return (
         <>
-            
             <KeyboardControls
                 map={[
                     {name: 'forward', keys: ['ArrowUp', 'KeyW']},
@@ -17,11 +19,14 @@ export default function Experience() {
                     {name: 'backward', keys: ['ArrowDown', 'KeyS']},
                     {name: 'space', keys: ['Space']},
                 ]}>
-                <Canvas shadows>
+                <Canvas 
+                    shadows
+                    onMouseLeave={() => setPointerActive(false)}
+                    onMouseEnter={() => setPointerActive(true)}>
                     <OrbitControls />
                     <Lights />
                     <Physics gravity={[0, 0, 0]}>
-                        <Spaceship />
+                        <Spaceship pointerActive={pointerActive} />
                         <Level />
                     </Physics>
                 </Canvas>
