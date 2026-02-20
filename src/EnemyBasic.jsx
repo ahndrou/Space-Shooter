@@ -1,15 +1,29 @@
+import { useGLTF } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
 
 export default function EnemyBasic({position}) {
+    const gltf = useGLTF("./space_shooter_enemy_basic.glb")
+    
+
+    console.log(gltf.materials["Material.003"])
+
     return (
         <RigidBody
             type="kinematicPosition"
             position={position}
             >
-            <mesh>
-                <boxGeometry args={[2, 2, 2]} />
-                <meshBasicMaterial color={"orange"} />
-            </mesh>
+                <group scale={3}>
+                    <mesh 
+                    geometry={gltf.meshes.Icosphere_1.geometry}
+                    material={gltf.materials["Material.001"]}
+                    />
+                    <mesh 
+                        geometry={gltf.meshes.Icosphere_2.geometry}
+                        material={gltf.materials["Material.003"]}
+                    />
+                </group>
+                
+            
         </RigidBody>
     )
 }
