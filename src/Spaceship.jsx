@@ -8,7 +8,7 @@ export default function Spaceship() {
     const ANGULAR_SPEED_FACTOR = 0.9
     const LINEAR_SPEED_FACTOR = 6
     const POINTER_LOWER_BOUND = 0.3
-    const POINTER_UPPER_BOUND = 0.99
+    const POINTER_UPPER_BOUND = 0.95
     const LINEAR_DAMPING = 0.4
     const ANGULAR_DAMPING = 0.6
     const ANGULAR_ACCELERATION = 2
