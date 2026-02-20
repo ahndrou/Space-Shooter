@@ -78,7 +78,7 @@ export default function Spaceship({pointerActive}) {
     return (
         <RigidBody 
             ref={rb} 
-            position={[0, 4, 0]}
+            position={[0, 0, 0]}
             type="kinematicVelocity"
             linearDamping={LINEAR_DAMPING} 
             angularDamping={ANGULAR_DAMPING}

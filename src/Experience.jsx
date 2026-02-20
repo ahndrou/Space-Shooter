@@ -5,8 +5,11 @@ import Level from "./Level";
 import { KeyboardControls, OrbitControls } from "@react-three/drei";
 import Lights from "./Lights";
 import { useState } from "react";
+import PlayArea from "./PlayArea";
 
 export default function Experience() {
+    const PLAY_AREA_SIZE = {x: 150, y: 150, z: 150}
+
     const [pointerActive, setPointerActive] = useState(true)
 
     return (
@@ -23,11 +26,11 @@ export default function Experience() {
                     shadows
                     onMouseLeave={() => setPointerActive(false)}
                     onMouseEnter={() => setPointerActive(true)}>
-                    <OrbitControls />
                     <Lights />
                     <Physics gravity={[0, 0, 0]}>
                         <Spaceship pointerActive={pointerActive} />
-                        <Level />
+                        <Level enemyBounds={PLAY_AREA_SIZE} />
+                        <PlayArea size={PLAY_AREA_SIZE} />
                     </Physics>
                 </Canvas>
             </KeyboardControls>
