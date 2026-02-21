@@ -1,4 +1,4 @@
-import { useKeyboardControls } from "@react-three/drei";
+import { useGLTF, useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
 import { useRef } from "react";
@@ -14,6 +14,8 @@ export default function Spaceship({pointerActive}) {
     const LINEAR_ACCELERATION = 2
 
     const rb = useRef()
+
+    const gltf = useGLTF("./space_shooter_player.glb")
 
     const [ , getKeys ] = useKeyboardControls()
     
@@ -41,7 +43,7 @@ export default function Spaceship({pointerActive}) {
         )
 
         // CAMERA SETUP
-        cameraOffset.current.set(0, 1, 7)
+        cameraOffset.current.set(0, 3, 7)
         // Quaternion transforms from local space to world space.
         cameraOffset.current.applyQuaternion(worldSpaceRotation.current)
         
@@ -83,10 +85,21 @@ export default function Spaceship({pointerActive}) {
             linearDamping={LINEAR_DAMPING} 
             angularDamping={ANGULAR_DAMPING}
         >
-            <mesh castShadow>
-                <boxGeometry args={[1, 1, 4]} />
-                <meshStandardMaterial color="red" />
-            </mesh>
+            <group 
+                rotation={[0, Math.PI / 2, 0]}
+                scale={0.5}>
+                <mesh 
+                castShadow
+                geometry={gltf.meshes["Cube001"].geometry}
+                material={gltf.materials["Faces"]}>
+                </mesh>
+                <mesh 
+                    castShadow
+                    geometry={gltf.meshes["Cube001_1"].geometry}
+                    material={gltf.materials["Lines"]}>
+                </mesh>
+            </group>
+            
         </RigidBody>
         
     )

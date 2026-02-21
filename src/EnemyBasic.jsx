@@ -1,7 +1,7 @@
 import { useGLTF } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
-import { Quaternion, Vector3 } from "three";
+import { Vector3 } from "three";
 
 export default function EnemyBasic({position}) {
     const gltf = useGLTF("./space_shooter_enemy_basic.glb")
@@ -10,7 +10,6 @@ export default function EnemyBasic({position}) {
     const MAX_SPEED = 0.4
 
     useEffect(() => {
-        console.log(rb.current)
         rb.current.setAngvel(new Vector3(
             Math.min(Math.random(), MAX_SPEED),
             Math.min(Math.random(), MAX_SPEED),
