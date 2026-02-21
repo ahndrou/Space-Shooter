@@ -8,7 +8,7 @@ export default function PlayArea({size}) {
         >
             <mesh>
                 <boxGeometry args={[size.x, size.y, size.z]} />
-                <meshStandardMaterial color="purple" side={DoubleSide} />
+                <meshBasicMaterial color="purple" side={DoubleSide} transparent opacity={0.5} />
             </mesh>
 
         </RigidBody>

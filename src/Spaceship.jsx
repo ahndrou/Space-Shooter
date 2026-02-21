@@ -46,9 +46,13 @@ export default function Spaceship({pointerActive}) {
         cameraOffset.current.set(0, 3, 7)
         // Quaternion transforms from local space to world space.
         cameraOffset.current.applyQuaternion(worldSpaceRotation.current)
+        cameraOffset.current.add(rb.current.translation())
         
-        state.camera.position.copy(rb.current.translation())
-        state.camera.position.add(cameraOffset.current)
+        // The slight lag from LERP gives the user a nice indication that they are turning.
+        // It also helps to reduce a visible stuttering that was occurring without it - still not
+        // entirely sure of the cause but I think it is related to cam & ship models being
+        // updated out of sync.
+        state.camera.position.lerp(cameraOffset.current, 0.02)
 
         state.camera.rotation.setFromQuaternion(worldSpaceRotation.current)
 
