@@ -1,6 +1,9 @@
 import { RigidBody } from "@react-three/rapier";
 import { DoubleSide } from "three";
 
+import vertexShader from "./shaders/boundary/vertex.glsl"
+import fragmentShader from "./shaders/boundary/fragment.glsl"
+
 export default function PlayArea({size}) {
     return (
         <RigidBody
@@ -8,7 +11,12 @@ export default function PlayArea({size}) {
         >
             <mesh>
                 <boxGeometry args={[size.x, size.y, size.z]} />
-                <meshBasicMaterial color="purple" side={DoubleSide} transparent opacity={0.5} />
+                <rawShaderMaterial
+                    vertexShader={vertexShader} 
+                    fragmentShader={fragmentShader} 
+                    transparent
+                    side={DoubleSide}
+                    />
             </mesh>
 
         </RigidBody>
