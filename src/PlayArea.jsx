@@ -9,7 +9,10 @@ export default function PlayArea({size}) {
         <RigidBody
             type="fixed"
         >
-            <mesh>
+            {/* Transparent pass uses distance between camera & object origin
+                for render order sorting. The bounding box walls are far from its origin
+                which was causing artifacts. */}
+            <mesh renderOrder={1}>
                 <boxGeometry args={[size.x, size.y, size.z]} />
                 <rawShaderMaterial
                     vertexShader={vertexShader} 
