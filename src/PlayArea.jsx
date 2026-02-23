@@ -3,8 +3,11 @@ import { DoubleSide } from "three";
 
 import vertexShader from "./shaders/boundary/vertex.glsl"
 import fragmentShader from "./shaders/boundary/fragment.glsl"
+import { useThree } from "@react-three/fiber";
 
 export default function PlayArea({size}) {
+    const three = useThree()
+
     return (
         <RigidBody
             type="fixed"
@@ -19,6 +22,9 @@ export default function PlayArea({size}) {
                     fragmentShader={fragmentShader} 
                     transparent
                     side={DoubleSide}
+                    uniforms={{
+                        cameraPos: {value: three.camera.position}
+                    }}
                     />
             </mesh>
 
