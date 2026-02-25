@@ -3,6 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
 import { useRef } from "react";
 import { Quaternion, Vector3 } from "three";
+import Weapon from "./Weapon";
 
 export default function Spaceship({pointerActive}) {
     const ANGULAR_SPEED_FACTOR = 0.9
@@ -81,7 +82,8 @@ export default function Spaceship({pointerActive}) {
 
     })
 
-    return (
+    return <>
+        <Weapon ship={rb} />
         <RigidBody 
             ref={rb} 
             position={[0, 0, 0]}
@@ -103,8 +105,6 @@ export default function Spaceship({pointerActive}) {
                     material={gltf.materials["Lines"]}>
                 </mesh>
             </group>
-            
         </RigidBody>
-        
-    )
+    </>
 }
