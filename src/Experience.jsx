@@ -2,10 +2,11 @@ import { Canvas } from "@react-three/fiber";
 import Spaceship from "./Spaceship";
 import { Physics } from "@react-three/rapier";
 import Level from "./Level";
-import { KeyboardControls, OrbitControls } from "@react-three/drei";
+import { KeyboardControls} from "@react-three/drei";
 import Lights from "./Lights";
 import { useState } from "react";
 import PlayArea from "./PlayArea";
+import Skybox from "./Skybox";
 
 export default function Experience() {
     const PLAY_AREA_SIZE = {x: 150, y: 150, z: 150}
@@ -32,6 +33,7 @@ export default function Experience() {
                         <Level enemyBounds={PLAY_AREA_SIZE} />
                         <PlayArea size={PLAY_AREA_SIZE} />
                     </Physics>
+                    <Skybox />
                 </Canvas>
             </KeyboardControls>
         </>
