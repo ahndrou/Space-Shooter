@@ -4,10 +4,29 @@ import { Euler, Quaternion } from "three"
 import { generateUUID } from "three/src/math/MathUtils.js"
 import Bullet from "./Bullet"
 
+const BULLET_LIFETIME = 6000
+
 export default function Weapon({ship}) {
     const [bullets, setBullets] = useState([])
 
     const [subscribe] = useKeyboardControls()
+
+    useEffect(() => {
+        function updateBullets() {
+            const filteredBullets = bullets.filter((bulletData) => {
+                if (Date.now() - bulletData.creationTime < BULLET_LIFETIME) {
+                    return true
+                } else {
+                    return false
+                }
+            })
+            setBullets(filteredBullets)
+        }
+
+        const interval = setInterval(updateBullets, BULLET_LIFETIME)
+
+        return () => clearInterval(interval)
+    }, [bullets])
 
     useEffect(() => {
         return subscribe(
