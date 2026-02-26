@@ -1,28 +1,39 @@
 import { useGLTF } from "@react-three/drei";
-import { RigidBody } from "@react-three/rapier";
+import { BallCollider, RigidBody } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 import { Vector3 } from "three";
+
+const MIN_TORQUE = 7
+const MAX_TORQUE = 12
 
 export default function EnemyBasic({position}) {
     const gltf = useGLTF("./space_shooter_enemy_basic.glb")
     const rb = useRef()
 
-    const MAX_SPEED = 0.4
-
     useEffect(() => {
-        rb.current.setAngvel(new Vector3(
-            Math.min(Math.random(), MAX_SPEED),
-            Math.min(Math.random(), MAX_SPEED),
-            Math.min(Math.random(), MAX_SPEED)
+        rb.current.addTorque(new Vector3(
+            Math.max(MIN_TORQUE, Math.random() * MAX_TORQUE),
+            Math.max(MIN_TORQUE, Math.random() * MAX_TORQUE),
+            Math.max(MIN_TORQUE, Math.random() * MAX_TORQUE)
         ))
     }, [])
 
     return (
         <RigidBody
-            type="kinematicVelocity"
+            type="dynamic"
             position={position}
             ref={rb}
+            colliders={false}
+            canSleep={false}
+            angularDamping={0.4}
             >
+                <BallCollider
+                    args={[3]}
+                    sensor
+                    onIntersectionEnter={() => {
+                        console.log("intersection")
+                    }} 
+                />
                 <group scale={3}>
                     <mesh 
                     geometry={gltf.meshes.Icosphere_1.geometry}
@@ -33,8 +44,6 @@ export default function EnemyBasic({position}) {
                         material={gltf.materials["Material.003"]}
                     />
                 </group>
-                
-            
         </RigidBody>
     )
 }
