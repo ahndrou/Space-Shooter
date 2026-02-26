@@ -1,6 +1,7 @@
 import { useKeyboardControls } from "@react-three/drei"
 import { useEffect, useState } from "react"
 import { Euler, Quaternion } from "three"
+import { generateUUID } from "three/src/math/MathUtils.js"
 import Bullet from "./Bullet"
 
 export default function Weapon({ship}) {
@@ -28,15 +29,23 @@ export default function Weapon({ship}) {
                     ))
 
                     const newBullet = 
-                        <Bullet 
-                            position={position}
-                            orientation={rotation}
+                        {
+                            id: generateUUID(),
+                            creationTime: Date.now(),
+                            initialPosition: position,
+                            rotation: rotation
 
-                        />
+                        }
                     setBullets([...bullets, newBullet])
                 }
             })
     }, [subscribe, bullets, ship])
 
-    return bullets
+    return bullets.map(bulletData => (
+        <Bullet 
+            key={bulletData.id}
+            position={bulletData.initialPosition}
+            rotation={bulletData.rotation}    
+        />
+    ))
 }
