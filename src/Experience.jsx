@@ -30,7 +30,7 @@ export default function Experience() {
                     <Lights />
                     <Physics debug gravity={[0, 0, 0]}>
                         <Spaceship pointerActive={pointerActive} />
-                        <Level enemyBounds={PLAY_AREA_SIZE} />
+                        <Level playAreaBounds={PLAY_AREA_SIZE} />
                         <PlayArea size={PLAY_AREA_SIZE} />
                     </Physics>
                     <Skybox />
