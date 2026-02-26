@@ -2,6 +2,9 @@ import { RigidBody } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
 
+import vertexShader from "./shaders/bullet/vertex.glsl"
+import fragmentShader from "./shaders/bullet/fragment.glsl"
+
 export default function Bullet({position, rotation}) {
     const SPEED = 20
     const rb = useRef();
@@ -22,8 +25,12 @@ export default function Bullet({position, rotation}) {
             rotation={rotation}
         >
             <mesh>
-                <boxGeometry args={[0.3, 0.3, 1.2]} />
-                <meshBasicMaterial color="green" />
+                <planeGeometry />
+                <rawShaderMaterial
+                    vertexShader={vertexShader} 
+                    fragmentShader={fragmentShader} 
+                    transparent
+                />
             </mesh>
         </RigidBody>
     )

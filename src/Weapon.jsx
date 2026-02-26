@@ -23,7 +23,7 @@ export default function Weapon({ship}) {
             setBullets(filteredBullets)
         }
 
-        const interval = setInterval(updateBullets, BULLET_LIFETIME)
+        const interval = setInterval(updateBullets, 1000)
 
         return () => clearInterval(interval)
     }, [bullets])
