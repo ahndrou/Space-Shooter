@@ -1,6 +1,6 @@
 import { useKeyboardControls } from "@react-three/drei"
 import { useEffect, useState } from "react"
-import { Euler, Quaternion } from "three"
+import { Euler, Quaternion, Vector3 } from "three"
 import { generateUUID } from "three/src/math/MathUtils.js"
 import Bullet from "./Bullet"
 
@@ -34,18 +34,24 @@ export default function Weapon({ship}) {
             (spacePressed) => 
             {
                 if (spacePressed && ship.current) {
-                    const position = [
+                    const position = new Vector3(
                         ship.current.translation().x,
                         ship.current.translation().y,
                         ship.current.translation().z
-                    ]
+                    )
 
-                    const rotation = new Euler().setFromQuaternion(new Quaternion(
+                    const q = new Quaternion(
                         ship.current.rotation().x,
                         ship.current.rotation().y,
                         ship.current.rotation().z,
                         ship.current.rotation().w
-                    ))
+                    )
+
+                    const offset = new Vector3(0, 0, -2)
+                    offset.applyQuaternion(q)
+                    position.add(offset)
+
+                    const rotation = new Euler().setFromQuaternion(q)
 
                     const newBullet = 
                         {
