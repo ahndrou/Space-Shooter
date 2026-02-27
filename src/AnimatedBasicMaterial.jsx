@@ -18,13 +18,13 @@ import { useRef } from "react"
 
 const ANIMATION_TIME = 3
 
-export default function AnimatedBasicMaterial({color, transparent, opacity}) {
+export default function AnimatedBasicMaterial({color, transparent, opacity, animationActive=false}) {
     const customUniforms = useRef({
         uTime: {value: 0}
     })
     
     useFrame((state, delta) => {
-        if (customUniforms.current.uTime.value < ANIMATION_TIME) {
+        if (animationActive && customUniforms.current.uTime.value < ANIMATION_TIME) {
             customUniforms.current.uTime.value += delta
         }
     })
@@ -49,7 +49,7 @@ export default function AnimatedBasicMaterial({color, transparent, opacity}) {
         shader.vertexShader = shader.vertexShader.replace("#include <begin_vertex>", 
             `
             #include <begin_vertex>
-            transformed *= (1.0 - uTime * 0.2);
+            transformed *= (1.0 - uTime * 0.4);
 
             `
         )
