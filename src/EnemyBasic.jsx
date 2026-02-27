@@ -6,7 +6,7 @@ import { Vector3 } from "three";
 const MIN_TORQUE = 7
 const MAX_TORQUE = 12
 
-export default function EnemyBasic({position}) {
+export default function EnemyBasic({position, remove}) {
     const gltf = useGLTF("./space_shooter_enemy_basic.glb")
     const rb = useRef()
 
@@ -32,6 +32,7 @@ export default function EnemyBasic({position}) {
                     sensor
                     onIntersectionEnter={() => {
                         console.log("intersection")
+                        remove()
                     }} 
                 />
                 <group scale={3}>

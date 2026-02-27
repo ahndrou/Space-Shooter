@@ -28,7 +28,7 @@ export default function Experience() {
                     onMouseLeave={() => setPointerActive(false)}
                     onMouseEnter={() => setPointerActive(true)}>
                     <Lights />
-                    <Physics debug gravity={[0, 0, 0]}>
+                    <Physics gravity={[0, 0, 0]}>
                         <Spaceship pointerActive={pointerActive} />
                         <Level playAreaBounds={PLAY_AREA_SIZE} />
                         <PlayArea size={PLAY_AREA_SIZE} />

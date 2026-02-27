@@ -3,7 +3,7 @@ import EnemyBasic from "./EnemyBasic";
 import { Vector3 } from "three";
 import { generateUUID } from "three/src/math/MathUtils.js";
 
-const ENEMY_COUNT = 40
+const ENEMY_COUNT = 80
 
 function createEnemyData(playAreaBounds) {
     return {
@@ -26,9 +26,14 @@ export default function Level({playAreaBounds}) {
         return enemies
     })
 
+    function removeEnemy(enemyToRemove) {
+        setEnemies(enemies.filter((enemy) => enemy.id !== enemyToRemove.id))
+    }
+
     return (
         enemies.map((enemyData) => {
-            return <EnemyBasic key={enemyData.id} position={enemyData.position} />
+            return <EnemyBasic key={enemyData.id} position={enemyData.position} remove={() => {
+                removeEnemy(enemyData)}} />
         }
     ))
 }
