@@ -2,6 +2,7 @@ import { useGLTF } from "@react-three/drei";
 import { BallCollider, RigidBody } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 import { Vector3 } from "three";
+import AnimatedBasicMaterial from "./AnimatedBasicMaterial";
 
 const MIN_TORQUE = 7
 const MAX_TORQUE = 12
@@ -38,13 +39,15 @@ export default function EnemyBasic({position, remove}) {
                 />
                 <group scale={3}>
                     <mesh 
-                    geometry={gltf.meshes.Icosphere_1.geometry}
-                    material={gltf.materials["Material.001"]}
-                    />
+                        geometry={gltf.meshes.Icosphere_1.geometry}
+                    >
+                        <AnimatedBasicMaterial color="green" transparent={true} opacity={0.7} />
+                    </mesh>
                     <mesh 
                         geometry={gltf.meshes.Icosphere_2.geometry}
-                        material={gltf.materials["Material.003"]}
-                    />
+                    >
+                        <AnimatedBasicMaterial color={[0.4, 0.4, 0.4]} />
+                    </mesh>
                 </group>
         </RigidBody>
     )
