@@ -5,10 +5,12 @@ import { Vector3 } from "three";
 
 const MIN_TORQUE = 7
 const MAX_TORQUE = 12
+const TIME_TO_REMOVE = 1000
 
 export default function EnemyBasic({position, remove}) {
     const gltf = useGLTF("./space_shooter_enemy_basic.glb")
     const rb = useRef()
+    const hit = useRef(false)
 
     useEffect(() => {
         rb.current.addTorque(new Vector3(
@@ -31,8 +33,7 @@ export default function EnemyBasic({position, remove}) {
                     args={[3]}
                     sensor
                     onIntersectionEnter={() => {
-                        console.log("intersection")
-                        remove()
+                        if (hit.current === false) setTimeout(remove, TIME_TO_REMOVE)
                     }} 
                 />
                 <group scale={3}>
