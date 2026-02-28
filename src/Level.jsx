@@ -27,7 +27,7 @@ export default function Level({playAreaBounds}) {
     })
 
     function removeEnemy(enemyToRemove) {
-        setEnemies(enemies.filter((enemy) => enemy.id !== enemyToRemove.id))
+        setEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyToRemove.id))
     }
 
     return (
