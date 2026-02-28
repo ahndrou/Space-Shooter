@@ -32,7 +32,7 @@ export default function Level({playAreaBounds}) {
 
     return (
         enemies.map((enemyData) => {
-            return <EnemyBasic key={enemyData.id} position={enemyData.position} remove={() => {
+            return <EnemyBasic key={enemyData.id} position={enemyData.position} disposeSelf={() => {
                 removeEnemy(enemyData)}} />
         }
     ))
