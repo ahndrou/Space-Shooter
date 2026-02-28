@@ -16,7 +16,11 @@ modify attributes, so the position value is copied to a new variable called 'tra
 import { useFrame } from "@react-three/fiber"
 import { useRef } from "react"
 
-const ANIMATION_TIME = 3
+const TOTAL_ANIMATION_TIME = 2
+const SCALE_UP_TIME = 0.2
+const SCALE_DOWN_TIME = 0.3
+const OSCILLATION_TIME = TOTAL_ANIMATION_TIME - SCALE_UP_TIME - SCALE_DOWN_TIME
+
 
 export default function AnimatedBasicMaterial({color, transparent, opacity, animationActive=false}) {
     const customUniforms = useRef({
@@ -24,17 +28,22 @@ export default function AnimatedBasicMaterial({color, transparent, opacity, anim
     })
     
     useFrame((state, delta) => {
-        if (animationActive && customUniforms.current.uTime.value < ANIMATION_TIME) {
+        if (animationActive && customUniforms.current.uTime.value < TOTAL_ANIMATION_TIME) {
             customUniforms.current.uTime.value += delta
         }
     })
 
     const modifyShader = (shader) => {
-         // Inject uniform declaration
+         // Injecting in global scope. This is where we add uniforms and such.
          shader.vertexShader = shader.vertexShader.replace("#include <common>", 
             `
             #include <common>
             uniform float uTime; 
+
+            float remap(float value, float originMin, float originMax, float destinationMin, float destinationMax)
+            {
+                return destinationMin + (value - originMin) * (destinationMax - destinationMin) / (originMax - originMin);
+            }
 
             `
         )
@@ -45,11 +54,44 @@ export default function AnimatedBasicMaterial({color, transparent, opacity, anim
         // We can update value from outside and the object allows us to keep a persistent reference to it.
         shader.uniforms.uTime = customUniforms.current.uTime
 
-        // Inject animation transforms
+        // Injecting inside the 'main' function.
         shader.vertexShader = shader.vertexShader.replace("#include <begin_vertex>", 
             `
             #include <begin_vertex>
-            transformed *= (1.0 - uTime * 0.4);
+
+            float openingProgress = remap(
+                uTime, 
+                0.0, 
+                ${SCALE_UP_TIME.toFixed(1)}, 
+                0.0, 
+                1.0
+            );
+
+            // remap does not clamp the values at the 'edge' values - it extrapolates.
+            openingProgress = clamp(openingProgress, 0.0, 1.0);
+
+            // Here for example, closingProgress would be < 1.0 before the starting point given.
+            float closingProgress = remap(
+                uTime, 
+                ${(SCALE_UP_TIME + OSCILLATION_TIME).toFixed(1)}, 
+                ${TOTAL_ANIMATION_TIME.toFixed(1)}, 
+                0.0, 
+                1.0
+            );
+
+            closingProgress = clamp(closingProgress, 0.0, 1.0);
+
+            // This gives us a nice increasing, constant then decreasing function for progress.
+            // Between values 0 and 1.
+            float progress = min(openingProgress, 1.0 - closingProgress);
+
+            // Maps us to [1.0, 2.0], following our progress curve.
+            float scale = mix(1.0, 2.0, progress);
+
+            // When the closing animation starts, this extra factor will send the scale to zero.
+            scale *= (1.0 - closingProgress);
+
+            transformed *= scale;
 
             `
         )
