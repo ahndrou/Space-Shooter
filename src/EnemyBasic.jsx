@@ -12,22 +12,29 @@ const MAX_TORQUE = 12
 const SCALING_TIME = 2
 const EXPLODING_TIME = 2
 
+const COLLISION_STATES = 
+{
+    NO_COLLISION: "no_collision",
+    SCALING:      "scaling",
+    EXPLODING:    "exploding"
+}
+
 export default function EnemyBasic({position, disposeSelf}) {
     const gltf = useGLTF("./space_shooter_enemy_basic.glb")
     const rb = useRef()
-    const [collisionProgress, setCollisionProgress] = useState("NO_COLLISION")
+    const [collisionProgress, setCollisionProgress] = useState(COLLISION_STATES.NO_COLLISION)
 
     const animationTimer = useRef(0)
 
     useFrame((state, delta) => {
-        if (collisionProgress !== "NO_COLLISION") {
+        if (collisionProgress !== COLLISION_STATES.NO_COLLISION) {
             animationTimer.current += delta
         }
 
-        if (collisionProgress === "SCALING" && animationTimer.current >= SCALING_TIME) {
-            setCollisionProgress("EXPLODING")
+        if (collisionProgress === COLLISION_STATES.SCALING && animationTimer.current >= SCALING_TIME) {
+            setCollisionProgress(COLLISION_STATES.EXPLODING)
             animationTimer.current = 0
-        } else if (collisionProgress === "EXPLODING" && animationTimer.current >= EXPLODING_TIME) {
+        } else if (collisionProgress === COLLISION_STATES.EXPLODING && animationTimer.current >= EXPLODING_TIME) {
             disposeSelf()
         }
     })
@@ -53,8 +60,8 @@ export default function EnemyBasic({position, disposeSelf}) {
                     args={[3]}
                     sensor
                     onIntersectionEnter={() => {
-                        if (collisionProgress === "NO_COLLISION") {
-                            setCollisionProgress("SCALING")
+                        if (collisionProgress === COLLISION_STATES.NO_COLLISION) {
+                            setCollisionProgress(COLLISION_STATES.SCALING)
                         }
                     }} 
                 />
@@ -63,16 +70,16 @@ export default function EnemyBasic({position, disposeSelf}) {
                     <mesh 
                         geometry={gltf.meshes.Icosphere_1.geometry}
                     >
-                        <AnimatedBasicMaterial color="green" transparent={true} opacity={0.7} animationActive={collisionProgress === "SCALING"} />
+                        <AnimatedBasicMaterial color="green" transparent={true} opacity={0.7} animationActive={collisionProgress === COLLISION_STATES.SCALING} />
                     </mesh>
                     <mesh 
                         geometry={gltf.meshes.Icosphere_2.geometry}
                     >
-                        <AnimatedBasicMaterial color={[0.4, 0.4, 0.4]} animationActive={collisionProgress === "SCALING"}/>
+                        <AnimatedBasicMaterial color={[0.4, 0.4, 0.4]} animationActive={collisionProgress === COLLISION_STATES.SCALING}/>
                     </mesh>
                 </group>
 
-                {collisionProgress === "EXPLODING" && <Explosion />}
+                {collisionProgress === COLLISION_STATES.EXPLODING && <Explosion />}
         </RigidBody>
     )
 }
