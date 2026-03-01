@@ -11,6 +11,9 @@ uniform vec2 uResolution;
 uniform float uTime;
 
 attribute float aSize;
+attribute float aOffset;
+
+varying float vOffsetTime;
 
 float remap(float value, float originMin, float originMax, float destinationMin, float destinationMax)
 {
@@ -25,7 +28,10 @@ float clampedRemap(float value, float originMin, float originMax, float destinat
 
 void main() {
     // Not sure this is necessary here, really. Check how I have got the animation progress in the frag shader.
-    float animationProgress = clampedRemap(uTime, 0.0, ANIMATION_LENGTH, 0.0, 1.0);
+    float offsetTime = uTime * aOffset;
+    float animationProgress = clampedRemap(offsetTime, 0.0, ANIMATION_LENGTH, 0.0, 1.0);
+
+    vOffsetTime = offsetTime;
 
     vec3 transformedPosition = position;
     // I feel like I could just transform this expression, rather than remapping first.

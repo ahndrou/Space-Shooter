@@ -1,13 +1,13 @@
 #include "config.glsl"
 
-uniform float uTime;
+varying float vOffsetTime;
 
 void main() {
     // Base shape
     float strength = step(0.5, 1.0 - distance(gl_PointCoord, vec2(0.5)));
 
     // Fade out
-    float animationProgress = clamp(uTime / ANIMATION_LENGTH, 0.0, 1.0);
+    float animationProgress = clamp(vOffsetTime / ANIMATION_LENGTH, 0.0, 1.0);
 
     strength *= clamp(1.0 - 2.0 * pow(animationProgress, 3.0), 0.0, 1.0);
 

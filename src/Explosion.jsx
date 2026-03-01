@@ -5,7 +5,7 @@ import fragmentShader from "./shaders/explosion/fragment.glsl"
 import { AdditiveBlending, Spherical, Vector2, Vector3 } from "three"
 import { useFrame } from "@react-three/fiber"
 
-const PARTICLE_COUNT = 400
+const PARTICLE_COUNT = 600
 
 const sizes = {
     width: window.innerWidth,
@@ -63,6 +63,18 @@ function createSizesArray() {
 }
 
 
+// Used to add some random offset to the particle animations.
+function createOffsetsArray() {
+    const offsets = new Float32Array(PARTICLE_COUNT)
+        
+    for(let i = 0; i < PARTICLE_COUNT; i++) {
+        offsets[i] = Math.random() + 1
+    }
+
+    return offsets
+}
+
+
 export default function Explosion({particleSize=1, sphereRadius=1}) {
 
     // Notice the linter gives a warning for using particlePositions.current
@@ -71,6 +83,7 @@ export default function Explosion({particleSize=1, sphereRadius=1}) {
 
     const particlePositions = useRef(createParticlePositionsArray(sphereRadius))
     const particleSizes = useRef(createSizesArray())
+    const particleOffsets = useRef(createOffsetsArray())
 
     // This is done so we have a stable object we can update on each frame.
     const uniforms = useRef(
@@ -95,6 +108,10 @@ export default function Explosion({particleSize=1, sphereRadius=1}) {
                 <bufferAttribute 
                     attach={"attributes-aSize"}
                     args={[particleSizes.current, 1]}
+                /> 
+                <bufferAttribute 
+                    attach={"attributes-aOffset"}
+                    args={[particleOffsets.current, 1]}
                 /> 
             </bufferGeometry>
             <shaderMaterial
