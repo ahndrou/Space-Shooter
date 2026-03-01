@@ -3,8 +3,9 @@ import { useRef } from "react"
 import vertexShader from "./shaders/explosion/vertex.glsl"
 import fragmentShader from "./shaders/explosion/fragment.glsl"
 import { AdditiveBlending, Spherical, Vector2, Vector3 } from "three"
+import { useFrame } from "@react-three/fiber"
 
-const PARTICLE_COUNT = 40
+const PARTICLE_COUNT = 400
 
 const sizes = {
     width: window.innerWidth,
@@ -62,7 +63,7 @@ function createSizesArray() {
 }
 
 
-export default function Explosion({particleSize, sphereRadius=1}) {
+export default function Explosion({particleSize=1, sphereRadius=1}) {
 
     // Notice the linter gives a warning for using particlePositions.current
     // in a prop below. I have left some insights I had when reading about this 
@@ -71,8 +72,21 @@ export default function Explosion({particleSize, sphereRadius=1}) {
     const particlePositions = useRef(createParticlePositionsArray(sphereRadius))
     const particleSizes = useRef(createSizesArray())
 
+    // This is done so we have a stable object we can update on each frame.
+    const uniforms = useRef(
+    {
+        uSize: {value: particleSize},
+        uResolution: {value: sizes.resolution},
+        uTime: {value: 0}
+    })
+
+    useFrame((state, delta) => 
+    {
+        uniforms.current.uTime.value += delta
+    })
+
     return (
-        <points>
+        <points frustumCulled={false}>
             <bufferGeometry>
                 <bufferAttribute 
                     attach={"attributes-position"}
@@ -90,10 +104,7 @@ export default function Explosion({particleSize, sphereRadius=1}) {
                 transparent
                 depthWrite={false}
                 blending={AdditiveBlending}
-                uniforms={{
-                    uSize: {value: particleSize},
-                    uResolution: {value: sizes.resolution}
-                }}    
+                uniforms={uniforms.current}    
             />
         </points>
     )

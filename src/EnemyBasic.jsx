@@ -9,8 +9,11 @@ import { useFrame } from "@react-three/fiber";
 const MIN_TORQUE = 7
 const MAX_TORQUE = 12
 
+// 'Scaling' part of the collision animation.
 const SCALING_TIME = 2
-const EXPLODING_TIME = 2
+// 'Exploding' part of the collision animation. Currently need to make sure
+// this matches up to the animation length defined in /shaders/explosion/config.glsl.
+const EXPLODING_TIME = 3
 
 const COLLISION_STATES = 
 {
@@ -65,7 +68,7 @@ export default function EnemyBasic({position, disposeSelf}) {
                         }
                     }} 
                 />
-{/* 
+
                 <group scale={3}>
                     <mesh 
                         geometry={gltf.meshes.Icosphere_1.geometry}
@@ -77,10 +80,9 @@ export default function EnemyBasic({position, disposeSelf}) {
                     >
                         <AnimatedBasicMaterial color={[0.4, 0.4, 0.4]} animationActive={collisionProgress === COLLISION_STATES.SCALING}/>
                     </mesh>
-                </group> */}
+                </group>
 
-                <Explosion particleSize={0.5}/>
-                {/* {collisionProgress === COLLISION_STATES.EXPLODING && <Explosion />} */}
+                {collisionProgress === COLLISION_STATES.EXPLODING && <Explosion />}
         </RigidBody>
     )
 }

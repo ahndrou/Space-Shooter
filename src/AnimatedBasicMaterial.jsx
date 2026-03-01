@@ -16,6 +16,8 @@ modify attributes, so the position value is copied to a new variable called 'tra
 import { useFrame } from "@react-three/fiber"
 import { useRef } from "react"
 
+// This whole component is for a scaling animation. The time is set here, but in EnemyBasic too? It is unclear
+// and needs refactoring. There is some tight coupling currently.
 const TOTAL_ANIMATION_TIME = 2
 const SCALE_UP_TIME = 0.2
 const SCALE_DOWN_TIME = 0.3
