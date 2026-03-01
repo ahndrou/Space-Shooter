@@ -7,13 +7,19 @@
 uniform float uSize;
 uniform vec2 uResolution;
 
+attribute float aSize;
+
 void main() {
     vec4 modelPosition = modelMatrix * vec4(position, 1.0);
     vec4 viewPosition = viewMatrix * modelPosition;
     gl_Position = projectionMatrix * viewPosition;
 
+    
+
     // Things in the scene should become smaller when the window height is reduced.
     gl_PointSize = uSize * uResolution.y;
+
+    gl_PointSize *= aSize;
 
     // Projection matrix handles the point positions with distance. This handles the
     // size of the individual points with perspective.

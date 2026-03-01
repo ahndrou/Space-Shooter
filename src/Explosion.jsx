@@ -27,31 +27,47 @@ window.addEventListener('resize', () =>
 })
 
 
-function createVertexArray() {
-    const positions = new Float32Array(PARTICLE_COUNT * 3)
+function createparticlePositionsArray() {
+    const particlePositions = new Float32Array(PARTICLE_COUNT * 3)
         
     for(let i = 0; i < PARTICLE_COUNT * 3; i++) {
-        positions[i] = (Math.random() - 0.5) * 3
+        particlePositions[i] = (Math.random() - 0.5) * 3
     }
 
-    return positions
+    return particlePositions
+}
+
+// Used to add some random size to the particles.
+function createSizesArray() {
+    const sizes = new Float32Array(PARTICLE_COUNT)
+        
+    for(let i = 0; i < PARTICLE_COUNT; i++) {
+        sizes[i] = Math.random()
+    }
+
+    return sizes
 }
 
 
 export default function Explosion({particleSize}) {
 
-    // Notice the linter gives a warning for using positions.current
+    // Notice the linter gives a warning for using particlePositions.current
     // in a prop below. I have left some insights I had when reading about this 
     // at the bottom of the file.
 
-    const positions = useRef(createVertexArray())
+    const particlePositions = useRef(createparticlePositionsArray())
+    const particleSizes = useRef(createSizesArray())
 
     return (
         <points>
             <bufferGeometry>
                 <bufferAttribute 
                     attach={"attributes-position"}
-                    args={[positions.current, 3]}
+                    args={[particlePositions.current, 3]}
+                />
+                <bufferAttribute 
+                    attach={"attributes-aSize"}
+                    args={[particleSizes.current, 1]}
                 /> 
             </bufferGeometry>
             <shaderMaterial
@@ -90,7 +106,7 @@ export default function Explosion({particleSize}) {
     // Here was the original way I was doing it:
     /* <bufferAttribute 
         attach={"attributes-position"}
-        array={positionsArray}
+        array={particlePositionsArray}
         itemSize={3}
         count={PARTICLE_COUNT} />  
     */
@@ -99,7 +115,7 @@ export default function Explosion({particleSize}) {
 // INSIGHT -- Math.random inside useMemo function --
     // Linter complains about using Math.random here. Reading around, it 
     // seems that the cache can be cleared internally for certain reasons.
-    // This would mean 'positions' would be recalculated between renders
+    // This would mean 'particlePositions' would be recalculated between renders
     // when I might expect it not to according to the empty dep. array.
 
     // The alternative seems to be to use a seeded RNG.
