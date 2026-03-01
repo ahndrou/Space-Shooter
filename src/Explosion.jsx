@@ -2,9 +2,9 @@ import { useRef } from "react"
 
 import vertexShader from "./shaders/explosion/vertex.glsl"
 import fragmentShader from "./shaders/explosion/fragment.glsl"
-import { AdditiveBlending, Vector2 } from "three"
+import { AdditiveBlending, Spherical, Vector2, Vector3 } from "three"
 
-const PARTICLE_COUNT = 15
+const PARTICLE_COUNT = 40
 
 const sizes = {
     width: window.innerWidth,
@@ -27,15 +27,28 @@ window.addEventListener('resize', () =>
 })
 
 
-function createparticlePositionsArray() {
+function createParticlePositionsArray(sphereRadius) {
     const particlePositions = new Float32Array(PARTICLE_COUNT * 3)
         
-    for(let i = 0; i < PARTICLE_COUNT * 3; i++) {
-        particlePositions[i] = (Math.random() - 0.5) * 3
+    for(let i = 0; i < PARTICLE_COUNT; i++) {
+        const i3 = i * 3
+
+        const spherical = new Spherical(
+            sphereRadius * (0.75 + Math.random() * 0.25),
+            Math.random() * Math.PI,
+            Math.random() * Math.PI * 2
+        )
+
+        const position = new Vector3().setFromSpherical(spherical)
+
+        particlePositions[i3    ] = position.x
+        particlePositions[i3 + 1] = position.y
+        particlePositions[i3 + 2] = position.z
     }
 
     return particlePositions
 }
+
 
 // Used to add some random size to the particles.
 function createSizesArray() {
@@ -49,13 +62,13 @@ function createSizesArray() {
 }
 
 
-export default function Explosion({particleSize}) {
+export default function Explosion({particleSize, sphereRadius=1}) {
 
     // Notice the linter gives a warning for using particlePositions.current
     // in a prop below. I have left some insights I had when reading about this 
     // at the bottom of the file.
 
-    const particlePositions = useRef(createparticlePositionsArray())
+    const particlePositions = useRef(createParticlePositionsArray(sphereRadius))
     const particleSizes = useRef(createSizesArray())
 
     return (

@@ -35,7 +35,7 @@ export default function Experience() {
                         <PlayArea size={PLAY_AREA_SIZE} />
                     </Physics>
                     <Skybox />
-                    <Explosion particleSize={1}/>
+                    <Explosion particleSize={0.5}/>
                 </Canvas>
             </KeyboardControls>
         </>
