@@ -2,8 +2,30 @@ import { useRef } from "react"
 
 import vertexShader from "./shaders/explosion/vertex.glsl"
 import fragmentShader from "./shaders/explosion/fragment.glsl"
+import { AdditiveBlending, Vector2 } from "three"
 
 const PARTICLE_COUNT = 15
+
+const sizes = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    pixelRatio: Math.min(window.devicePixelRatio, 2)
+}
+// innerheight and innerwidth do not account for high density displays. In fact not just this,
+// but the OS can apply display scaling, too. Browser zoom level also affects pixel ratio.
+sizes.resolution = new Vector2(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)
+
+window.addEventListener('resize', () =>
+{
+    // Handles moving between displays. A resize will often happen. If the
+    // displays have different pixel ratios, it is also handled here.
+    sizes.pixelRatio = Math.min(window.devicePixelRatio, 2)
+
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+    sizes.resolution.set(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)
+})
+
 
 function createVertexArray() {
     const positions = new Float32Array(PARTICLE_COUNT * 3)
@@ -15,7 +37,8 @@ function createVertexArray() {
     return positions
 }
 
-export default function Explosion() {
+
+export default function Explosion({particleSize}) {
 
     // Notice the linter gives a warning for using positions.current
     // in a prop below. I have left some insights I had when reading about this 
@@ -31,9 +54,17 @@ export default function Explosion() {
                     args={[positions.current, 3]}
                 /> 
             </bufferGeometry>
-            <shaderMaterial 
+            <shaderMaterial
+                key={Math.random()} 
                 vertexShader={vertexShader}
-                fragmentShader={fragmentShader}    
+                fragmentShader={fragmentShader}
+                transparent
+                depthWrite={false}
+                blending={AdditiveBlending}
+                uniforms={{
+                    uSize: {value: particleSize},
+                    uResolution: {value: sizes.resolution}
+                }}    
             />
         </points>
     )

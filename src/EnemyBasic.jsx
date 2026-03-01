@@ -79,7 +79,7 @@ export default function EnemyBasic({position, disposeSelf}) {
                     </mesh>
                 </group> */}
 
-                <Explosion />
+                <Explosion particleSize={0.5}/>
                 {/* {collisionProgress === COLLISION_STATES.EXPLODING && <Explosion />} */}
         </RigidBody>
     )
