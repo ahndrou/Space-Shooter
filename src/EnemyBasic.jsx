@@ -65,7 +65,7 @@ export default function EnemyBasic({position, disposeSelf}) {
                         }
                     }} 
                 />
-
+{/* 
                 <group scale={3}>
                     <mesh 
                         geometry={gltf.meshes.Icosphere_1.geometry}
@@ -77,9 +77,10 @@ export default function EnemyBasic({position, disposeSelf}) {
                     >
                         <AnimatedBasicMaterial color={[0.4, 0.4, 0.4]} animationActive={collisionProgress === COLLISION_STATES.SCALING}/>
                     </mesh>
-                </group>
+                </group> */}
 
-                {collisionProgress === COLLISION_STATES.EXPLODING && <Explosion />}
+                <Explosion />
+                {/* {collisionProgress === COLLISION_STATES.EXPLODING && <Explosion />} */}
         </RigidBody>
     )
 }
