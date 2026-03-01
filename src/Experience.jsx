@@ -7,11 +7,10 @@ import Lights from "./Lights";
 import { useState } from "react";
 import PlayArea from "./PlayArea";
 import Skybox from "./Skybox";
-import Explosion from "./Explosion";
+
+const PLAY_AREA_SIZE = {x:50, y: 150, z: 150}
 
 export default function Experience() {
-    const PLAY_AREA_SIZE = {x: 150, y: 150, z: 150}
-
     const [pointerActive, setPointerActive] = useState(true)
 
     return (
@@ -35,7 +34,6 @@ export default function Experience() {
                         <PlayArea size={PLAY_AREA_SIZE} />
                     </Physics>
                     <Skybox />
-                    <Explosion particleSize={0.5}/>
                 </Canvas>
             </KeyboardControls>
         </>
