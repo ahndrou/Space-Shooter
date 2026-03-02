@@ -1,13 +1,25 @@
 precision mediump float;
 
+uniform vec3 uTipColour;
+uniform vec3 uTailColour;
+uniform vec2 uZBounds;
+
+varying vec3 vPos;
 varying vec2 vUv;
 
 void main() {
-    float strength = pow(0.016, (distance(vUv, vec2(0.5))));
+    float zMin = uZBounds.x;
+    float zMax = uZBounds.y;
 
-    vec3 highlightColour = vec3(0.9, 0.99, 0.9);
+    float strength = - vPos.z / (zMax - zMin);
+    float alpha = strength;
 
-    if (strength < 0.2) discard;
+    strength += 0.2;
+    strength = clamp(strength, 0.0, 1.0);
 
-    gl_FragColor = vec4(highlightColour, strength);
+    alpha += 0.5;   
+
+    vec3 colour = mix(uTailColour, uTipColour, strength);
+
+    gl_FragColor = vec4(vec3(colour), 1.0);
 }

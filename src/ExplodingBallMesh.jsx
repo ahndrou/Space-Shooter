@@ -35,12 +35,19 @@ export default function ExplodingBallMesh({collisionState, setCollisionState, di
             <mesh 
                 geometry={gltf.meshes.Icosphere_1.geometry}
             >
-                <ScaleAnimatedMaterial color="green" transparent={true} opacity={0.7} animationActive={collisionState === COLLISION_STATES.SCALING} />
+                <ScaleAnimatedMaterial 
+                    color="green" 
+                    transparent={true} 
+                    opacity={0.7} 
+                    animationActive={collisionState === COLLISION_STATES.SCALING} 
+                />
             </mesh>
             <mesh 
                 geometry={gltf.meshes.Icosphere_2.geometry}
             >
-                <ScaleAnimatedMaterial color={[0.4, 0.4, 0.4]} animationActive={collisionState === COLLISION_STATES.SCALING}/>
+                <ScaleAnimatedMaterial 
+                    color={[0.4, 0.4, 0.4]} 
+                    animationActive={collisionState === COLLISION_STATES.SCALING}/>
             </mesh>
         </group>
 
