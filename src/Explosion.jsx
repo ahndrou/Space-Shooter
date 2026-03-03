@@ -121,7 +121,7 @@ export default function Explosion({particleSize=1, sphereRadius=1}) {
                 transparent
                 depthWrite={false}
                 blending={AdditiveBlending}
-                uniforms={uniforms.current}    
+                uniforms={uniforms.current}
             />
         </points>
     )

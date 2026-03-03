@@ -1,9 +1,11 @@
 import { useGLTF, useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
 import Weapon from "./Weapon";
+
+let i = 0
 
 export default function Spaceship({pointerActive}) {
     const ANGULAR_SPEED_FACTOR = 0.9
@@ -16,24 +18,24 @@ export default function Spaceship({pointerActive}) {
 
     const rb = useRef()
 
+    useEffect(() => console.log(rb.current))
+
     const gltf = useGLTF("./space_shooter_player.glb")
 
     const [ , getKeys ] = useKeyboardControls()
     
-    // Calculated from scratch each frame, but this avoids creating a new object
-    // every frame.
+    // Creation of new objects each frame might cause slowdown due to GC.
+    // The same objects are re-used for each frame.
     const cameraOffset = useRef(new Vector3())
     const worldSpaceRotation = useRef(new Quaternion())
     const angularVelocityTarget = useRef(new Vector3(0, 0, 0))
     const linearVelocityTarget = useRef(new Vector3(0, 0, 0))
 
-    // This needs to be maintained across renders.
+    // LERP is used. Thus we need a reference to the previous frame's velocity
     const smoothedLinearVelocity = useRef(new Vector3(0, 0, 0))
     const smoothedAngularVelocity = useRef(new Vector3(0, 0, 0))
 
     useFrame((state, delta) => {
-        const keys = getKeys()
-
         // rb.current.rotation() returns a plain object, not an instance
         // of the quaternion class.
         worldSpaceRotation.current.set(
@@ -50,14 +52,13 @@ export default function Spaceship({pointerActive}) {
         cameraOffset.current.add(rb.current.translation())
         
         // The slight lag from LERP gives the user a nice indication that they are turning.
-        // It also helps to reduce a visible stuttering that was occurring without it - still not
-        // entirely sure of the cause but I think it is related to cam & ship models being
-        // updated out of sync.
-        state.camera.position.lerp(cameraOffset.current, 0.02)
+        state.camera.position.lerp(cameraOffset.current, 5 * delta)
 
         state.camera.rotation.setFromQuaternion(worldSpaceRotation.current)
 
         // INPUT HANDLING
+        const keys = getKeys()
+
         let yawSpeed = 0
         if (pointerActive && Math.abs(state.pointer.x) > POINTER_LOWER_BOUND) {
             yawSpeed = -state.pointer.x * ANGULAR_SPEED_FACTOR
