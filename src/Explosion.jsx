@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 
 import vertexShader from "./shaders/explosion/vertex.glsl"
 import fragmentShader from "./shaders/explosion/fragment.glsl"
@@ -76,16 +76,13 @@ function createOffsetsArray() {
 
 
 export default function Explosion({particleSize=1, sphereRadius=1}) {
+    const [particlePositions] = useState(() => createParticlePositionsArray(sphereRadius))
+    const [particleSizes] = useState(() => createSizesArray())
+    const [particleOffsets] = useState(() => createOffsetsArray())
 
-    // Notice the linter gives a warning for using particlePositions.current
-    // in a prop below. I have left some insights I had when reading about this 
-    // at the bottom of the file.
-
-    const particlePositions = useRef(createParticlePositionsArray(sphereRadius))
-    const particleSizes = useRef(createSizesArray())
-    const particleOffsets = useRef(createOffsetsArray())
-
-    // This is done so we have a stable object we can update on each frame.
+    // Linter complains about using ref value for rendering. This pattern is the advised one for 
+    // R3F, though. This uniform is updated every frame. If state was updated every frame, the
+    // React re-rendering would tank performance.
     const uniforms = useRef(
     {
         uSize: {value: particleSize},
@@ -103,19 +100,18 @@ export default function Explosion({particleSize=1, sphereRadius=1}) {
             <bufferGeometry>
                 <bufferAttribute 
                     attach={"attributes-position"}
-                    args={[particlePositions.current, 3]}
+                    args={[particlePositions, 3]}
                 />
                 <bufferAttribute 
                     attach={"attributes-aSize"}
-                    args={[particleSizes.current, 1]}
+                    args={[particleSizes, 1]}
                 /> 
                 <bufferAttribute 
                     attach={"attributes-aOffset"}
-                    args={[particleOffsets.current, 1]}
+                    args={[particleOffsets, 1]}
                 /> 
             </bufferGeometry>
             <shaderMaterial
-                key={Math.random()} 
                 vertexShader={vertexShader}
                 fragmentShader={fragmentShader}
                 transparent
@@ -171,3 +167,9 @@ export default function Explosion({particleSize=1, sphereRadius=1}) {
 
     // I suppose the perfect solution would be to use a seeded RNG function inside
     // a useMemo.
+
+    // FURTHER THOUGHTS
+    // I ended up opting for useState, without destructuring a setter. I think this is the better
+    // approach because child components should re-render when it is updated. This better signals that
+    // it is reactive data. With a ref, in the future I might try to mutate the value, leaving child
+    // components with stale state unintentionally.
