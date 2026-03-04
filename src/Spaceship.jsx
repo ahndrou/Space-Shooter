@@ -5,9 +5,7 @@ import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
 import Weapon from "./Weapon";
 
-let i = 0
-
-export default function Spaceship({pointerActive}) {
+export default function Spaceship() {
     const ANGULAR_SPEED_FACTOR = 0.9
     const LINEAR_SPEED_FACTOR = 6
     const POINTER_LOWER_BOUND = 0.3
@@ -17,15 +15,27 @@ export default function Spaceship({pointerActive}) {
     const LINEAR_ACCELERATION = 2
 
     const rb = useRef()
-
-    useEffect(() => console.log(rb.current))
+    const pointerActive = useRef(true)
 
     const gltf = useGLTF("./space_shooter_player.glb")
 
     const [ , getKeys ] = useKeyboardControls()
+
+    useEffect(() => {
+        const setPointerActive = () => pointerActive.current = true
+        const setPointerInactive = () => pointerActive.current = false
+        
+        document.addEventListener("pointerleave", setPointerInactive)
+        document.addEventListener("pointerenter", setPointerActive)
+
+        return () => {
+            document.removeEventListener("pointerleave", setPointerInactive)
+            document.removeEventListener("pointerenter", setPointerActive)
+        }
+    }, [])
     
     // Creation of new objects each frame might cause slowdown due to GC.
-    // The same objects are re-used for each frame.
+    // The same objects are re-used for eacwh frame.
     const cameraOffset = useRef(new Vector3())
     const worldSpaceRotation = useRef(new Quaternion())
     const angularVelocityTarget = useRef(new Vector3(0, 0, 0))
@@ -60,11 +70,11 @@ export default function Spaceship({pointerActive}) {
         const keys = getKeys()
 
         let yawSpeed = 0
-        if (pointerActive && Math.abs(state.pointer.x) > POINTER_LOWER_BOUND) {
+        if (pointerActive.current && Math.abs(state.pointer.x) > POINTER_LOWER_BOUND) {
             yawSpeed = -state.pointer.x * ANGULAR_SPEED_FACTOR
         }
         let pitchSpeed = 0
-        if (pointerActive && Math.abs(state.pointer.y) > POINTER_LOWER_BOUND) {
+        if (pointerActive.current && Math.abs(state.pointer.y) > POINTER_LOWER_BOUND) {
             pitchSpeed = state.pointer.y * ANGULAR_SPEED_FACTOR
         }
         const rollSpeed = ((keys.leftward ? 1 : 0) + (keys.rightward ? -1 : 0)) * ANGULAR_SPEED_FACTOR
@@ -94,16 +104,23 @@ export default function Spaceship({pointerActive}) {
         >
             <group 
                 rotation={[0, Math.PI / 2, 0]}
-                scale={0.5}>
+                scale={0.5}
+            >
                 <mesh 
-                castShadow
-                geometry={gltf.meshes["Cube001"].geometry}
-                material={gltf.materials["Faces"]}>
+                    geometry={gltf.meshes["Cube001"].geometry}
+                >
+                    <meshBasicMaterial 
+                        color={"olive"} 
+                        transparent 
+                        opacity={0.6} 
+                    />
                 </mesh>
                 <mesh 
-                    castShadow
                     geometry={gltf.meshes["Cube001_1"].geometry}
-                    material={gltf.materials["Lines"]}>
+                >
+                    <meshBasicMaterial 
+                        color={"green"} 
+                    />
                 </mesh>
             </group>
         </RigidBody>

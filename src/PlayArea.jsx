@@ -4,7 +4,7 @@ import fragmentShader from "./shaders/boundary/fragment.glsl"
 import { useThree } from "@react-three/fiber";
 
 export default function PlayArea({size}) {
-    const three = useThree()
+    const camera = useThree((three) => three.camera)
 
     return (
         /* Transparent pass uses distance between camera & object origin
@@ -18,7 +18,7 @@ export default function PlayArea({size}) {
                 transparent
                 side={DoubleSide}
                 uniforms={{
-                    cameraPos: {value: three.camera.position}
+                    cameraPos: {value: camera.position}
                 }}
                 />
         </mesh>
