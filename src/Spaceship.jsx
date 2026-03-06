@@ -6,8 +6,8 @@ import { Quaternion, Vector3 } from "three";
 import Weapon from "./Weapon";
 
 export default function Spaceship() {
-    const ANGULAR_SPEED_FACTOR = 0.9
-    const LINEAR_SPEED_FACTOR = 6
+    const ANGULAR_SPEED_FACTOR = 2
+    const LINEAR_SPEED_FACTOR = 20
     const POINTER_LOWER_BOUND = 0.3
     const LINEAR_DAMPING = 0.4
     const ANGULAR_DAMPING = 0.6

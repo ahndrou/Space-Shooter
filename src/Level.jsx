@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import EnemyBasic from "./EnemyBasic";
 import { Vector3 } from "three";
 import { generateUUID } from "three/src/math/MathUtils.js";
 
-const ENEMY_COUNT = 80
+const ENEMY_COUNT = 600
 
 function createEnemyData(playAreaBounds) {
     return {
@@ -26,14 +26,20 @@ export default function Level({playAreaBounds}) {
         return enemies
     })
 
-    function removeEnemy(enemyToRemove) {
-        setEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyToRemove.id))
-    }
+    const removeEnemy = useCallback((enemyId) => {
+        setEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyId))
+    }, [setEnemies])
 
     return (
         enemies.map((enemyData) => {
-            return <EnemyBasic key={enemyData.id} position={enemyData.position} disposeSelf={() => {
-                removeEnemy(enemyData)}} />
+            return (
+            <EnemyBasic 
+                key={enemyData.id}
+                id={enemyData.id} 
+                position={enemyData.position} 
+                removeEnemy={removeEnemy}
+            />
+            )
         }
     ))
 }

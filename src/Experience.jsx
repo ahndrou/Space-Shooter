@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import Spaceship from "./Spaceship";
 import { Physics } from "@react-three/rapier";
 import Level from "./Level";
-import { KeyboardControls} from "@react-three/drei";
+import { KeyboardControls } from "@react-three/drei";
 import PlayArea from "./PlayArea";
 import Skybox from "./Skybox";
 import { Perf } from "r3f-perf";

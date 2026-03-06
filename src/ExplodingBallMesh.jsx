@@ -12,7 +12,7 @@ const SCALING_TIME = 2
 // this matches up to the animation length defined in /shaders/explosion/config.glsl.
 const EXPLODING_TIME = 3
 
-export default function ExplodingBallMesh({collisionState, setCollisionState, disposeParent}) {
+export default function ExplodingBallMesh({collisionState, setCollisionState, removeParent}) {
     const gltf = useGLTF("./space_shooter_enemy_basic.glb")
 
     const animationTimer = useRef(0)
@@ -26,7 +26,7 @@ export default function ExplodingBallMesh({collisionState, setCollisionState, di
             setCollisionState(COLLISION_STATES.EXPLODING)
             animationTimer.current = 0
         } else if (collisionState === COLLISION_STATES.EXPLODING && animationTimer.current >= EXPLODING_TIME) {
-            disposeParent()
+            removeParent()
         }
     })
 
