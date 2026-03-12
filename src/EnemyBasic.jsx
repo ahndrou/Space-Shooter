@@ -1,5 +1,5 @@
 import { BallCollider, RigidBody } from "@react-three/rapier";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Vector3 } from "three";
 import ExplodingBallMesh from "./ExplodingBallMesh.jsx";
 
@@ -10,7 +10,7 @@ const MAX_TORQUE = 12
 
 export default React.memo(EnemyBasic)
 
-export function EnemyBasic({position, id, removeEnemy}) {
+export function EnemyBasic({position, id, removeEnemy, size}) {
     const rb = useRef()
     const [collisionState, setCollisionState] = useState(COLLISION_STATES.NO_COLLISION)
 
@@ -34,7 +34,7 @@ export function EnemyBasic({position, id, removeEnemy}) {
             angularDamping={0.4}
             >
                 <BallCollider
-                    args={[3]}
+                    args={[size / 2]}
                     sensor
                     onIntersectionEnter={() => {
                         if (collisionState === COLLISION_STATES.NO_COLLISION) {
@@ -47,6 +47,7 @@ export function EnemyBasic({position, id, removeEnemy}) {
                     collisionState={collisionState} 
                     setCollisionState={setCollisionState} 
                     removeParent={removeSelf}
+                    size={size / 2}
                 />
         </RigidBody>
     )

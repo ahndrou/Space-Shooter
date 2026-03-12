@@ -12,7 +12,7 @@ const SCALING_TIME = 2
 // this matches up to the animation length defined in /shaders/explosion/config.glsl.
 const EXPLODING_TIME = 3
 
-export default function ExplodingBallMesh({collisionState, setCollisionState, removeParent}) {
+export default function ExplodingBallMesh({collisionState, setCollisionState, removeParent, size}) {
     const gltf = useGLTF("./space_shooter_enemy_basic.glb")
 
     const animationTimer = useRef(0)
@@ -31,7 +31,7 @@ export default function ExplodingBallMesh({collisionState, setCollisionState, re
     })
 
     return <>
-        <group scale={3}>
+        <group scale={size}>
             <mesh 
                 geometry={gltf.meshes.Icosphere_1.geometry}
             >

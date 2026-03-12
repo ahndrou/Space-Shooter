@@ -6,8 +6,9 @@ import { KeyboardControls } from "@react-three/drei";
 import PlayArea from "./PlayArea";
 import Skybox from "./Skybox";
 import { Perf } from "r3f-perf";
+import { Vector3 } from "three";
 
-const PLAY_AREA_SIZE = {x:50, y: 150, z: 150}
+const PLAY_AREA_SIZE = new Vector3(200, 200, 200)
 
 export default function Experience() {
 
