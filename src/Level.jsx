@@ -1,7 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import EnemyBasic from "./EnemyBasic";
-import { Vector3 } from "three";
+import { Quaternion, Vector3 } from "three";
 import { generateUUID } from "three/src/math/MathUtils.js";
+import { useFrame } from "@react-three/fiber";
+import { useRapier } from "@react-three/rapier";
 
 const ENEMY_COUNT = 200
 const ENEMY_SIZE = 6
@@ -53,15 +55,73 @@ function createInitialEnemyState(boundingDimensions, enemySize) {
     return positions.map((position) => {return {id: generateUUID(), position}})
 }
 
+function useSpawnEnemy(enemySize, boundingDimensions) {
+    const { world, rapier } = useRapier()
+
+    function findSpawnPosition() {
+        const radius = enemySize / 2
+        const shape = new rapier.Ball(radius)
+
+        let attempts = 0
+        while (attempts < 100) {
+            const shapePosition = {
+                x: (Math.random() - 0.5) * (boundingDimensions.x - enemySize / 2),
+                y: (Math.random() - 0.5) * (boundingDimensions.y - enemySize / 2),
+                z: (Math.random() - 0.5) * (boundingDimensions.z - enemySize / 2)
+            }
+            const shapeRotation = new Quaternion(0, 0, 0, 1)
+
+            let hit = false
+
+            world.intersectionsWithShape(
+                shapePosition,
+                shapeRotation,
+                shape,
+                () => {
+                    hit = true
+                    return false
+                }
+            )
+
+            if (!hit) {
+                return new Vector3(shapePosition.x, shapePosition.y, shapePosition.z)
+            } else {
+                attempts++
+            }
+        }
+
+        throw new Error("Could not find a non-intersecting spawn position for new enemy.")
+    }
+
+    return findSpawnPosition
+}
+
+
 export default function Level({playAreaBounds}) {
     
     const [enemies, setEnemies] = useState(() => {
         return createInitialEnemyState(playAreaBounds, ENEMY_SIZE)
     })
 
+    const findSpawnPosition = useSpawnEnemy(ENEMY_SIZE, playAreaBounds)
+
     const removeEnemy = useCallback((enemyId) => {
         setEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyId))
     }, [setEnemies])
+
+    const addEnemy = () => {
+        const position = findSpawnPosition()
+        const newEnemy = {id: generateUUID(), position}
+        setEnemies((enemies) => [...enemies, newEnemy])
+    }
+
+    let lastEnemyTime = useRef(0)
+    useFrame((state) => {
+        if (state.clock.elapsedTime - lastEnemyTime.current > 1) {
+            addEnemy()
+            lastEnemyTime.current = state.clock.elapsedTime
+        }
+    })
     
     return (
         enemies.map((enemyData) => {

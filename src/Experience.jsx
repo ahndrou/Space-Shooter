@@ -8,7 +8,7 @@ import Skybox from "./Skybox";
 import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
 
-const PLAY_AREA_SIZE = new Vector3(200, 200, 200)
+const PLAY_AREA_SIZE = new Vector3(60, 60, 40)
 
 export default function Experience() {
 
