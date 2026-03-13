@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
 import Weapon from "./Weapon";
 
-export default function Spaceship() {
+export default function Spaceship({ rigidBodyRef }) {
     const ANGULAR_SPEED_FACTOR = 2
     const LINEAR_SPEED_FACTOR = 20
     const POINTER_LOWER_BOUND = 0.3
@@ -13,8 +13,7 @@ export default function Spaceship() {
     const ANGULAR_DAMPING = 0.6
     const ANGULAR_ACCELERATION = 2
     const LINEAR_ACCELERATION = 2
-
-    const rb = useRef()
+    
     const pointerActive = useRef(true)
 
     const gltf = useGLTF("./space_shooter_player.glb")
@@ -46,20 +45,20 @@ export default function Spaceship() {
     const smoothedAngularVelocity = useRef(new Vector3(0, 0, 0))
 
     useFrame((state, delta) => {
-        // rb.current.rotation() returns a plain object, not an instance
+        // rigidBodyRef.current.rotation() returns a plain object, not an instance
         // of the quaternion class.
         worldSpaceRotation.current.set(
-            rb.current.rotation().x,
-            rb.current.rotation().y,
-            rb.current.rotation().z,
-            rb.current.rotation().w,
+            rigidBodyRef.current.rotation().x,
+            rigidBodyRef.current.rotation().y,
+            rigidBodyRef.current.rotation().z,
+            rigidBodyRef.current.rotation().w,
         )
 
         // CAMERA SETUP
         cameraOffset.current.set(0, 3, 7)
         // Quaternion transforms from local space to world space.
         cameraOffset.current.applyQuaternion(worldSpaceRotation.current)
-        cameraOffset.current.add(rb.current.translation())
+        cameraOffset.current.add(rigidBodyRef.current.translation())
         
         // The slight lag from LERP gives the user a nice indication that they are turning.
         state.camera.position.lerp(cameraOffset.current, 5 * delta)
@@ -88,15 +87,15 @@ export default function Spaceship() {
         smoothedAngularVelocity.current.lerp(angularVelocityTarget.current, ANGULAR_ACCELERATION * delta)
         smoothedLinearVelocity.current.lerp(linearVelocityTarget.current, LINEAR_ACCELERATION * delta)
 
-        rb.current.setAngvel(smoothedAngularVelocity.current, true)
-        rb.current.setLinvel(smoothedLinearVelocity.current, true)
+        rigidBodyRef.current.setAngvel(smoothedAngularVelocity.current, true)
+        rigidBodyRef.current.setLinvel(smoothedLinearVelocity.current, true)
 
     })
 
     return <>
-        <Weapon ship={rb} />
+        <Weapon ship={rigidBodyRef} />
         <RigidBody 
-            ref={rb} 
+            ref={rigidBodyRef} 
             position={[0, 0, 0]}
             type="kinematicVelocity"
             linearDamping={LINEAR_DAMPING} 

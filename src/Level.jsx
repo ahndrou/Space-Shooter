@@ -1,11 +1,12 @@
 import { useCallback, useRef, useState } from "react";
-import EnemyBasic from "./EnemyBasic";
+import BasicEnemy from "./BasicEnemy";
 import { Quaternion, Vector3 } from "three";
 import { generateUUID } from "three/src/math/MathUtils.js";
 import { useFrame } from "@react-three/fiber";
 import { useRapier } from "@react-three/rapier";
+import SnakeEnemy from "./SnakeEnemy";
 
-const ENEMY_COUNT = 200
+const ENEMY_COUNT = 10
 const ENEMY_SIZE = 6
 
 function createEnemyPosition(boundingDimensions, enemySize) {
@@ -97,7 +98,7 @@ function useSpawnEnemy(enemySize, boundingDimensions) {
 }
 
 
-export default function Level({playAreaBounds}) {
+export default function Level({playAreaBounds, spaceshipRb}) {
     
     const [enemies, setEnemies] = useState(() => {
         return createInitialEnemyState(playAreaBounds, ENEMY_SIZE)
@@ -117,23 +118,24 @@ export default function Level({playAreaBounds}) {
 
     let lastEnemyTime = useRef(0)
     useFrame((state) => {
-        if (state.clock.elapsedTime - lastEnemyTime.current > 1) {
+        if (state.clock.elapsedTime - lastEnemyTime.current > 3) {
             addEnemy()
             lastEnemyTime.current = state.clock.elapsedTime
         }
     })
     
-    return (
-        enemies.map((enemyData) => {
+    return <>
+        {enemies.map((enemyData) => {
             return (
-            <EnemyBasic 
+            <BasicEnemy 
                 key={enemyData.id}
                 id={enemyData.id} 
                 position={enemyData.position} 
                 removeEnemy={removeEnemy}
                 size={ENEMY_SIZE}
             />
-            )
+            )})
         }
-    ))
+        <SnakeEnemy position={[2,2,2]} spaceshipRb={spaceshipRb} />
+    </>
 }

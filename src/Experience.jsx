@@ -7,10 +7,12 @@ import PlayArea from "./PlayArea";
 import Skybox from "./Skybox";
 import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
+import { useRef } from "react";
 
-const PLAY_AREA_SIZE = new Vector3(60, 60, 40)
+const PLAY_AREA_SIZE = new Vector3(100, 100, 80)
 
 export default function Experience() {
+    const spaceshipRb = useRef()
 
     return (
         <>
@@ -25,8 +27,8 @@ export default function Experience() {
                 <Canvas> 
                     <Perf />
                     <Physics gravity={[0, 0, 0]} timeStep={"vary"}>
-                        <Spaceship />
-                        <Level playAreaBounds={PLAY_AREA_SIZE} />
+                        <Spaceship rigidBodyRef={spaceshipRb}/>
+                        <Level playAreaBounds={PLAY_AREA_SIZE} spaceshipRb={spaceshipRb} />
                         <PlayArea size={PLAY_AREA_SIZE} />
                     </Physics>
                     <Skybox />

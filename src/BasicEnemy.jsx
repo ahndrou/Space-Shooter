@@ -8,9 +8,9 @@ import { COLLISION_STATES } from "./constants.js";
 const MIN_TORQUE = 7
 const MAX_TORQUE = 12
 
-export default React.memo(EnemyBasic)
+export default React.memo(BasicEnemy)
 
-export function EnemyBasic({position, id, removeEnemy, size}) {
+export function BasicEnemy({position, id, removeEnemy, size}) {
     const rb = useRef()
     const [collisionState, setCollisionState] = useState(COLLISION_STATES.NO_COLLISION)
 
