@@ -6,8 +6,8 @@ import { useFrame } from "@react-three/fiber";
 import { useRapier } from "@react-three/rapier";
 import SnakeEnemy from "./SnakeEnemy";
 
-const ENEMY_COUNT = 10
 const ENEMY_SIZE = 6
+const SNAKE_COUNT = 5
 
 function createEnemyPosition(boundingDimensions, enemySize) {
     let x = (Math.random() - 0.5) * (boundingDimensions.x - enemySize / 2)
@@ -18,11 +18,11 @@ function createEnemyPosition(boundingDimensions, enemySize) {
 }
 
 // Creates a set of initial positions which do not cause intersection of enemies.
-function createInitialPositions(boundingDimensions, enemySize) {
+function createInitialPositions(boundingDimensions, enemySize, enemyCount) {
     const enemyPositions = []
 
     // O(n^2). Okay here considering it is a one off and number of enemies should be relatively low.
-    for (let i = 0; i < ENEMY_COUNT; i++) {
+    for (let i = 0; i < enemyCount; i++) {
         let attempts = 0
         while (attempts < 100) {
             let newPosition = createEnemyPosition(boundingDimensions, enemySize)
@@ -51,10 +51,11 @@ function createInitialPositions(boundingDimensions, enemySize) {
     return enemyPositions
 }
 
-function createInitialEnemyState(boundingDimensions, enemySize) {
-    const positions = createInitialPositions(boundingDimensions, enemySize)
+function createInitialEnemyState(boundingDimensions, enemySize, enemyCount) {
+    const positions = createInitialPositions(boundingDimensions, enemySize, enemyCount)
     return positions.map((position) => {return {id: generateUUID(), position}})
 }
+
 
 function useSpawnEnemy(enemySize, boundingDimensions) {
     const { world, rapier } = useRapier()
@@ -101,8 +102,10 @@ function useSpawnEnemy(enemySize, boundingDimensions) {
 export default function Level({playAreaBounds, spaceshipRb}) {
     
     const [enemies, setEnemies] = useState(() => {
-        return createInitialEnemyState(playAreaBounds, ENEMY_SIZE)
+        return createInitialEnemyState(playAreaBounds, ENEMY_SIZE, 20)
     })
+
+    const [snakes, setSnakes] = useState(() => createInitialEnemyState(playAreaBounds, 0, 5))
 
     const findSpawnPosition = useSpawnEnemy(ENEMY_SIZE, playAreaBounds)
 
@@ -127,15 +130,25 @@ export default function Level({playAreaBounds, spaceshipRb}) {
     return <>
         {enemies.map((enemyData) => {
             return (
-            <BasicEnemy 
-                key={enemyData.id}
-                id={enemyData.id} 
-                position={enemyData.position} 
-                removeEnemy={removeEnemy}
-                size={ENEMY_SIZE}
-            />
+                <BasicEnemy 
+                    key={enemyData.id}
+                    id={enemyData.id} 
+                    position={enemyData.position} 
+                    removeEnemy={removeEnemy}
+                    size={ENEMY_SIZE}
+                />
             )})
         }
-        <SnakeEnemy position={[2,2,2]} spaceshipRb={spaceshipRb} />
+
+        {snakes.map((snakeData) => {
+            return (
+                <SnakeEnemy
+                    key={snakeData.id}
+                    position={snakeData.position}
+                    spaceshipRb={spaceshipRb}
+                    segments={100}
+                />
+            )
+        })}
     </>
 }

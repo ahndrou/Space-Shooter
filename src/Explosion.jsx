@@ -5,7 +5,7 @@ import fragmentShader from "./shaders/explosion/fragment.glsl"
 import { AdditiveBlending, Spherical, Vector2, Vector3 } from "three"
 import { useFrame } from "@react-three/fiber"
 
-const PARTICLE_COUNT = 600
+const PARTICLE_COUNT = 2000
 
 const sizes = {
     width: window.innerWidth,
@@ -75,7 +75,7 @@ function createOffsetsArray() {
 }
 
 
-export default function Explosion({particleSize=1, sphereRadius=1}) {
+export default function Explosion({particleSize=1, sphereRadius=2.5}) {
     const [particlePositions] = useState(() => createParticlePositionsArray(sphereRadius))
     const [particleSizes] = useState(() => createSizesArray())
     const [particleOffsets] = useState(() => createOffsetsArray())
