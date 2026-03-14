@@ -35,12 +35,11 @@ export function BasicEnemy({position, id, removeEnemy, size}) {
             >
                 <BallCollider
                     args={[size / 2]}
-                    sensor
-                    onIntersectionEnter={() => {
-                        if (collisionState === COLLISION_STATES.NO_COLLISION) {
-                            setCollisionState(COLLISION_STATES.SCALING)
-                        }
-                    }} 
+                    // onIntersectionEnter={() => {
+                    //     if (collisionState === COLLISION_STATES.NO_COLLISION) {
+                    //         setCollisionState(COLLISION_STATES.SCALING)
+                    //     }
+                    // }} 
                 />
 
                 <ExplodingBallMesh 
