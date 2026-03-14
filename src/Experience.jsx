@@ -26,7 +26,7 @@ export default function Experience() {
                 ]}>
                 <Canvas> 
                     <Perf />
-                    <Physics gravity={[0, 0, 0]} timeStep={"vary"}>
+                    <Physics gravity={[0, 0, 0]} timeStep={"vary"} debug>
                         <Spaceship rigidBodyRef={spaceshipRb}/>
                         <Level playAreaBounds={PLAY_AREA_SIZE} spaceshipRb={spaceshipRb} />
                         <PlayArea size={PLAY_AREA_SIZE} />

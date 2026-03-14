@@ -7,7 +7,8 @@ import { useRapier } from "@react-three/rapier";
 import SnakeEnemy from "./SnakeEnemy";
 
 const ENEMY_SIZE = 6
-const SNAKE_COUNT = 5
+const SNAKE_COUNT = 1
+const BASIC_ENEMY_COUNT = 10
 
 function createEnemyPosition(boundingDimensions, enemySize) {
     let x = (Math.random() - 0.5) * (boundingDimensions.x - enemySize / 2)
@@ -102,10 +103,10 @@ function useSpawnEnemy(enemySize, boundingDimensions) {
 export default function Level({playAreaBounds, spaceshipRb}) {
     
     const [enemies, setEnemies] = useState(() => {
-        return createInitialEnemyState(playAreaBounds, ENEMY_SIZE, 20)
+        return createInitialEnemyState(playAreaBounds, ENEMY_SIZE, BASIC_ENEMY_COUNT)
     })
 
-    const [snakes, setSnakes] = useState(() => createInitialEnemyState(playAreaBounds, 0, 5))
+    const [snakes, setSnakes] = useState(() => createInitialEnemyState(playAreaBounds, 0, SNAKE_COUNT))
 
     const findSpawnPosition = useSpawnEnemy(ENEMY_SIZE, playAreaBounds)
 
@@ -144,9 +145,10 @@ export default function Level({playAreaBounds, spaceshipRb}) {
             return (
                 <SnakeEnemy
                     key={snakeData.id}
-                    position={snakeData.position}
+                    position={new Vector3(0, 0 ,0)}
+                    // position={snakeData.posiion}
                     spaceshipRb={spaceshipRb}
-                    segments={100}
+                    segments={20}
                 />
             )
         })}
