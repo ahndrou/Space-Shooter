@@ -29,7 +29,7 @@ export default function Experience() {
                     <Physics gravity={[0, 0, 0]} timeStep={"vary"} debug>
                         <Spaceship rigidBodyRef={spaceshipRb}/>
                         <Level playAreaBounds={PLAY_AREA_SIZE} spaceshipRb={spaceshipRb} />
-                        <PlayArea size={PLAY_AREA_SIZE} />
+                        {/* <PlayArea size={PLAY_AREA_SIZE} /> */}
                     </Physics>
                     <Skybox />
                 </Canvas>
