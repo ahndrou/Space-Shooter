@@ -1,47 +1,52 @@
 import { BallCollider, CuboidCollider, RigidBody, useSphericalJoint } from "@react-three/rapier";
 import React, { useRef } from "react";
 import { Vector3 } from "three";
-import useWanderTarget from "./hooks/useWanderTarget";
+import useWanderSteering from "./hooks/useWanderSteering";
 import { useFrame } from "@react-three/fiber";
+import useCentralSteering from "./hooks/useCentralSteering";
 
 const SEGMENT_DISTANCE = 1.5
-
+const WANDER_RADIUS = 5
+const WANDER_OFFSET = 6
 
 export default React.memo(SnakeEnemy)
 
-export function SnakeEnemy({ position, segments }) {
+export function SnakeEnemy({ position, segments, playAreaSize}) {
     const head = useRef()
 
     const nextSegmentPosition = new Vector3().copy(position)
     nextSegmentPosition.z += SEGMENT_DISTANCE
 
     return <>
-        <SnakeHead ref={head} position={position} />
+        <SnakeHead ref={head} position={position} playAreaSize={playAreaSize} />
         <BodySegment parentRef={head} index={0} max={segments} position={nextSegmentPosition} />
-        
     </>
 }
 
 
-function SnakeHead( {ref, position} ) {
-    const {steeringForce, wanderTargetCenter, wanderTargetOuter} = useWanderTarget(ref)
+function SnakeHead( {ref, position, playAreaSize, debug} ) {
+    const wanderSteering = useWanderSteering(ref, WANDER_RADIUS, WANDER_OFFSET)
+    const centralSteering = useCentralSteering(ref, playAreaSize, 0.9)
 
     useFrame(() => {
-        ref.current.applyImpulse(steeringForce.current)
+        ref.current.applyImpulse(wanderSteering.steeringForceRef.current.add(centralSteering.steeringForceRef.current))
     })
 
     return <>
-        <RigidBody ref={ref} colliders={false} type="dynamic" position={position} linearDamping={3} angularDamping={4} >
-            <CuboidCollider args={[1, 1, 1]} />
+        <RigidBody ref={ref} colliders={false} type="dynamic" position={position} linearDamping={1} angularDamping={1} >
+            <BallCollider args={[1.2]} />
             <mesh>
                 <boxGeometry args={[2, 2, 2]}/>
                 <meshBasicMaterial color="red" />
             </mesh>
         </RigidBody>
         
-        <DebugSphere posRef={wanderTargetCenter} r={0.2} />
-        <DebugSphere posRef={wanderTargetCenter} r={6} />
-        <DebugSphere posRef={wanderTargetOuter} r={0.4} color="green" />
+        {debug && <>
+            <DebugSphere posRef={wanderSteering.targetCenterRef} r={0.2} />
+            <DebugSphere posRef={wanderSteering.targetCenterRef} r={WANDER_RADIUS} />
+            <DebugSphere posRef={wanderSteering.targetOuterRef} r={0.4} color="green" />
+        </>}
+        
     </>
 }
 
