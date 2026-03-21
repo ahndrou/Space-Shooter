@@ -1,9 +1,9 @@
-import { BallCollider, RigidBody } from "@react-three/rapier";
+import { BallCollider, interactionGroups, RigidBody } from "@react-three/rapier";
 import React, { useEffect, useRef, useState } from "react";
 import { Vector3 } from "three";
 import ExplodingBallMesh from "./ExplodingBallMesh.jsx";
 
-import { COLLISION_STATES } from "./constants.js";
+import { COLLISION_GROUPS, COLLISION_STATES } from "./constants.js";
 
 const MIN_TORQUE = 7
 const MAX_TORQUE = 12
@@ -32,6 +32,7 @@ export function BasicEnemy({position, id, removeEnemy, size}) {
             colliders={false}
             canSleep={false}
             angularDamping={0.4}
+            collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS, [COLLISION_GROUPS.INNER_OBJECTS, COLLISION_GROUPS.BOUNDARY])}
             >
                 <BallCollider
                     args={[size / 2]}

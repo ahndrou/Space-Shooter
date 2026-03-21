@@ -1,9 +1,10 @@
-import { BallCollider, CuboidCollider, RigidBody, useSphericalJoint } from "@react-three/rapier";
-import React, { useRef } from "react";
+import { BallCollider, CuboidCollider, interactionGroups, RigidBody, useSphericalJoint } from "@react-three/rapier";
+import React, { useEffect, useRef } from "react";
 import { Vector3 } from "three";
 import useWanderSteering from "./hooks/useWanderSteering";
 import { useFrame } from "@react-three/fiber";
 import useCentralSteering from "./hooks/useCentralSteering";
+import { COLLISION_GROUPS } from "./constants";
 
 const SEGMENT_DISTANCE = 1.5
 const WANDER_RADIUS = 5
@@ -33,7 +34,15 @@ function SnakeHead( {ref, position, playAreaSize, debug} ) {
     })
 
     return <>
-        <RigidBody ref={ref} colliders={false} type="dynamic" position={position} linearDamping={1} angularDamping={1} >
+        <RigidBody 
+            ref={ref} 
+            colliders={false} 
+            type="dynamic" 
+            position={position} 
+            linearDamping={1} 
+            angularDamping={1}
+            collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS, [COLLISION_GROUPS.INNER_OBJECTS, COLLISION_GROUPS.BOUNDARY])} 
+        >
             <BallCollider args={[1.2]} />
             <mesh>
                 <boxGeometry args={[2, 2, 2]}/>
@@ -81,12 +90,21 @@ function BodySegment({ parentRef, index, max, position }) {
     nextSegmentPosition.z += SEGMENT_DISTANCE
 
     return <>
-        <RigidBody ref={segment} type="dynamic" position={position} mass={90} linearDamping={3} angularDamping={4} colliders={false}>
+        <RigidBody 
+            ref={segment} 
+            type="dynamic" 
+            position={position} 
+            mass={90} 
+            linearDamping={3} 
+            angularDamping={4} 
+            colliders={false}
+            collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS, COLLISION_GROUPS.INNER_OBJECTS)} 
+        >
             <mesh ref={mesh}>
                 <boxGeometry args={[1, 1, 1]}/>
                 <meshBasicMaterial color="blue" />
             </mesh>
-            <BallCollider args={[0.6]} />
+            <BallCollider args={[0.6]}/>
         </RigidBody>
 
         {(index + 1) < max && (

@@ -5,3 +5,9 @@ export const COLLISION_STATES =
     EXPLODING:    "exploding",
     DONE:         "done"
 }
+
+export const COLLISION_GROUPS = 
+{
+    INNER_OBJECTS: 1,
+    BOUNDARY: 2
+}
