@@ -10,23 +10,23 @@ const ENEMY_SIZE = 6
 const SNAKE_COUNT = 20
 const BASIC_ENEMY_COUNT = 100
 
-function createEnemyPosition(boundingDimensions, enemySize) {
-    let x = (Math.random() - 0.5) * (boundingDimensions.x - enemySize / 2)
-    let y = (Math.random() - 0.5) * (boundingDimensions.y - enemySize / 2)
-    let z = (Math.random() - 0.5) * (boundingDimensions.z - enemySize / 2)
+function createEnemyPosition(playAreaSize, enemySize) {
+    let x = (Math.random() - 0.5) * (playAreaSize - enemySize / 2)
+    let y = (Math.random() - 0.5) * (playAreaSize - enemySize / 2)
+    let z = (Math.random() - 0.5) * (playAreaSize - enemySize / 2)
 
     return new Vector3(x, y, z)
 }
 
 // Creates a set of initial positions which do not cause intersection of enemies.
-function createInitialPositions(boundingDimensions, enemySize, enemyCount) {
+function createInitialPositions(playAreaSize, enemySize, enemyCount) {
     const enemyPositions = []
 
     // O(n^2). Okay here considering it is a one off and number of enemies should be relatively low.
     for (let i = 0; i < enemyCount; i++) {
         let attempts = 0
         while (attempts < 100) {
-            let newPosition = createEnemyPosition(boundingDimensions, enemySize)
+            let newPosition = createEnemyPosition(playAreaSize, enemySize)
             let intersectionFound = false
 
             for (let existingPosition of enemyPositions) {
@@ -52,13 +52,13 @@ function createInitialPositions(boundingDimensions, enemySize, enemyCount) {
     return enemyPositions
 }
 
-function createInitialEnemyState(boundingDimensions, enemySize, enemyCount) {
-    const positions = createInitialPositions(boundingDimensions, enemySize, enemyCount)
+function createInitialEnemyState(playAreaSize, enemySize, enemyCount) {
+    const positions = createInitialPositions(playAreaSize, enemySize, enemyCount)
     return positions.map((position) => {return {id: generateUUID(), position}})
 }
 
 
-function useSpawnEnemy(enemySize, boundingDimensions) {
+function useSpawnEnemy(enemySize, playAreaSize) {
     const { world, rapier } = useRapier()
 
     function findSpawnPosition() {
@@ -68,9 +68,9 @@ function useSpawnEnemy(enemySize, boundingDimensions) {
         let attempts = 0
         while (attempts < 100) {
             const shapePosition = {
-                x: (Math.random() - 0.5) * (boundingDimensions.x - enemySize / 2),
-                y: (Math.random() - 0.5) * (boundingDimensions.y - enemySize / 2),
-                z: (Math.random() - 0.5) * (boundingDimensions.z - enemySize / 2)
+                x: (Math.random() - 0.5) * (playAreaSize - enemySize / 2),
+                y: (Math.random() - 0.5) * (playAreaSize - enemySize / 2),
+                z: (Math.random() - 0.5) * (playAreaSize - enemySize / 2)
             }
             const shapeRotation = new Quaternion(0, 0, 0, 1)
 
@@ -100,15 +100,15 @@ function useSpawnEnemy(enemySize, boundingDimensions) {
 }
 
 
-export default function Level({playAreaBounds, spaceshipRb}) {
+export default function Level({playAreaSize, spaceshipRb}) {
     
     const [enemies, setEnemies] = useState(() => {
-        return createInitialEnemyState(playAreaBounds, ENEMY_SIZE, BASIC_ENEMY_COUNT)
+        return createInitialEnemyState(playAreaSize, ENEMY_SIZE, BASIC_ENEMY_COUNT)
     })
 
-    const [snakes, setSnakes] = useState(() => createInitialEnemyState(playAreaBounds, 0, SNAKE_COUNT))
+    const [snakes, setSnakes] = useState(() => createInitialEnemyState(playAreaSize, 0, SNAKE_COUNT))
 
-    const findSpawnPosition = useSpawnEnemy(ENEMY_SIZE, playAreaBounds)
+    const findSpawnPosition = useSpawnEnemy(ENEMY_SIZE, playAreaSize)
 
     const removeEnemy = useCallback((enemyId) => {
         setEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyId))
@@ -148,7 +148,7 @@ export default function Level({playAreaBounds, spaceshipRb}) {
                     position={snakeData.position}
                     spaceshipRb={spaceshipRb}
                     segments={15}
-                    playAreaSize={playAreaBounds}
+                    playAreaSize={playAreaSize}
                 />
             )
         })}

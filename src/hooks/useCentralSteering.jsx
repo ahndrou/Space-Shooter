@@ -15,9 +15,9 @@ export default function useCentralSteering(headRef, playAreaSize, thresholdFacto
             headRef.current.translation().z
         )
 
-        if (Math.abs(headPosition.current.x) > thresholdFactor * playAreaSize.x / 2 ||
-            Math.abs(headPosition.current.y) > thresholdFactor * playAreaSize.y / 2 ||
-            Math.abs(headPosition.current.z) > thresholdFactor * playAreaSize.z / 2
+        if (Math.abs(headPosition.current.x) > thresholdFactor * playAreaSize / 2 ||
+            Math.abs(headPosition.current.y) > thresholdFactor * playAreaSize / 2 ||
+            Math.abs(headPosition.current.z) > thresholdFactor * playAreaSize / 2
          ) {
             steeringForceRef.current.copy(headPosition.current).normalize().multiplyScalar(-1 * MAXIMUM_FORCE)
          }

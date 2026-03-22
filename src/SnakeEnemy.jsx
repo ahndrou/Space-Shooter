@@ -41,7 +41,7 @@ function SnakeHead( {ref, position, playAreaSize, debug} ) {
             position={position} 
             linearDamping={1} 
             angularDamping={1}
-            collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS, [COLLISION_GROUPS.INNER_OBJECTS, COLLISION_GROUPS.BOUNDARY])} 
+            collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS)} 
         >
             <BallCollider args={[1.2]} />
             <mesh>

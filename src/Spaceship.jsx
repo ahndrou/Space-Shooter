@@ -1,13 +1,14 @@
 import { useGLTF, useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { RigidBody } from "@react-three/rapier";
+import { interactionGroups, RigidBody } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
 import Weapon from "./Weapon";
+import { COLLISION_GROUPS } from "./constants";
 
 export default function Spaceship({ rigidBodyRef }) {
     const ANGULAR_SPEED_FACTOR = 2
-    const LINEAR_SPEED_FACTOR = 20
+    const LINEAR_SPEED_FACTOR = 10
     const POINTER_LOWER_BOUND = 0.3
     const LINEAR_DAMPING = 0.4
     const ANGULAR_DAMPING = 0.6
@@ -100,6 +101,10 @@ export default function Spaceship({ rigidBodyRef }) {
             type="kinematicVelocity"
             linearDamping={LINEAR_DAMPING} 
             angularDamping={ANGULAR_DAMPING}
+            collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS, [COLLISION_GROUPS.INNER_OBJECTS, COLLISION_GROUPS.BOUNDARY])}
+            onCollisionEnter={() => {
+                console.log("Hit")
+            }}
         >
             <group 
                 rotation={[0, Math.PI / 2, 0]}
