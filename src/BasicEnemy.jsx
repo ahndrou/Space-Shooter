@@ -1,28 +1,18 @@
-import { BallCollider, interactionGroups, RigidBody } from "@react-three/rapier";
-import React, { useEffect, useRef, useState } from "react";
-import { Vector3 } from "three";
-import ExplodingBallMesh from "./ExplodingBallMesh.jsx";
-
-import { COLLISION_GROUPS, COLLISION_STATES } from "./constants.js";
+import { BallCollider, RigidBody } from "@react-three/rapier";
+import React, { useRef } from "react";
+import { useGLTF } from "@react-three/drei";
+import useRandomTorque from "./hooks/useRandomTorque";
 
 const MIN_TORQUE = 7
 const MAX_TORQUE = 12
 
 export default React.memo(BasicEnemy)
 
-export function BasicEnemy({position, id, removeEnemy, size}) {
+export function BasicEnemy({position, size}) {
+    const gltf = useGLTF("./space_shooter_enemy_basic.glb")
     const rb = useRef()
-    const [collisionState, setCollisionState] = useState(COLLISION_STATES.NO_COLLISION)
-
-    const removeSelf = () => removeEnemy(id)
-
-    useEffect(() => {
-        rb.current.addTorque(new Vector3(
-            Math.max(MIN_TORQUE, Math.random() * MAX_TORQUE),
-            Math.max(MIN_TORQUE, Math.random() * MAX_TORQUE),
-            Math.max(MIN_TORQUE, Math.random() * MAX_TORQUE)
-        ))
-    }, [])
+    
+    useRandomTorque(MIN_TORQUE, MAX_TORQUE, rb)
 
     return (
         <RigidBody
@@ -32,23 +22,21 @@ export function BasicEnemy({position, id, removeEnemy, size}) {
             colliders={false}
             canSleep={false}
             angularDamping={0.4}
-            collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS, [COLLISION_GROUPS.INNER_OBJECTS, COLLISION_GROUPS.BOUNDARY])}
             >
-                <BallCollider
-                    args={[size / 2]}
-                    // onIntersectionEnter={() => {
-                    //     if (collisionState === COLLISION_STATES.NO_COLLISION) {
-                    //         setCollisionState(COLLISION_STATES.SCALING)
-                    //     }
-                    // }} 
-                />
-
-                <ExplodingBallMesh 
-                    collisionState={collisionState} 
-                    setCollisionState={setCollisionState} 
-                    removeParent={removeSelf}
-                    size={size / 2}
-                />
+                <BallCollider args={[size * 0.97]}/>
+                <group scale={size}>
+                    <mesh 
+                        geometry={gltf.meshes.Icosphere_1.geometry}
+                    >
+                        <meshBasicMaterial color="green" transparent opacity={0.6} />
+                    </mesh>
+                    
+                    <mesh 
+                        geometry={gltf.meshes.Icosphere_2.geometry}
+                    >
+                         <meshBasicMaterial color="white" />
+                    </mesh>
+                </group>
         </RigidBody>
     )
 }
