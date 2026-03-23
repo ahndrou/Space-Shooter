@@ -60,9 +60,9 @@ function BoundaryWall({orientation, size}) {
             type="fixed"
             collisionGroups={interactionGroups(COLLISION_GROUPS.BOUNDARY, COLLISION_GROUPS.INNER_OBJECTS)}
         >
-            <mesh>
+            <mesh renderOrder={-1}>
                 <boxGeometry args={dimensions} />
-                <meshBasicMaterial transparent opacity={0.4} />
+                <meshBasicMaterial transparent opacity={0.2}/>
                 {/* <rawShaderMaterial
                     vertexShader={vertexShader} 
                     fragmentShader={fragmentShader} 
