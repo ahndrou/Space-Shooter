@@ -3,25 +3,51 @@ import { useRef } from "react";
 import { Vector3 } from "three";
 
 const MAXIMUM_FORCE = 0.75
+const MAXIMUM_TORQUE = 0.5
 
-export default function useCentralSteering(headRef, playAreaSize, thresholdFactor) {
+export default function useCentralSteering(rigidBodyRef, playAreaSize, thresholdFactor, maxForce=MAXIMUM_FORCE, maxTorque=MAXIMUM_TORQUE) {
     const steeringForceRef = useRef(new Vector3())
-    const headPosition = useRef(new Vector3())
+    const steeringTorqueRef = useRef(new Vector3())
+    const position = useRef(new Vector3())
+    const motionDirection = useRef(new Vector3())
+    const originDirection = useRef(new Vector3())
 
     useFrame(() => {
-        headPosition.current.set(
-            headRef.current.translation().x,
-            headRef.current.translation().y,
-            headRef.current.translation().z
+        position.current.set(
+            rigidBodyRef.current.translation().x,
+            rigidBodyRef.current.translation().y,
+            rigidBodyRef.current.translation().z
         )
 
-        if (Math.abs(headPosition.current.x) > thresholdFactor * playAreaSize / 2 ||
-            Math.abs(headPosition.current.y) > thresholdFactor * playAreaSize / 2 ||
-            Math.abs(headPosition.current.z) > thresholdFactor * playAreaSize / 2
+        if (Math.abs(position.current.x) > thresholdFactor * playAreaSize / 2 ||
+            Math.abs(position.current.y) > thresholdFactor * playAreaSize / 2 ||
+            Math.abs(position.current.z) > thresholdFactor * playAreaSize / 2
          ) {
-            steeringForceRef.current.copy(headPosition.current).normalize().multiplyScalar(-1 * MAXIMUM_FORCE)
+            originDirection.current
+            .copy(position.current)
+            .normalize()
+            .multiplyScalar(-1)
+
+            steeringForceRef.current
+            .copy(originDirection.current)
+            .multiplyScalar(maxForce)
+
+            motionDirection.current.set(
+                rigidBodyRef.current.linvel().x,
+                rigidBodyRef.current.linvel().y,
+                rigidBodyRef.current.linvel().z
+            ).normalize()
+
+            steeringTorqueRef.current
+            .copy(motionDirection.current)
+            .cross(originDirection.current)
+            .multiplyScalar(maxTorque)
+
+         } else {
+            steeringForceRef.current.set(0, 0, 0)
+            steeringTorqueRef.current.set(0, 0, 0)
          }
     })
 
-    return {steeringForceRef}
+    return {steeringForceRef, steeringTorqueRef}
 }
