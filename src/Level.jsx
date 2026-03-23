@@ -5,10 +5,12 @@ import { generateUUID } from "three/src/math/MathUtils.js";
 import { useFrame } from "@react-three/fiber";
 import { useRapier } from "@react-three/rapier";
 import SnakeEnemy from "./SnakeEnemy";
+import ExplodingEnemy from "./ExplodingEnemy";
 
-const ENEMY_SIZE = 6
+const ENEMY_SIZE = 4
 const SNAKE_COUNT = 20
-const BASIC_ENEMY_COUNT = 100
+const EXPLODING_ENEMY_COUNT = 30
+const BASIC_ENEMY_COUNT = 30
 
 function createEnemyPosition(playAreaSize, enemySize) {
     let x = (Math.random() - 0.5) * (playAreaSize - enemySize / 2)
@@ -102,17 +104,17 @@ function useSpawnEnemy(enemySize, playAreaSize) {
 
 export default function Level({playAreaSize, spaceshipRb}) {
     
-    const [enemies, setEnemies] = useState(() => {
-        return createInitialEnemyState(playAreaSize, ENEMY_SIZE, BASIC_ENEMY_COUNT)
-    })
-
+    const [enemies, setEnemies] = useState(() => createInitialEnemyState(playAreaSize, ENEMY_SIZE, BASIC_ENEMY_COUNT))
     const [snakes, setSnakes] = useState(() => createInitialEnemyState(playAreaSize, 0, SNAKE_COUNT))
+    const [explodingEnemies, setExplodingEnemies] = useState(() => createInitialEnemyState(playAreaSize, 0, EXPLODING_ENEMY_COUNT))
+
+
 
     const findSpawnPosition = useSpawnEnemy(ENEMY_SIZE, playAreaSize)
 
-    const removeEnemy = useCallback((enemyId) => {
-        setEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyId))
-    }, [setEnemies])
+    const removeExplodingEnemy = useCallback((enemyId) => {
+        setExplodingEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyId))
+    }, [setExplodingEnemies])
 
     const addEnemy = () => {
         const position = findSpawnPosition()
@@ -133,9 +135,7 @@ export default function Level({playAreaSize, spaceshipRb}) {
             return (
                 <BasicEnemy 
                     key={enemyData.id}
-                    id={enemyData.id} 
                     position={enemyData.position} 
-                    removeEnemy={removeEnemy}
                     size={ENEMY_SIZE}
                 />
             )})
@@ -149,6 +149,18 @@ export default function Level({playAreaSize, spaceshipRb}) {
                     spaceshipRb={spaceshipRb}
                     segments={15}
                     playAreaSize={playAreaSize}
+                />
+            )
+        })}
+
+        {explodingEnemies.map((enemyData) => {
+            return (
+                <ExplodingEnemy 
+                    key={enemyData.id}
+                    id={enemyData.id}
+                    position={enemyData.position}
+                    removeEnemy={removeExplodingEnemy}
+                    size={ENEMY_SIZE}
                 />
             )
         })}

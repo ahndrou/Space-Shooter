@@ -10,7 +10,7 @@ import { useGLTF } from "@react-three/drei";
 useGLTF.preload("/bullet.glb")
 
 export default function Bullet({position, rotation}) {
-    const SPEED = 190
+    const SPEED = 140
     const rb = useRef();
 
     const {meshes : { Cylinder : { geometry } }} = useGLTF("/bullet.glb")
