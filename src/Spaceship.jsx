@@ -1,23 +1,25 @@
 import { useGLTF, useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { interactionGroups, RigidBody } from "@react-three/rapier";
+import { CapsuleCollider, interactionGroups, RigidBody } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
 import Weapon from "./Weapon";
 import { COLLISION_GROUPS } from "./constants";
+import useCentralSteering from "./hooks/useCentralSteering";
 
-export default function Spaceship({ rigidBodyRef }) {
-    const ANGULAR_SPEED_FACTOR = 2
-    const LINEAR_SPEED_FACTOR = 10
+export default function Spaceship({ rigidBodyRef, playAreaSize}) {
+    const MAX_ANGULAR_FORCE = 0.6
+    const MAX_LINEAR_FORCE = 2
     const POINTER_LOWER_BOUND = 0.3
-    const LINEAR_DAMPING = 0.4
-    const ANGULAR_DAMPING = 0.6
-    const ANGULAR_ACCELERATION = 2
-    const LINEAR_ACCELERATION = 2
+    const LINEAR_DAMPING = 2
+    const ANGULAR_DAMPING = 6
+    const CAMERA_DELAY = 19
     
     const pointerActive = useRef(true)
 
     const gltf = useGLTF("./space_shooter_player.glb")
+
+    const centralSteering = useCentralSteering(rigidBodyRef, playAreaSize, 0.86, 2)
 
     const [ , getKeys ] = useKeyboardControls()
 
@@ -38,12 +40,8 @@ export default function Spaceship({ rigidBodyRef }) {
     // The same objects are re-used for eacwh frame.
     const cameraOffset = useRef(new Vector3())
     const worldSpaceRotation = useRef(new Quaternion())
-    const angularVelocityTarget = useRef(new Vector3(0, 0, 0))
-    const linearVelocityTarget = useRef(new Vector3(0, 0, 0))
-
-    // LERP is used. Thus we need a reference to the previous frame's velocity
-    const smoothedLinearVelocity = useRef(new Vector3(0, 0, 0))
-    const smoothedAngularVelocity = useRef(new Vector3(0, 0, 0))
+    const angularForce = useRef(new Vector3(0, 0, 0))
+    const linearForce = useRef(new Vector3(0, 0, 0))
 
     useFrame((state, delta) => {
         // rigidBodyRef.current.rotation() returns a plain object, not an instance
@@ -62,34 +60,30 @@ export default function Spaceship({ rigidBodyRef }) {
         cameraOffset.current.add(rigidBodyRef.current.translation())
         
         // The slight lag from LERP gives the user a nice indication that they are turning.
-        state.camera.position.lerp(cameraOffset.current, 5 * delta)
-
+        state.camera.position.lerp(cameraOffset.current, CAMERA_DELAY * delta)
         state.camera.rotation.setFromQuaternion(worldSpaceRotation.current)
 
         // INPUT HANDLING
         const keys = getKeys()
 
-        let yawSpeed = 0
+        let yawForce = 0
         if (pointerActive.current && Math.abs(state.pointer.x) > POINTER_LOWER_BOUND) {
-            yawSpeed = -state.pointer.x * ANGULAR_SPEED_FACTOR
+            yawForce = -state.pointer.x 
         }
-        let pitchSpeed = 0
+        let pitchForce = 0
         if (pointerActive.current && Math.abs(state.pointer.y) > POINTER_LOWER_BOUND) {
-            pitchSpeed = state.pointer.y * ANGULAR_SPEED_FACTOR
+            pitchForce = state.pointer.y
         }
-        const rollSpeed = ((keys.leftward ? 1 : 0) + (keys.rightward ? -1 : 0)) * ANGULAR_SPEED_FACTOR
+        const rollForce = ((keys.leftward ? 1 : 0) + (keys.rightward ? -1 : 0))
 
-        angularVelocityTarget.current.set(pitchSpeed, yawSpeed, rollSpeed)
-        angularVelocityTarget.current.applyQuaternion(worldSpaceRotation.current)
+        angularForce.current.set(pitchForce, yawForce, rollForce).normalize().multiplyScalar(MAX_ANGULAR_FORCE)
+        angularForce.current.applyQuaternion(worldSpaceRotation.current)
 
-        linearVelocityTarget.current.set(0, 0, keys.forward ? -LINEAR_SPEED_FACTOR : 0)
-        linearVelocityTarget.current.applyQuaternion(worldSpaceRotation.current)
+        linearForce.current.set(0, 0, keys.forward ? -MAX_LINEAR_FORCE : 0)
+        linearForce.current.applyQuaternion(worldSpaceRotation.current)
 
-        smoothedAngularVelocity.current.lerp(angularVelocityTarget.current, ANGULAR_ACCELERATION * delta)
-        smoothedLinearVelocity.current.lerp(linearVelocityTarget.current, LINEAR_ACCELERATION * delta)
-
-        rigidBodyRef.current.setAngvel(smoothedAngularVelocity.current, true)
-        rigidBodyRef.current.setLinvel(smoothedLinearVelocity.current, true)
+        rigidBodyRef.current.applyTorqueImpulse(angularForce.current.add(centralSteering.steeringTorqueRef.current), true)
+        rigidBodyRef.current.applyImpulse(linearForce.current.add(centralSteering.steeringForceRef.current), true)
 
     })
 
@@ -98,7 +92,8 @@ export default function Spaceship({ rigidBodyRef }) {
         <RigidBody 
             ref={rigidBodyRef} 
             position={[0, 0, 0]}
-            type="kinematicVelocity"
+            colliders={false}
+            type="dynamic"
             linearDamping={LINEAR_DAMPING} 
             angularDamping={ANGULAR_DAMPING}
             collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS, [COLLISION_GROUPS.INNER_OBJECTS, COLLISION_GROUPS.BOUNDARY])}
@@ -106,6 +101,7 @@ export default function Spaceship({ rigidBodyRef }) {
                 console.log("Hit")
             }}
         >
+            <CapsuleCollider args={[0.01, 1.5]} rotation={[0, 0, 0]}/>
             <group 
                 rotation={[0, Math.PI / 2, 0]}
                 scale={0.5}
