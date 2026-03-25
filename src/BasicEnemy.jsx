@@ -22,6 +22,7 @@ export function BasicEnemy({position, size}) {
             colliders={false}
             canSleep={false}
             angularDamping={0.4}
+            userData={{type: "basic enemy"}}
             >
                 <BallCollider args={[size * 0.97]}/>
                 <group scale={size}>

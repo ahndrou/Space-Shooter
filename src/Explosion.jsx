@@ -1,11 +1,12 @@
-import { useRef, useState } from "react"
-
+import { useEffect, useRef, useState } from "react"
 import vertexShader from "./shaders/explosion/vertex.glsl"
 import fragmentShader from "./shaders/explosion/fragment.glsl"
 import { AdditiveBlending, Spherical, Vector2, Vector3 } from "three"
 import { useFrame } from "@react-three/fiber"
+import { useRapier } from "@react-three/rapier"
 
 const PARTICLE_COUNT = 2000
+const FORCE_MAGNITUDE = 120
 
 const sizes = {
     width: window.innerWidth,
@@ -75,7 +76,7 @@ function createOffsetsArray() {
 }
 
 
-export default function Explosion({particleSize=1, sphereRadius=2.5}) {
+export default function Explosion({particleSize=1, sphereRadius=2.5, rbRef}) {
     const [particlePositions] = useState(() => createParticlePositionsArray(sphereRadius))
     const [particleSizes] = useState(() => createSizesArray())
     const [particleOffsets] = useState(() => createOffsetsArray())
@@ -90,10 +91,46 @@ export default function Explosion({particleSize=1, sphereRadius=2.5}) {
         uTime: {value: 0}
     })
 
+    const {world, rapier} = useRapier()
+
     useFrame((state, delta) => 
     {
         uniforms.current.uTime.value += delta
     })
+
+    useEffect(() => {
+        const sphere = new rapier.Ball(30)
+
+        const translation = rbRef.current.translation()
+        const translationVec = new Vector3(translation.x, translation.y, translation.z)
+        const rotation = { x: 0, y: 0, z: 0, w: 1 }
+
+        const bodiesToAffect = []
+
+        // It is important not to mutate the physics world whilst
+        // iterating over it. Leads to Rust unsafe aliasing errors.
+        world.intersectionsWithShape(
+            translation,
+            rotation,
+            sphere,
+            (collider) => {
+                if (collider?.parent().handle !== rbRef.current.handle) {
+                    bodiesToAffect.push(collider.parent())
+                } 
+                return true
+            }
+        )
+
+        bodiesToAffect.forEach((rb) => {
+            const rbTranslation = rb.translation()
+            const rbTranslationVec = new Vector3(rbTranslation.x, rbTranslation.y, rbTranslation.z)
+            
+            const force = rbTranslationVec.clone().sub(translationVec).normalize().multiplyScalar(FORCE_MAGNITUDE)
+
+            rb.applyImpulse(force, true)
+        })
+
+    }, [rapier.Ball, world, rbRef])
 
     return (
         <points frustumCulled={false}>

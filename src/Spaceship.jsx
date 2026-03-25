@@ -9,9 +9,9 @@ import useCentralSteering from "./hooks/useCentralSteering";
 
 export default function Spaceship({ rigidBodyRef, playAreaSize}) {
     const MAX_ANGULAR_FORCE = 0.6
-    const MAX_LINEAR_FORCE = 2
+    const MAX_LINEAR_FORCE = 0.5
     const POINTER_LOWER_BOUND = 0.3
-    const LINEAR_DAMPING = 2
+    const LINEAR_DAMPING = 0.4
     const ANGULAR_DAMPING = 6
     const CAMERA_DELAY = 19
     
@@ -91,15 +91,12 @@ export default function Spaceship({ rigidBodyRef, playAreaSize}) {
         <Weapon ship={rigidBodyRef} />
         <RigidBody 
             ref={rigidBodyRef} 
-            position={[0, 0, 0]}
             colliders={false}
             type="dynamic"
             linearDamping={LINEAR_DAMPING} 
             angularDamping={ANGULAR_DAMPING}
-            collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS, [COLLISION_GROUPS.INNER_OBJECTS, COLLISION_GROUPS.BOUNDARY])}
-            onCollisionEnter={() => {
-                console.log("Hit")
-            }}
+            canSleep={false}
+            userData={{type: 'player'}}
         >
             <CapsuleCollider args={[0.01, 1.5]} rotation={[0, 0, 0]}/>
             <group 

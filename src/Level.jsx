@@ -8,8 +8,8 @@ import SnakeEnemy from "./SnakeEnemy";
 import ExplodingEnemy from "./ExplodingEnemy";
 
 const ENEMY_SIZE = 4
-const SNAKE_COUNT = 20
-const EXPLODING_ENEMY_COUNT = 30
+const SNAKE_COUNT = 3
+const EXPLODING_ENEMY_COUNT = 10
 const BASIC_ENEMY_COUNT = 30
 
 function createEnemyPosition(playAreaSize, enemySize) {
@@ -122,13 +122,13 @@ export default function Level({playAreaSize, spaceshipRb}) {
         setEnemies((enemies) => [...enemies, newEnemy])
     }
 
-    let lastEnemyTime = useRef(0)
-    useFrame((state) => {
-        if (state.clock.elapsedTime - lastEnemyTime.current > 3) {
-            addEnemy()
-            lastEnemyTime.current = state.clock.elapsedTime
-        }
-    })
+    // let lastEnemyTime = useRef(0)
+    // useFrame((state) => {
+    //     if (state.clock.elapsedTime - lastEnemyTime.current > 3) {
+    //         addEnemy()
+    //         lastEnemyTime.current = state.clock.elapsedTime
+    //     }
+    // })
     
     return <>
         {enemies.map((enemyData) => {

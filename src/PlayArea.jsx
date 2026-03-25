@@ -59,6 +59,7 @@ function BoundaryWall({orientation, size}) {
             position={position}
             type="fixed"
             collisionGroups={interactionGroups(COLLISION_GROUPS.BOUNDARY, COLLISION_GROUPS.INNER_OBJECTS)}
+            userData={{type: "wall"}}
         >
             <mesh renderOrder={-1}>
                 <boxGeometry args={dimensions} />
