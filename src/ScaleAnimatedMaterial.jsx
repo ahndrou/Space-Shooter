@@ -15,6 +15,7 @@ modify attributes, so the position value is copied to a new variable called 'tra
 
 import { useFrame } from "@react-three/fiber"
 import { useRef } from "react"
+import { Vector3 } from "three"
 
 // This whole component is for a scaling animation. The time is set here, but in EnemyBasic too? It is unclear
 // and needs refactoring. There is some tight coupling currently.
@@ -25,7 +26,7 @@ const SCALE_DOWN_TIME = 0.3
 const OSCILLATION_TIME = TOTAL_ANIMATION_TIME - SCALE_UP_TIME - SCALE_DOWN_TIME
 
 
-export default function ScaleAnimatedMaterial({color, transparent, opacity, animationActive=false}) {
+export default function ScaleAnimatedMaterial({color, transparent, opacity, animationActive=false, setExplosionPos, rbRef}) {
     const customUniforms = useRef({
         uTime: {value: 0}
     })
@@ -33,6 +34,15 @@ export default function ScaleAnimatedMaterial({color, transparent, opacity, anim
     useFrame((state, delta) => {
         if (animationActive && customUniforms.current.uTime.value < TOTAL_ANIMATION_TIME) {
             customUniforms.current.uTime.value += delta
+        }
+
+        // Scaling part has finished. Start explosion part.
+        if (animationActive && customUniforms.current.uTime.value >= TOTAL_ANIMATION_TIME) {
+            setExplosionPos(new Vector3(
+                rbRef.current.translation().x,
+                rbRef.current.translation().y,
+                rbRef.current.translation().z
+            ))
         }
     })
 

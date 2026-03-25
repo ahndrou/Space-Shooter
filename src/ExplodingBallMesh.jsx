@@ -6,29 +6,10 @@ import Explosion from "./Explosion"
 import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 
-// 'Scaling' part of the collision animation.
-const SCALING_TIME = 2
-// 'Exploding' part of the collision animation. Currently need to make sure
-// this matches up to the animation length defined in /shaders/explosion/config.glsl.
-const EXPLODING_TIME = 3
-
-export default function ExplodingBallMesh({collisionState, setCollisionState, removeParent, size, color="green", rbRef}) {
+// See about combining setExplosionPos and rbRef into a premade function.
+// Limits what this component can do, making things clearer and less error prone.
+export default function ExplodingBallMesh({isHit, setExplosionPos, size, color="purple", rbRef}) {
     const gltf = useGLTF("./space_shooter_enemy_basic.glb")
-
-    const animationTimer = useRef(0)
-
-    useFrame((state, delta) => {
-        if (collisionState !== COLLISION_STATES.NO_COLLISION) {
-            animationTimer.current += delta
-        }
-
-        if (collisionState === COLLISION_STATES.SCALING && animationTimer.current >= SCALING_TIME) {
-            setCollisionState(COLLISION_STATES.EXPLODING)
-            animationTimer.current = 0
-        } else if (collisionState === COLLISION_STATES.EXPLODING && animationTimer.current >= EXPLODING_TIME) {
-            removeParent()
-        }
-    })
 
     return <>
         <group scale={size}>
@@ -39,7 +20,9 @@ export default function ExplodingBallMesh({collisionState, setCollisionState, re
                     color={color}
                     transparent={true} 
                     opacity={0.7} 
-                    animationActive={collisionState === COLLISION_STATES.SCALING} 
+                    animationActive={isHit} 
+                    setExplosionPos={setExplosionPos}
+                    rbRef={rbRef}
                 />
             </mesh>
             <mesh 
@@ -47,10 +30,11 @@ export default function ExplodingBallMesh({collisionState, setCollisionState, re
             >
                 <ScaleAnimatedMaterial 
                     color={[0.4, 0.4, 0.4]} 
-                    animationActive={collisionState === COLLISION_STATES.SCALING}/>
+                    animationActive={isHit}
+                    setExplosionPos={setExplosionPos} 
+                    rbRef={rbRef}
+                />
             </mesh>
         </group>
-
-        {collisionState === COLLISION_STATES.EXPLODING && <Explosion rbRef={rbRef}/>}
         </>
 }

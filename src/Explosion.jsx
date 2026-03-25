@@ -76,7 +76,7 @@ function createOffsetsArray() {
 }
 
 
-export default function Explosion({particleSize=1, sphereRadius=2.5, rbRef}) {
+export default function Explosion({particleSize=1, sphereRadius=2.5, position}) {
     const [particlePositions] = useState(() => createParticlePositionsArray(sphereRadius))
     const [particleSizes] = useState(() => createSizesArray())
     const [particleOffsets] = useState(() => createOffsetsArray())
@@ -101,8 +101,6 @@ export default function Explosion({particleSize=1, sphereRadius=2.5, rbRef}) {
     useEffect(() => {
         const sphere = new rapier.Ball(30)
 
-        const translation = rbRef.current.translation()
-        const translationVec = new Vector3(translation.x, translation.y, translation.z)
         const rotation = { x: 0, y: 0, z: 0, w: 1 }
 
         const bodiesToAffect = []
@@ -110,13 +108,11 @@ export default function Explosion({particleSize=1, sphereRadius=2.5, rbRef}) {
         // It is important not to mutate the physics world whilst
         // iterating over it. Leads to Rust unsafe aliasing errors.
         world.intersectionsWithShape(
-            translation,
+            position,
             rotation,
             sphere,
             (collider) => {
-                if (collider?.parent().handle !== rbRef.current.handle) {
-                    bodiesToAffect.push(collider.parent())
-                } 
+                bodiesToAffect.push(collider.parent()) 
                 return true
             }
         )
@@ -125,15 +121,15 @@ export default function Explosion({particleSize=1, sphereRadius=2.5, rbRef}) {
             const rbTranslation = rb.translation()
             const rbTranslationVec = new Vector3(rbTranslation.x, rbTranslation.y, rbTranslation.z)
             
-            const force = rbTranslationVec.clone().sub(translationVec).normalize().multiplyScalar(FORCE_MAGNITUDE)
+            const force = rbTranslationVec.clone().sub(position).normalize().multiplyScalar(FORCE_MAGNITUDE)
 
             rb.applyImpulse(force, true)
         })
 
-    }, [rapier.Ball, world, rbRef])
+    }, [rapier.Ball, world, position])
 
     return (
-        <points frustumCulled={false}>
+        <points frustumCulled={false} position={position}>
             <bufferGeometry>
                 <bufferAttribute 
                     attach={"attributes-position"}
