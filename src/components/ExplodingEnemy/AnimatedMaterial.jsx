@@ -1,14 +1,20 @@
 import { useFrame } from "@react-three/fiber"
 import { useRef } from "react"
 
-const TOTAL_ANIMATION_LENGTH = 2
-const SCALE_UP_TIME = 2
-const SCALE_DOWN_TIME = 0.3
+const TIME_TO_SCALE_UP = 2
+const TIME_TO_SCALE_DOWN = 0.2
+const TOTAL_ANIMATION_LENGTH = TIME_TO_SCALE_UP + TIME_TO_SCALE_DOWN
 
-const OSCILLATION_TIME = TOTAL_ANIMATION_LENGTH - SCALE_UP_TIME - SCALE_DOWN_TIME
+const SCALE_UP_FACTOR = 1.5
 
-
-export default function AnimatedMaterial({color, transparent, opacity, animationActive, triggerExplosion}) {
+export default function AnimatedMaterial(
+    {
+        color, 
+        transparent, 
+        opacity, 
+        animationActive, 
+        triggerExplosion
+    }) {
     const customUniforms = useRef({
         uTime: {value: 0}
     })
@@ -65,7 +71,7 @@ const modifyShader = (shader, customUniforms) => {
         float openingProgress = remap(
             uTime, 
             0.0, 
-            ${SCALE_UP_TIME.toFixed(1)}, 
+            ${TIME_TO_SCALE_UP.toFixed(1)}, 
             0.0, 
             1.0
         );
@@ -76,7 +82,7 @@ const modifyShader = (shader, customUniforms) => {
         // Here for example, closingProgress would be < 1.0 before the starting point given.
         float closingProgress = remap(
             uTime, 
-            ${(SCALE_UP_TIME + OSCILLATION_TIME).toFixed(1)}, 
+            ${(TIME_TO_SCALE_UP).toFixed(1)}, 
             ${TOTAL_ANIMATION_LENGTH.toFixed(1)}, 
             0.0, 
             1.0
@@ -88,8 +94,8 @@ const modifyShader = (shader, customUniforms) => {
         // Between values 0 and 1.
         float progress = min(openingProgress, 1.0 - closingProgress);
 
-        // Maps us to [1.0, 2.0], following our progress curve.
-        float scale = mix(1.0, 2.0, progress);
+        // Maps us to the scale transform, following our progress curve.
+        float scale = mix(1.0, ${SCALE_UP_FACTOR.toFixed(1)}, progress);
 
         // When the closing animation starts, this extra factor will send the scale to zero.
         scale *= (1.0 - closingProgress);

@@ -4,11 +4,11 @@
 // and uniforms are injected depends on enabled/disabled features such as lighting, as well as the geometry used.
 // Different built in geometries have specific sets of attributes attached.
 
-#include "config.glsl"
-
 uniform float uSize;
 uniform vec2 uResolution;
 uniform float uTime;
+uniform float uDuration;
+uniform float uExplosionScale;
 
 attribute float aSize;
 attribute float aOffset;
@@ -17,12 +17,12 @@ varying float vOffsetTime;
 
 void main() {
     float offsetTime = uTime * aOffset;
-    float animationProgress = offsetTime / ANIMATION_LENGTH;
+    float animationProgress = offsetTime / uDuration;
  
     vOffsetTime = offsetTime;
 
     vec3 transformedPosition = position;
-    transformedPosition *= (1.0 - pow(1.0 - animationProgress, 6.0)) * EXPLOSION_SCALE;
+    transformedPosition *= (1.0 - pow(1.0 - animationProgress, 6.0)) * uExplosionScale;
 
     vec4 modelPosition = modelMatrix * vec4(transformedPosition, 1.0);
     vec4 viewPosition = viewMatrix * modelPosition;

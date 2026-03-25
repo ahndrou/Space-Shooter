@@ -22,7 +22,7 @@ export function ExplodingEnemy( {position, removeEnemy, id, size} ) {
         }
 
         { explosionActive && (
-            <Explosion position={explosionPos} removeParentEnemy={removeSelf} />
+            <Explosion position={explosionPos} color={'purple'} removeParentEnemy={removeSelf} />
         )}
     </> 
 }

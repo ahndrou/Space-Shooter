@@ -4,10 +4,12 @@ import fragmentShader from "../../shaders/explosion/fragment.glsl"
 import { AdditiveBlending, Spherical, Vector2, Vector3 } from "three"
 import { useFrame } from "@react-three/fiber"
 import { useRapier } from "@react-three/rapier"
+import * as THREE from 'three'
 
 const PARTICLE_COUNT = 2000
 const FORCE_MAGNITUDE = 120
 const EXPLOSION_DURATION = 10
+const EXPLOSION_SCALE = 20
 
 const sizes = {
     width: window.innerWidth,
@@ -77,8 +79,8 @@ function createOffsetsArray() {
 }
 
 
-export default function Explosion({particleSize=1, sphereRadius=2.5, position, removeParentEnemy}) {
-    const [particlePositions] = useState(() => createParticlePositionsArray(sphereRadius))
+export default function Explosion({particleSize=1, color, position, removeParentEnemy}) {
+    const [particlePositions] = useState(() => createParticlePositionsArray(1))
     const [particleSizes] = useState(() => createSizesArray())
     const [particleOffsets] = useState(() => createOffsetsArray())
 
@@ -89,7 +91,10 @@ export default function Explosion({particleSize=1, sphereRadius=2.5, position, r
     {
         uSize: {value: particleSize},
         uResolution: {value: sizes.resolution},
-        uTime: {value: 0}
+        uTime: {value: 0},
+        uColor: {value: new THREE.Color(color)},
+        uDuration: {value: EXPLOSION_DURATION},
+        uExplosionScale: {value: EXPLOSION_SCALE}
     })
 
     const {world, rapier} = useRapier()
@@ -104,7 +109,7 @@ export default function Explosion({particleSize=1, sphereRadius=2.5, position, r
     })
 
     useEffect(() => {
-        const sphere = new rapier.Ball(30)
+        const sphere = new rapier.Ball(EXPLOSION_SCALE)
 
         const rotation = { x: 0, y: 0, z: 0, w: 1 }
 
