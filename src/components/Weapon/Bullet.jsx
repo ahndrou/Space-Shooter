@@ -2,8 +2,8 @@ import { RigidBody } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 import { Quaternion, Vector2, Vector3 } from "three";
 
-import vertexShader from "./shaders/bullet/vertex.glsl"
-import fragmentShader from "./shaders/bullet/fragment.glsl"
+import vertexShader from "../../shaders/bullet/vertex.glsl"
+import fragmentShader from "../../shaders/bullet/fragment.glsl"
 import { useGLTF } from "@react-three/drei";
 
 

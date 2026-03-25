@@ -1,48 +1,26 @@
-/*
-To know what to replace, I looked inside the shader code files ThreeJS uses - found in node_modules. The
-result of the linked shader can be found in the argument passed to the onBeforeCompile call-back, which we can
-modify before compilation.
-
-The first argument to 'replace' can be used as a way to target a specific spot in the shader where we want to
-inject our own code. Notice though that we replace part of the shader with itself, plus some more, so the 
-existing functionality doesn't break.
-
-The existing shader files should be read to determine what variables are available to us at the point we are
-injecting to. i.e. from reading the files, I can see that the 'begin_vertex' shader introduces a vec3 called
-'transformed' which we can use to apply transformations to the original vertex position (we can't directly
-modify attributes, so the position value is copied to a new variable called 'transformed').
-*/
-
 import { useFrame } from "@react-three/fiber"
 import { useRef } from "react"
-import { Vector3 } from "three"
 
-// This whole component is for a scaling animation. The time is set here, but in EnemyBasic too? It is unclear
-// and needs refactoring. There is some tight coupling currently.
-const TOTAL_ANIMATION_TIME = 2
+const TOTAL_ANIMATION_LENGTH = 2
 const SCALE_UP_TIME = 2
 const SCALE_DOWN_TIME = 0.3
 
-const OSCILLATION_TIME = TOTAL_ANIMATION_TIME - SCALE_UP_TIME - SCALE_DOWN_TIME
+const OSCILLATION_TIME = TOTAL_ANIMATION_LENGTH - SCALE_UP_TIME - SCALE_DOWN_TIME
 
 
-export default function ScaleAnimatedMaterial({color, transparent, opacity, animationActive=false, setExplosionPos, rbRef}) {
+export default function AnimatedMaterial({color, transparent, opacity, animationActive, triggerExplosion}) {
     const customUniforms = useRef({
         uTime: {value: 0}
     })
     
     useFrame((state, delta) => {
-        if (animationActive && customUniforms.current.uTime.value < TOTAL_ANIMATION_TIME) {
-            customUniforms.current.uTime.value += delta
-        }
-
-        // Scaling part has finished. Start explosion part.
-        if (animationActive && customUniforms.current.uTime.value >= TOTAL_ANIMATION_TIME) {
-            setExplosionPos(new Vector3(
-                rbRef.current.translation().x,
-                rbRef.current.translation().y,
-                rbRef.current.translation().z
-            ))
+        if (animationActive) {
+        
+            if (customUniforms.current.uTime.value < TOTAL_ANIMATION_LENGTH) {
+                customUniforms.current.uTime.value += delta
+            } else {
+                triggerExplosion()
+            }
         }
     })
 
@@ -99,7 +77,7 @@ const modifyShader = (shader, customUniforms) => {
         float closingProgress = remap(
             uTime, 
             ${(SCALE_UP_TIME + OSCILLATION_TIME).toFixed(1)}, 
-            ${TOTAL_ANIMATION_TIME.toFixed(1)}, 
+            ${TOTAL_ANIMATION_LENGTH.toFixed(1)}, 
             0.0, 
             1.0
         );
@@ -121,3 +99,19 @@ const modifyShader = (shader, customUniforms) => {
         `
     )
 }
+
+/*
+----- INSIGHTS -----
+To know what to replace, I looked inside the shader code files ThreeJS uses - found in node_modules. The
+result of the linked shader can be found in the argument passed to the onBeforeCompile call-back, which we can
+modify before compilation.
+
+The first argument to 'replace' can be used as a way to target a specific spot in the shader where we want to
+inject our own code. Notice though that we replace part of the shader with itself, plus some more, so the 
+existing functionality doesn't break.
+
+The existing shader files should be read to determine what variables are available to us at the point we are
+injecting to. i.e. from reading the files, I can see that the 'begin_vertex' shader introduces a vec3 called
+'transformed' which we can use to apply transformations to the original vertex position (we can't directly
+modify attributes, so the position value is copied to a new variable called 'transformed').
+*/

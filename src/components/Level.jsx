@@ -1,11 +1,10 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import BasicEnemy from "./BasicEnemy";
 import { Quaternion, Vector3 } from "three";
 import { generateUUID } from "three/src/math/MathUtils.js";
-import { useFrame } from "@react-three/fiber";
 import { useRapier } from "@react-three/rapier";
 import SnakeEnemy from "./SnakeEnemy";
-import ExplodingEnemy from "./ExplodingEnemy";
+import ExplodingEnemy from "./ExplodingEnemy/ExplodingEnemy";
 
 const ENEMY_SIZE = 4
 const SNAKE_COUNT = 3

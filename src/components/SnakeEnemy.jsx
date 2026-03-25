@@ -1,10 +1,10 @@
 import { BallCollider, CuboidCollider, interactionGroups, RigidBody, useSphericalJoint } from "@react-three/rapier";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { Vector3 } from "three";
-import useWanderSteering from "./hooks/useWanderSteering";
+import useWanderSteering from "../hooks/useWanderSteering";
 import { useFrame } from "@react-three/fiber";
-import useCentralSteering from "./hooks/useCentralSteering";
-import { COLLISION_GROUPS } from "./constants";
+import useCentralSteering from "../hooks/useCentralSteering";
+import { COLLISION_GROUPS } from "../constants";
 
 const SEGMENT_DISTANCE = 1.5
 const WANDER_RADIUS = 5

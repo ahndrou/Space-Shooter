@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react"
-import vertexShader from "./shaders/explosion/vertex.glsl"
-import fragmentShader from "./shaders/explosion/fragment.glsl"
+import vertexShader from "../../shaders/explosion/vertex.glsl"
+import fragmentShader from "../../shaders/explosion/fragment.glsl"
 import { AdditiveBlending, Spherical, Vector2, Vector3 } from "three"
 import { useFrame } from "@react-three/fiber"
 import { useRapier } from "@react-three/rapier"
 
 const PARTICLE_COUNT = 2000
 const FORCE_MAGNITUDE = 120
+const EXPLOSION_DURATION = 10
 
 const sizes = {
     width: window.innerWidth,
@@ -76,7 +77,7 @@ function createOffsetsArray() {
 }
 
 
-export default function Explosion({particleSize=1, sphereRadius=2.5, position}) {
+export default function Explosion({particleSize=1, sphereRadius=2.5, position, removeParentEnemy}) {
     const [particlePositions] = useState(() => createParticlePositionsArray(sphereRadius))
     const [particleSizes] = useState(() => createSizesArray())
     const [particleOffsets] = useState(() => createOffsetsArray())
@@ -96,6 +97,10 @@ export default function Explosion({particleSize=1, sphereRadius=2.5, position}) 
     useFrame((state, delta) => 
     {
         uniforms.current.uTime.value += delta
+
+        if (uniforms.current.uTime.value >= EXPLOSION_DURATION) {
+            removeParentEnemy()
+        }
     })
 
     useEffect(() => {

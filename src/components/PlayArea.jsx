@@ -1,9 +1,9 @@
 import { DoubleSide } from "three";
-import vertexShader from "./shaders/boundary/vertex.glsl"
-import fragmentShader from "./shaders/boundary/fragment.glsl"
+import vertexShader from "../shaders/boundary/vertex.glsl"
+import fragmentShader from "../shaders/boundary/fragment.glsl"
 import { useThree } from "@react-three/fiber";
 import { interactionGroups, RigidBody } from "@react-three/rapier";
-import { COLLISION_GROUPS } from "./constants";
+import { COLLISION_GROUPS } from "../constants";
 
 const WALL_ORIENTATIONS = new Map(Object.entries({
     TOP: 1,
