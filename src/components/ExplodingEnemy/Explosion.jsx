@@ -7,9 +7,9 @@ import { useRapier } from "@react-three/rapier"
 import * as THREE from 'three'
 
 const PARTICLE_COUNT = 2000
-const FORCE_MAGNITUDE = 120
-const EXPLOSION_DURATION = 10
+const EXPLOSION_DURATION = 2
 const EXPLOSION_SCALE = 20
+const FORCE_MAGNITUDE = 60
 
 const sizes = {
     width: window.innerWidth,

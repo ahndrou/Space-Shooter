@@ -33,22 +33,22 @@ function BoundaryWall({orientation, size}) {
     let dimensions, position
 
     if (orientation === WALL_ORIENTATIONS.get('TOP')) {
-        dimensions = [size, THICKNESS, size]
+        dimensions = [size - THICKNESS, THICKNESS, size  - THICKNESS]
         position = [0, size / 2, 0]
     } else if (orientation === WALL_ORIENTATIONS.get('BOTTOM')) {
-        dimensions = [size, THICKNESS, size]
+        dimensions = [size - THICKNESS, THICKNESS, size - THICKNESS]
         position = [0, - size / 2, 0]
     } else if (orientation === WALL_ORIENTATIONS.get('RIGHT')) {
-        dimensions = [THICKNESS, size, size]
+        dimensions = [THICKNESS, size - THICKNESS, size - THICKNESS]
         position = [size / 2, 0, 0]
     } else if (orientation === WALL_ORIENTATIONS.get('LEFT')) {
-        dimensions = [THICKNESS, size, size]
+        dimensions = [THICKNESS, size - THICKNESS, size - THICKNESS]
         position = [- size / 2, 0, 0]
     } else if (orientation === WALL_ORIENTATIONS.get('FRONT')) {
-        dimensions = [size, size, THICKNESS]
+        dimensions = [size - THICKNESS, size - THICKNESS, THICKNESS]
         position = [0, 0, size / 2]
     } else if (orientation === WALL_ORIENTATIONS.get('BACK')) {
-        dimensions = [size, size, THICKNESS]
+        dimensions = [size - THICKNESS, size - THICKNESS, THICKNESS]
         position = [0, 0, - size / 2]
     } else {
         throw new Error(`Invalid wall orientation given: ${orientation}.`)

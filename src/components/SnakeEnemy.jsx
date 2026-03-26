@@ -12,26 +12,33 @@ const WANDER_OFFSET = 6
 
 export default React.memo(SnakeEnemy)
 
-export function SnakeEnemy({ position, segments, playAreaSize}) {
+export function SnakeEnemy({ position, segments, playAreaSize, id, removeSelf}) {
     const head = useRef()
 
     const nextSegmentPosition = new Vector3().copy(position)
     nextSegmentPosition.z += SEGMENT_DISTANCE
 
     return <>
-        <SnakeHead ref={head} position={position} playAreaSize={playAreaSize} />
+        <SnakeHead ref={head} position={position} playAreaSize={playAreaSize} removeParentSnake={() => removeSelf(id)}/>
         <BodySegment parentRef={head} index={0} max={segments} position={nextSegmentPosition} />
     </>
 }
 
 
-function SnakeHead( {ref, position, playAreaSize, debug} ) {
+function SnakeHead( {ref, position, playAreaSize, debug, removeParentSnake} ) {
     const wanderSteering = useWanderSteering(ref, WANDER_RADIUS, WANDER_OFFSET)
     const centralSteering = useCentralSteering(ref, playAreaSize, 0.9)
 
     useFrame(() => {
         ref.current.applyImpulse(wanderSteering.steeringForceRef.current.add(centralSteering.steeringForceRef.current))
     })
+
+    const handleHit = (collider) => {
+        if (collider.rigidBody?.userData?.type === 'bullet') {
+            removeParentSnake()
+        }
+        
+    }
 
     return <>
         <RigidBody 
@@ -41,7 +48,8 @@ function SnakeHead( {ref, position, playAreaSize, debug} ) {
             position={position} 
             linearDamping={1} 
             angularDamping={1}
-            collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS)} 
+            collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS)}
+            onCollisionEnter={handleHit}
         >
             <BallCollider args={[1.2]} />
             <mesh>

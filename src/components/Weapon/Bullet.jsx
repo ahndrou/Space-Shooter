@@ -1,11 +1,9 @@
 import { RigidBody } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 import { Quaternion, Vector2, Vector3 } from "three";
-
 import vertexShader from "../../shaders/bullet/vertex.glsl"
 import fragmentShader from "../../shaders/bullet/fragment.glsl"
 import { useGLTF } from "@react-three/drei";
-
 
 useGLTF.preload("/bullet.glb")
 
@@ -32,6 +30,7 @@ export default function Bullet({position, rotation}) {
             type="kinematicVelocity"
             position={position}
             rotation={rotation}
+            userData={{type: 'bullet'}}
         >
             <mesh geometry={geometry} scale={4.5}>
                 <rawShaderMaterial

@@ -1,15 +1,16 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import BasicEnemy from "./BasicEnemy";
 import { Quaternion, Vector3 } from "three";
 import { generateUUID } from "three/src/math/MathUtils.js";
 import { useRapier } from "@react-three/rapier";
 import SnakeEnemy from "./SnakeEnemy";
 import ExplodingEnemy from "./ExplodingEnemy/ExplodingEnemy";
+import { useFrame } from "@react-three/fiber";
 
 const ENEMY_SIZE = 4
 const SNAKE_COUNT = 3
 const EXPLODING_ENEMY_COUNT = 20
-const BASIC_ENEMY_COUNT = 10
+const BASIC_ENEMY_COUNT = 40
 
 function createEnemyPosition(playAreaSize, enemySize) {
     let x = (Math.random() - 0.5) * (playAreaSize - enemySize / 2)
@@ -107,27 +108,32 @@ export default function Level({playAreaSize, spaceshipRb}) {
     const [snakes, setSnakes] = useState(() => createInitialEnemyState(playAreaSize, 0, SNAKE_COUNT))
     const [explodingEnemies, setExplodingEnemies] = useState(() => createInitialEnemyState(playAreaSize, 0, EXPLODING_ENEMY_COUNT))
 
-
-
     const findSpawnPosition = useSpawnEnemy(ENEMY_SIZE, playAreaSize)
 
     const removeExplodingEnemy = useCallback((enemyId) => {
         setExplodingEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyId))
     }, [setExplodingEnemies])
 
-    const addEnemy = () => {
+    const removeSnakeEnemy = useCallback((enemyId) => {
+        setSnakes((enemies) => enemies.filter((enemy) => enemy.id !== enemyId))
+    }, [setSnakes])
+
+    const addEnemy = (setEnemiesFunction) => {
         const position = findSpawnPosition()
         const newEnemy = {id: generateUUID(), position}
-        setEnemies((enemies) => [...enemies, newEnemy])
+
+        setEnemiesFunction((enemies) => [...enemies, newEnemy])
     }
 
-    // let lastEnemyTime = useRef(0)
-    // useFrame((state) => {
-    //     if (state.clock.elapsedTime - lastEnemyTime.current > 3) {
-    //         addEnemy()
-    //         lastEnemyTime.current = state.clock.elapsedTime
-    //     }
-    // })
+    const enemySetters = [setEnemies, setSnakes, setExplodingEnemies]
+
+    let lastEnemyTime = useRef(0)
+    useFrame((state) => {
+        if (state.clock.elapsedTime - lastEnemyTime.current > 10) {
+            addEnemy(enemySetters[Math.round(Math.random() * (enemySetters.length - 1))])
+            lastEnemyTime.current = state.clock.elapsedTime
+        }
+    })
     
     return <>
         {enemies.map((enemyData) => {
@@ -144,10 +150,12 @@ export default function Level({playAreaSize, spaceshipRb}) {
             return (
                 <SnakeEnemy
                     key={snakeData.id}
+                    id={snakeData.id}
                     position={snakeData.position}
                     spaceshipRb={spaceshipRb}
                     segments={15}
                     playAreaSize={playAreaSize}
+                    removeSelf={removeSnakeEnemy}
                 />
             )
         })}
