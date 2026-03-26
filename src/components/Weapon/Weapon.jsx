@@ -47,7 +47,7 @@ export default function Weapon({ship}) {
                         ship.current.rotation().w
                     )
 
-                    const offset = new Vector3(0, 0, -2)
+                    const offset = new Vector3(0, 0, -3)
                     offset.applyQuaternion(q)
                     position.add(offset)
 

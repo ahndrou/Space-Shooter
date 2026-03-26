@@ -9,7 +9,7 @@ import { Perf } from "r3f-perf";
 import { Vector3 } from "three";
 import { useRef } from "react";
 
-const PLAY_AREA_SIZE = 75
+const PLAY_AREA_SIZE = 175
 
 export default function Experience() {
     const spaceshipRb = useRef()

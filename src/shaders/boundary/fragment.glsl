@@ -1,9 +1,9 @@
 precision mediump float;
 
-uniform vec3 cameraPos;
-
 varying vec2 vUv;
 varying vec3 vPos;
+
+uniform vec2 uCollisionPoints;
 
 // This hexagonal grid shader is adapted from the following:
 // "ShaderToy Tutorial - Hexagonal Tiling" 
@@ -44,22 +44,30 @@ void main() {
     vec3 col = vec3(0.);
 
     // Factor here controls the scale of the grid.
-    vec2 uv = 2.0 * (vUv - 0.5) * 20.0;
+    vec2 uv = 2.0 * (vUv - 0.5) * 40.0;
+    vec2 collisionUv = 2.0 * (uCollisionPoints - 0.5) * 40.0;
 
     vec4 hc = HexCoords(uv);
 
     // r controls the thickness of the hexagon borders.
-    float r = 0.11;
+    float r = 0.06;
     float c = smoothstep(r, r + 0.01, hc.y);
     
     col += c;
 
     // b controls the fade-out distance at the edge of the grid.
-    float b = 0.15;
+    float b = 0.45;
     vec2 strengthV = abs(2.0 * (vUv - 0.5));
     strengthV = smoothstep(0.99, 0.99 - b, strengthV);
 
-    float strength = 0.1 * min(strengthV.x, strengthV.y);
+    // getting the grid coordinates of collision point.
+    vec4 collisionGC = HexCoords(collisionUv);
 
-    gl_FragColor = vec4(col, strength);
+    // Direct float comparison is not a good idea in shaders apparently.
+    // Step adds some margin for error.
+    float sameCell = step(length(hc.zw - collisionGC.zw), 0.001);
+
+    float strength = 0.05 * min(strengthV.x, strengthV.y);
+
+    gl_FragColor = vec4(col, strength + sameCell * 0.6);
 }

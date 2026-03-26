@@ -1,5 +1,5 @@
 import { RigidBody } from "@react-three/rapier";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Quaternion, Vector2, Vector3 } from "three";
 import vertexShader from "../../shaders/bullet/vertex.glsl"
 import fragmentShader from "../../shaders/bullet/fragment.glsl"
@@ -7,14 +7,16 @@ import { useGLTF } from "@react-three/drei";
 
 useGLTF.preload("/bullet.glb")
 
-export default function Bullet({position, rotation}) {
-    const SPEED = 140
+export default React.memo(Bullet)
+
+export function Bullet({position, rotation}) {
+    const INITIAL_SPEED = 120
     const rb = useRef();
 
     const {meshes : { Cylinder : { geometry } }} = useGLTF("/bullet.glb")
 
     useEffect(() => {
-        const velocity = new Vector3(0, 0, -SPEED)
+        const velocity = new Vector3(0, 0, -INITIAL_SPEED)
         const q = new Quaternion().setFromEuler(rotation)
         velocity.applyQuaternion(q)
         rb.current.setLinvel(velocity)
@@ -27,7 +29,7 @@ export default function Bullet({position, rotation}) {
     return (
         <RigidBody 
             ref={rb}
-            type="kinematicVelocity"
+            type="dynamic"
             position={position}
             rotation={rotation}
             userData={{type: 'bullet'}}
