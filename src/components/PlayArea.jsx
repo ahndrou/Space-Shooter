@@ -63,16 +63,14 @@ function BoundaryWall({orientation, size}) {
         >
             <mesh renderOrder={-1}>
                 <boxGeometry args={dimensions} />
-                <meshBasicMaterial transparent opacity={0.2}/>
-                {/* <rawShaderMaterial
+                <rawShaderMaterial
                     vertexShader={vertexShader} 
                     fragmentShader={fragmentShader} 
                     transparent
-                    side={DoubleSide}
                     uniforms={{
                         cameraPos: {value: camera.position}
                     }}
-                /> */}
+                />
             </mesh>
         </RigidBody>
     )
