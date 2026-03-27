@@ -8,9 +8,9 @@ import ExplodingEnemy from "./ExplodingEnemy/ExplodingEnemy";
 import { useFrame } from "@react-three/fiber";
 
 const ENEMY_SIZE = 4
-const SNAKE_COUNT = 3
-const EXPLODING_ENEMY_COUNT = 20
-const BASIC_ENEMY_COUNT = 40
+const SNAKE_COUNT = 10
+const EXPLODING_ENEMY_COUNT = 40
+const BASIC_ENEMY_COUNT = 100
 
 function createEnemyPosition(playAreaSize, enemySize) {
     let x = (Math.random() - 0.5) * (playAreaSize - enemySize / 2)

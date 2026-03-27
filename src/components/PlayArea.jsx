@@ -16,6 +16,9 @@ const WALL_ORIENTATIONS = new Map(Object.entries({
 
 const THICKNESS = 2
 
+// Make sure this is the same in the fragment shader file.
+const MAX_COLLISIONS = 10
+
 export default function PlayArea({size}) {
 
     return [...WALL_ORIENTATIONS].map(([, orientation]) => (
@@ -30,8 +33,9 @@ export default function PlayArea({size}) {
 function BoundaryWall({orientation, size}) {
     const meshRef = useRef()
     const customUniformsRef = useRef({
-        uCollisionPoints: {value: new Vector2()}
+        uCollisionPoints: {value: Array.from({length: MAX_COLLISIONS}, () => new Vector3())}
     })
+    const collisionIndex = useRef(0)
 
     let dimensions, position, rotation
     dimensions = [size - THICKNESS, size - THICKNESS, THICKNESS]
@@ -72,7 +76,9 @@ function BoundaryWall({orientation, size}) {
         collisionPoint = meshRef.current.worldToLocal(collosionPointVec) // Local space
         collisionPoint.divideScalar(size/2).addScalar(1).divideScalar(2) // Range 0 <> 1.
 
-        customUniformsRef.current.uCollisionPoints.value.set(collisionPoint.x, collisionPoint.y)
+        customUniformsRef.current.uCollisionPoints.value[collisionIndex.current].set(collisionPoint.x, collisionPoint.y)
+        collisionIndex.current = (collisionIndex.current + 1) % MAX_COLLISIONS
+        console.log(collisionIndex.current)
     }
 
     return (

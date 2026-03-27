@@ -3,7 +3,7 @@ import { useRef } from "react"
 import { Quaternion, Vector3 } from "three"
 
 const WANDER_RANGE_MAGNITUDE = 0.19
-const MAX_FORCE = 1
+const MAX_FORCE = 2
 
 export default function useWanderSteering( headRef, wanderRadius, wanderOffset ) {
     const targetCenterRef = useRef(new Vector3())
