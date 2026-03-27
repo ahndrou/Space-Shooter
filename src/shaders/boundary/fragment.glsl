@@ -6,6 +6,7 @@ varying vec2 vUv;
 varying vec3 vPos;
 
 uniform vec2 uCollisionPoints[MAX_COLLISIONS];
+uniform float uCollisionTimers[MAX_COLLISIONS];
 
 // This hexagonal grid shader is adapted from the following:
 // "ShaderToy Tutorial - Hexagonal Tiling" 
@@ -61,7 +62,12 @@ void main() {
     vec2 strengthV = abs(2.0 * (vUv - 0.5));
     strengthV = smoothstep(0.99, 0.99 - b, strengthV);
 
-    float sameCell;
+    float baseStr = 0.05 * min(strengthV.x, strengthV.y);
+
+
+    // Hit cells should have a fading boost to opacity.
+    //////////////////////////////////////////////////
+    float collisionStr;
     // getting the grid coordinates of collision point.
     for (int i = 0; i < MAX_COLLISIONS; i += 1) {
         vec2 collisionUv = 2.0 * (uCollisionPoints[i] - 0.5) * 40.0;
@@ -69,11 +75,13 @@ void main() {
 
         // Direct float comparison is not a good idea in shaders apparently.
         // Step adds some margin for error.
-        sameCell = max(sameCell, step(length(hc.zw - collisionGC.zw), 0.001));
+        float sameCell = step(length(hc.zw - collisionGC.zw), 0.00001);
+        
+        if (abs(1.0 -  sameCell) < 0.00001) {
+            collisionStr = clamp((1.0 - uCollisionTimers[i]), 0.0, 1.0);
+            break;
+        }
     }
-    
 
-    float strength = 0.05 * min(strengthV.x, strengthV.y);
-
-    gl_FragColor = vec4(col, strength + sameCell * 0.6);
+    gl_FragColor = vec4(col, baseStr + collisionStr * 0.6);
 }

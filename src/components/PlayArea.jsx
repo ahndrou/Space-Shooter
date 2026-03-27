@@ -4,6 +4,7 @@ import fragmentShader from "../shaders/boundary/fragment.glsl"
 import { interactionGroups, RigidBody } from "@react-three/rapier";
 import { COLLISION_GROUPS } from "../constants";
 import { useRef } from "react";
+import { useFrame } from "@react-three/fiber";
 
 const WALL_ORIENTATIONS = new Map(Object.entries({
     TOP: 1,
@@ -33,9 +34,31 @@ export default function PlayArea({size}) {
 function BoundaryWall({orientation, size}) {
     const meshRef = useRef()
     const customUniformsRef = useRef({
-        uCollisionPoints: {value: Array.from({length: MAX_COLLISIONS}, () => new Vector3())}
+        uCollisionPoints: {value: Array.from({length: MAX_COLLISIONS}, () => new Vector2(-1, -1))},
+        uCollisionTimers: {value: Array.from({length: MAX_COLLISIONS}, () => 0)}
     })
     const collisionIndex = useRef(0)
+    const activeTimers = useRef([])
+    const timersToRemove = useRef([])
+
+    useFrame((state, delta) => {
+
+        for (let index of activeTimers.current) {
+            if (customUniformsRef.current.uCollisionTimers.value[index] > 1) {
+                customUniformsRef.current.uCollisionTimers.value[index] = 0
+                customUniformsRef.current.uCollisionPoints.value[index].set(-1, -1)
+                timersToRemove.current.push(index)
+            } else {
+                customUniformsRef.current.uCollisionTimers.value[index] += delta
+            }
+        }
+
+        for (let remove of timersToRemove.current) {
+            activeTimers.current = activeTimers.current.filter(active => active !== remove)
+        }
+
+        timersToRemove.current.length = 0
+    })
 
     let dimensions, position, rotation
     dimensions = [size - THICKNESS, size - THICKNESS, THICKNESS]
@@ -70,6 +93,7 @@ function BoundaryWall({orientation, size}) {
         rotation = [-Math.PI / 2, 0, 0]
     }
 
+
     function handleCollision(collision) {
         let collisionPoint = collision.manifold.solverContactPoint(0) // World space
         let collosionPointVec = new Vector3(collisionPoint.x, collisionPoint.y, collisionPoint.z)
@@ -77,8 +101,9 @@ function BoundaryWall({orientation, size}) {
         collisionPoint.divideScalar(size/2).addScalar(1).divideScalar(2) // Range 0 <> 1.
 
         customUniformsRef.current.uCollisionPoints.value[collisionIndex.current].set(collisionPoint.x, collisionPoint.y)
+        activeTimers.current.push(collisionIndex.current)
+        
         collisionIndex.current = (collisionIndex.current + 1) % MAX_COLLISIONS
-        console.log(collisionIndex.current)
     }
 
     return (
