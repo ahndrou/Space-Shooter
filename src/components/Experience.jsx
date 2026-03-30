@@ -6,7 +6,6 @@ import { KeyboardControls } from "@react-three/drei";
 import PlayArea from "./PlayArea";
 import Skybox from "./Skybox";
 import { Perf } from "r3f-perf";
-import { Vector3 } from "three";
 import { useRef } from "react";
 
 const PLAY_AREA_SIZE = 175

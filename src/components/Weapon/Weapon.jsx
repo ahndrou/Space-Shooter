@@ -4,7 +4,7 @@ import { Euler, Quaternion, Vector3 } from "three"
 import { generateUUID } from "three/src/math/MathUtils.js"
 import Bullet from "./Bullet"
 
-const BULLET_LIFETIME = 6000
+const BULLET_LIFETIME = 5000
 
 export default function Weapon({ship}) {
     const [bullets, setBullets] = useState([])
@@ -47,7 +47,7 @@ export default function Weapon({ship}) {
                         ship.current.rotation().w
                     )
 
-                    const offset = new Vector3(0, 0, -3)
+                    const offset = new Vector3(0, 0 , -2)
                     offset.applyQuaternion(q)
                     position.add(offset)
 

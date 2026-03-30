@@ -1,6 +1,6 @@
 import { useGLTF, useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { CapsuleCollider, RigidBody } from "@react-three/rapier";
+import { CapsuleCollider, CuboidCollider, RigidBody } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
 import Weapon from "./Weapon/Weapon";
@@ -16,7 +16,7 @@ export default function Spaceship({ rigidBodyRef, playAreaSize}) {
     
     const pointerActive = useRef(true)
 
-    const gltf = useGLTF("./space_shooter_player.glb")
+    const gltf = useGLTF("./player_spaceship.glb")
 
     const centralSteering = useCentralSteering(rigidBodyRef, playAreaSize, 0.86, 2)
 
@@ -97,28 +97,46 @@ export default function Spaceship({ rigidBodyRef, playAreaSize}) {
             canSleep={false}
             userData={{type: 'player'}}
         >
-            <CapsuleCollider args={[0.01, 1.5]} rotation={[0, 0, 0]}/>
+            <CuboidCollider args={[1.9, 0.3, 1.5]} />
             <group 
                 rotation={[0, Math.PI / 2, 0]}
-                scale={0.5}
+                scale={0.4}
             >
                 <mesh 
-                    geometry={gltf.meshes["Cube001"].geometry}
+                    geometry={gltf.meshes["Base"].geometry}
                 >
                     <meshBasicMaterial 
-                        color={"olive"} 
+                        color={"green"} 
                         transparent 
                         opacity={0.6} 
                     />
                 </mesh>
+
                 <mesh 
-                    geometry={gltf.meshes["Cube001_1"].geometry}
+                    geometry={gltf.meshes["Wireframe"].geometry}
                 >
                     <meshBasicMaterial 
-                        color={"green"} 
+                        color={"white"} 
+                    />
+                </mesh>
+
+                <mesh 
+                    geometry={gltf.meshes["Thruster_L"].geometry}
+                >
+                    <meshBasicMaterial 
+                        color={"orange"} 
+                    />
+                </mesh>
+
+                <mesh 
+                    geometry={gltf.meshes["Thruster_R"].geometry}
+                >
+                    <meshBasicMaterial 
+                        color={"orange"} 
                     />
                 </mesh>
             </group>
+
         </RigidBody>
     </>
 }

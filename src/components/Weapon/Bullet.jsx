@@ -1,19 +1,13 @@
 import { RigidBody } from "@react-three/rapier";
 import React, { useEffect, useRef } from "react";
-import { Quaternion, Vector2, Vector3 } from "three";
-import vertexShader from "../../shaders/bullet/vertex.glsl"
-import fragmentShader from "../../shaders/bullet/fragment.glsl"
-import { useGLTF } from "@react-three/drei";
-
-useGLTF.preload("/bullet.glb")
+import { Quaternion, Vector3 } from "three";
+import { Trail } from "@react-three/drei";
 
 export default React.memo(Bullet)
 
 export function Bullet({position, rotation}) {
     const INITIAL_SPEED = 120
     const rb = useRef();
-
-    const {meshes : { Cylinder : { geometry } }} = useGLTF("/bullet.glb")
 
     useEffect(() => {
         const velocity = new Vector3(0, 0, -INITIAL_SPEED)
@@ -23,29 +17,29 @@ export function Bullet({position, rotation}) {
 
     }, [rotation])
 
-    geometry.computeBoundingBox()
-    const zBounds = new Vector2(geometry.boundingBox.min.z, geometry.boundingBox.max.z)
 
     return (
-        <RigidBody 
-            ref={rb}
-            type="dynamic"
-            position={position}
-            rotation={rotation}
-            userData={{type: 'bullet'}}
-        >
-            <mesh geometry={geometry} scale={4.5}>
-                <rawShaderMaterial
-                    vertexShader={vertexShader} 
-                    fragmentShader={fragmentShader} 
-                    transparent
-                    uniforms={{
-                        uTipColour : { value : new Vector3(1, 0.84, 0.2) },
-                        uTailColour : { value : new Vector3(0.91, 0.37, 0.29) },
-                        uZBounds : { value : zBounds }
-                    }}
-                />
-            </mesh>
-        </RigidBody>
+        // Trail ends seem to flicker a lot when used with Rapier Rigid Bodies.
+        // I tried everything I could think of, but the only solution that seems to work is to
+        // hide the flickering by hiding the ends of the trail with attenuation.
+        <Trail
+            color='orange'
+            width={3}
+            length={8}
+            attenuation={t => t < 0.02 || t > 0.98 ? 0 : t}
+        >    
+            <RigidBody 
+                ref={rb}
+                type="dynamic"
+                position={position}
+                rotation={rotation}
+                userData={{type: 'bullet'}}
+            >
+                <mesh>
+                    <sphereGeometry args={[0.15]} />
+                    <meshBasicMaterial color='orange' />
+                </mesh>
+            </RigidBody>
+        </Trail>
     )
 }
