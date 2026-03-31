@@ -10,43 +10,72 @@ const BULLET_LIFETIME = 5000
 
 export default function Weapon({ship}) {
     const [bullets, setBullets] = useState([])
-    const [subscribe] = useKeyboardControls()
-    const getCrosshairIntersection = useCrosshairIntersection()
+
+    useWeaponControls(ship, setBullets)
 
     useEffect(() => {
         function updateBullets() {
-            const filteredBullets = bullets.filter((bulletData) => {
-                if (Date.now() - bulletData.creationTime < BULLET_LIFETIME) {
-                    return true
-                } else {
-                    return false
-                }
-            })
-            setBullets(filteredBullets)
+            setBullets(bullets => bullets.filter(bulletData => (Date.now() - bulletData.creationTime) < BULLET_LIFETIME))
         }
 
         const interval = setInterval(updateBullets, 1000)
 
         return () => clearInterval(interval)
-    }, [bullets])
+    }, [])
+
+    return bullets.map(bulletData => (
+        <Bullet 
+            key={bulletData.id}
+            position={bulletData.initialPosition}
+            rotation={bulletData.rotation}
+            direction={bulletData.direction}    
+        />
+    ))
+}
+
+
+function useCrosshairIntersection() {
+    const {scene, camera} = useThree()
+
+    const raycasterRef = useRef(new THREE.Raycaster())
+
+    const getCrosshairIntersection = useCallback(() => {
+        raycasterRef.current.setFromCamera(new THREE.Vector2(0, 0), camera)
+        const intersections = raycasterRef.current.intersectObjects(scene.children)
+
+        if (intersections.length > 0) {
+            return intersections[0].point
+        } else {
+            console.log(raycasterRef.current.ray)
+            return raycasterRef.current.ray.direction.clone().normalize().multiplyScalar(100000)
+        }
+    }, [scene, camera])
+
+    return getCrosshairIntersection
+}
+
+
+function useWeaponControls(shipRef, setBullets) {
+    const [subscribe] = useKeyboardControls()
+    const getCrosshairIntersection = useCrosshairIntersection()
 
     useEffect(() => {
         return subscribe(
             (keysState) => keysState.space,
             (spacePressed) => 
             {
-                if (spacePressed && ship.current) {
+                if (spacePressed && shipRef.current) {
                     const initialPosition = new Vector3(
-                        ship.current.translation().x,
-                        ship.current.translation().y,
-                        ship.current.translation().z
+                        shipRef.current.translation().x,
+                        shipRef.current.translation().y,
+                        shipRef.current.translation().z
                     )
 
                     const shipOrientation = new Quaternion(
-                        ship.current.rotation().x,
-                        ship.current.rotation().y,
-                        ship.current.rotation().z,
-                        ship.current.rotation().w
+                        shipRef.current.rotation().x,
+                        shipRef.current.rotation().y,
+                        shipRef.current.rotation().z,
+                        shipRef.current.rotation().w
                     )
 
                     const offset = new Vector3(0, 0, -2)
@@ -67,37 +96,8 @@ export default function Weapon({ship}) {
                             direction: direction
 
                         }
-                    setBullets([...bullets, newBullet])
+                    setBullets(bullets => [...bullets, newBullet])
                 }
             })
-    }, [subscribe, bullets, ship, getCrosshairIntersection])
-
-    return bullets.map(bulletData => (
-        <Bullet 
-            key={bulletData.id}
-            position={bulletData.initialPosition}
-            rotation={bulletData.rotation}
-            direction={bulletData.direction}    
-        />
-    ))
-}
-
-function useCrosshairIntersection() {
-    const {scene, camera} = useThree()
-
-    const raycasterRef = useRef(new THREE.Raycaster())
-
-    const getCrosshairIntersection = useCallback(() => {
-        raycasterRef.current.setFromCamera(new THREE.Vector2(0, 0), camera)
-        const intersections = raycasterRef.current.intersectObjects(scene.children)
-
-        if (intersections.length > 0) {
-            return intersections[0].point
-        } else {
-            console.log(raycasterRef.current.ray)
-            return raycasterRef.current.ray.direction.clone().normalize().multiplyScalar(100000)
-        }
-    }, [scene, camera])
-
-    return getCrosshairIntersection
+    }, [subscribe, shipRef, getCrosshairIntersection, setBullets])
 }
