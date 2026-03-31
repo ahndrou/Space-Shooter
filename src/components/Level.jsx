@@ -139,6 +139,10 @@ export default function Level({playAreaSize, spaceshipRb}) {
         setSnakes((enemies) => enemies.filter((enemy) => enemy.id !== enemyId))
     }, [setSnakes])
 
+    const removeCollectable = useCallback((enemyId) => {
+        setCollectables((enemies) => enemies.filter((enemy) => enemy.id !== enemyId))
+    }, [setCollectables])
+
     const addEnemy = (setEnemiesFunction) => {
         const position = findSpawnPosition()
         const newEnemy = {id: generateUUID(), position}
@@ -203,6 +207,7 @@ export default function Level({playAreaSize, spaceshipRb}) {
                     rotation={enemyData.rotation}
                     playAreaSize={playAreaSize}
                     size={ENEMY_SIZE}
+                    removeCollectable={removeCollectable}
                 />
             )
         })}
