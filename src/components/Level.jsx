@@ -6,11 +6,13 @@ import { useRapier } from "@react-three/rapier";
 import SnakeEnemy from "./SnakeEnemy";
 import ExplodingEnemy from "./ExplodingEnemy/ExplodingEnemy";
 import { useFrame } from "@react-three/fiber";
+import Collectable from "./Collectable";
 
 const ENEMY_SIZE = 4
 const SNAKE_COUNT = 10
 const EXPLODING_ENEMY_COUNT = 40
 const BASIC_ENEMY_COUNT = 100
+const COLLECTABLES_COUNT = 10
 
 function createEnemyPosition(playAreaSize, enemySize) {
     let x = (Math.random() - 0.5) * (playAreaSize - enemySize / 2)
@@ -20,7 +22,18 @@ function createEnemyPosition(playAreaSize, enemySize) {
     return new Vector3(x, y, z)
 }
 
+function createRandomRotation() {
+    return (
+    [
+        Math.random() * 2 * Math.PI,
+        Math.random() * 2 * Math.PI,
+        Math.random() * 2 * Math.PI,
+    ])
+}
+
 // Creates a set of initial positions which do not cause intersection of enemies.
+// TODO Check they don't collide with other enemy type positions, too.
+// Cannot use physics world for collisions yet, so much use initial state.
 function createInitialPositions(playAreaSize, enemySize, enemyCount) {
     const enemyPositions = []
 
@@ -56,7 +69,14 @@ function createInitialPositions(playAreaSize, enemySize, enemyCount) {
 
 function createInitialEnemyState(playAreaSize, enemySize, enemyCount) {
     const positions = createInitialPositions(playAreaSize, enemySize, enemyCount)
-    return positions.map((position) => {return {id: generateUUID(), position}})
+
+    return positions.map((position) => {
+        return {
+            id: generateUUID(), 
+            position, 
+            rotation: createRandomRotation()
+        }}
+    )
 }
 
 
@@ -107,6 +127,7 @@ export default function Level({playAreaSize, spaceshipRb}) {
     const [enemies, setEnemies] = useState(() => createInitialEnemyState(playAreaSize, ENEMY_SIZE, BASIC_ENEMY_COUNT))
     const [snakes, setSnakes] = useState(() => createInitialEnemyState(playAreaSize, 0, SNAKE_COUNT))
     const [explodingEnemies, setExplodingEnemies] = useState(() => createInitialEnemyState(playAreaSize, 0, EXPLODING_ENEMY_COUNT))
+    const [collectables, setCollectables] = useState(() => createInitialEnemyState(playAreaSize, 0, COLLECTABLES_COUNT))
 
     const findSpawnPosition = useSpawnEnemy(ENEMY_SIZE, playAreaSize)
 
@@ -166,7 +187,21 @@ export default function Level({playAreaSize, spaceshipRb}) {
                     key={enemyData.id}
                     id={enemyData.id}
                     position={enemyData.position}
+                    rotation={enemyData.rotation}
                     removeEnemy={removeExplodingEnemy}
+                    size={ENEMY_SIZE}
+                />
+            )
+        })}
+
+        {collectables.map((enemyData) => {
+            return (
+                <Collectable 
+                    key={enemyData.id}
+                    id={enemyData.id}
+                    position={enemyData.position}
+                    rotation={enemyData.rotation}
+                    playAreaSize={playAreaSize}
                     size={ENEMY_SIZE}
                 />
             )

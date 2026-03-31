@@ -21,7 +21,7 @@ export default function AnimatedMesh({isHit, size, color="purple", triggerExplos
                 geometry={gltf.meshes.Wireframe.geometry}
             >
                 <AnimatedMaterial 
-                    color={[0.4, 0.4, 0.4]} 
+                    color={[1, 1, 1]} 
                     animationActive={isHit}
                     triggerExplosion={triggerExplosion}
                 />

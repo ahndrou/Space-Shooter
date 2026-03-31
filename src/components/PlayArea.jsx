@@ -54,6 +54,8 @@ function BoundaryWall({orientation, size}) {
         }
 
         for (let remove of timersToRemove.current) {
+            // TODO: Refactor this filter. It generates a new array every few frames.
+            // Use an array of booleans instead?
             activeTimers.current = activeTimers.current.filter(active => active !== remove)
         }
 

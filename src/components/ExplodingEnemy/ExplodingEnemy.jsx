@@ -10,7 +10,7 @@ const MAX_TORQUE = 35
 
 export default React.memo(ExplodingEnemy)
 
-export function ExplodingEnemy( {position, removeEnemy, id, size} ) {
+export function ExplodingEnemy( {position, rotation, removeEnemy, id, size} ) {
     const [explosionPos, setExplosionPos] = useState(null)
     const explosionActive = explosionPos !== null
     
@@ -18,7 +18,7 @@ export function ExplodingEnemy( {position, removeEnemy, id, size} ) {
 
     return <>
         { !explosionActive && 
-            <ExplodingEnemyRigidBody position={position} size={size} setExplosionPos={setExplosionPos}/>
+            <ExplodingEnemyRigidBody position={position} rotation={rotation} size={size} setExplosionPos={setExplosionPos}/>
         }
 
         { explosionActive && (
@@ -27,7 +27,7 @@ export function ExplodingEnemy( {position, removeEnemy, id, size} ) {
     </> 
 }
 
-function ExplodingEnemyRigidBody ({ position, size, setExplosionPos }) {
+function ExplodingEnemyRigidBody ({ position, rotation, size, setExplosionPos }) {
     const rbRef = useRef()
     const [isHit, setIsHit] = useState(false)
 
@@ -45,6 +45,7 @@ function ExplodingEnemyRigidBody ({ position, size, setExplosionPos }) {
         <RigidBody 
                 colliders={false} 
                 position={position}
+                rotation={rotation}
                 canSleep={false}
                 ref={rbRef}
                 angularDamping={0.4}

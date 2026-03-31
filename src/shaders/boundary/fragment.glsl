@@ -83,5 +83,7 @@ void main() {
         }
     }
 
-    gl_FragColor = vec4(col, baseStr + collisionStr * 0.6);
+    gl_FragColor = vec4(col * 0.5, baseStr + collisionStr * 0.6);
+
+    
 }
