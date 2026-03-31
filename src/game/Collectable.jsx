@@ -1,10 +1,11 @@
 import { useGLTF } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
-import useCentralSteering from "../hooks/useCentralSteering";
+import useCentralSteering from "./hooks/useCentralSteering";
 import { useRef, useState } from "react";
-import useRandomTorque from "../hooks/useRandomTorque";
+import useRandomTorque from "./hooks/useRandomTorque";
 import Explosion from "./ExplodingEnemy/Explosion";
 import { Vector3 } from "three";
+import { useScoreStore } from "../stores/useScoreStore";
 
 export default function Collectable({position, rotation, removeCollectable, id, size, playAreaSize}) {
     const [explosionPos, setExplosionPos] = useState(null)
@@ -37,6 +38,8 @@ function CollectableRigidBody({position, rotation, size, setExplosionPos, playAr
     useCentralSteering(rbRef, playAreaSize, 0.9, 20)
     useRandomTorque(10, 20, rbRef)
 
+    const incrementScore = useScoreStore(state => state.increment)
+
     const triggerExplosion = () => {
         setExplosionPos(new Vector3(
             rbRef.current.translation().x,
@@ -49,6 +52,8 @@ function CollectableRigidBody({position, rotation, size, setExplosionPos, playAr
         if (collisionPayload.other.rigidBody?.userData?.type === 'player'
             || collisionPayload.other.rigidBody?.userData?.type === 'bullet'
         ) {
+            console.log("trigger")
+            incrementScore(2)
             triggerExplosion()
         }
     }

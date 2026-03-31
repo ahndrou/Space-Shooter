@@ -7,3 +7,13 @@ body,
   padding: 0;
   overflow: hidden;
 }
+
+.scoreCounter {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0;
+  margin: 0;
+  font-size: 4rem;
+  color: azure;
+}

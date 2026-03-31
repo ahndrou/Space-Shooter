@@ -4,7 +4,7 @@ import { CapsuleCollider, CuboidCollider, RigidBody } from "@react-three/rapier"
 import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
 import Weapon from "./Weapon/Weapon";
-import useCentralSteering from "../hooks/useCentralSteering";
+import useCentralSteering from "./hooks/useCentralSteering";
 
 export default function Spaceship({ rigidBodyRef, playAreaSize}) {
     const MAX_ANGULAR_FORCE = 0.25

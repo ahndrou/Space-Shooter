@@ -1,7 +1,7 @@
 import { BallCollider, RigidBody } from "@react-three/rapier";
 import AnimatedMesh from "./AnimatedMesh";
 import React, { useRef, useState } from "react";
-import useRandomTorque from "../../hooks/useRandomTorque";
+import useRandomTorque from "../hooks/useRandomTorque";
 import Explosion from "./Explosion";
 import { Vector3 } from "three";
 

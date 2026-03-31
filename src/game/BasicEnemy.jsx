@@ -1,7 +1,7 @@
 import { BallCollider, RigidBody } from "@react-three/rapier";
 import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
-import useRandomTorque from "../hooks/useRandomTorque";
+import useRandomTorque from "./hooks/useRandomTorque";
 
 const MIN_TORQUE = 7
 const MAX_TORQUE = 12

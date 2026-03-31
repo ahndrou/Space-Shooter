@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
-import vertexShader from "../../shaders/explosion/vertex.glsl"
-import fragmentShader from "../../shaders/explosion/fragment.glsl"
+import vertexShader from "../shaders/explosion/vertex.glsl"
+import fragmentShader from "../shaders/explosion/fragment.glsl"
 import { AdditiveBlending, Spherical, Vector2, Vector3 } from "three"
 import { useFrame } from "@react-three/fiber"
 import { useRapier } from "@react-three/rapier"

@@ -7,6 +7,7 @@ import SnakeEnemy from "./SnakeEnemy";
 import ExplodingEnemy from "./ExplodingEnemy/ExplodingEnemy";
 import { useFrame } from "@react-three/fiber";
 import Collectable from "./Collectable";
+import { useScoreStore } from "../stores/useScoreStore";
 
 const ENEMY_SIZE = 4
 const SNAKE_COUNT = 10
@@ -129,6 +130,8 @@ export default function Level({playAreaSize, spaceshipRb}) {
     const [explodingEnemies, setExplodingEnemies] = useState(() => createInitialEnemyState(playAreaSize, 0, EXPLODING_ENEMY_COUNT))
     const [collectables, setCollectables] = useState(() => createInitialEnemyState(playAreaSize, 0, COLLECTABLES_COUNT))
 
+    const incrementScore = useScoreStore(state => state.increment)
+
     const findSpawnPosition = useSpawnEnemy(ENEMY_SIZE, playAreaSize)
 
     const removeExplodingEnemy = useCallback((enemyId) => {
@@ -137,7 +140,8 @@ export default function Level({playAreaSize, spaceshipRb}) {
 
     const removeSnakeEnemy = useCallback((enemyId) => {
         setSnakes((enemies) => enemies.filter((enemy) => enemy.id !== enemyId))
-    }, [setSnakes])
+        incrementScore(4)
+    }, [setSnakes, incrementScore])
 
     const removeCollectable = useCallback((enemyId) => {
         setCollectables((enemies) => enemies.filter((enemy) => enemy.id !== enemyId))

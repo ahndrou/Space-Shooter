@@ -1,6 +1,6 @@
 import { Vector2, Vector3 } from "three";
-import vertexShader from "../shaders/boundary/vertex.glsl"
-import fragmentShader from "../shaders/boundary/fragment.glsl"
+import vertexShader from "./shaders/boundary/vertex.glsl"
+import fragmentShader from "./shaders/boundary/fragment.glsl"
 import { interactionGroups, RigidBody } from "@react-three/rapier";
 import { COLLISION_GROUPS } from "../constants";
 import { useRef } from "react";

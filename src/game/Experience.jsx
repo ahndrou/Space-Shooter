@@ -7,6 +7,7 @@ import PlayArea from "./PlayArea";
 import Skybox from "./Skybox";
 import { Perf } from "r3f-perf";
 import { useRef } from "react";
+import Interface from "../interface/Interface";
 
 const PLAY_AREA_SIZE = 175
 
@@ -33,6 +34,7 @@ export default function Experience() {
                     <Skybox />
                 </Canvas>
             </KeyboardControls>
+            <Interface />
         </>
         
     )

@@ -1,9 +1,9 @@
 import { BallCollider, CuboidCollider, interactionGroups, RigidBody, useSphericalJoint } from "@react-three/rapier";
 import React, { useRef } from "react";
 import { Vector3 } from "three";
-import useWanderSteering from "../hooks/useWanderSteering";
+import useWanderSteering from "./hooks/useWanderSteering";
 import { useFrame } from "@react-three/fiber";
-import useCentralSteering from "../hooks/useCentralSteering";
+import useCentralSteering from "./hooks/useCentralSteering";
 import { COLLISION_GROUPS } from "../constants";
 import { useGLTF } from "@react-three/drei";
 
@@ -30,6 +30,7 @@ function SnakeHead( {ref, position, playAreaSize, debug, removeParentSnake} ) {
     const wanderSteering = useWanderSteering(ref, WANDER_RADIUS, WANDER_OFFSET)
     const centralSteering = useCentralSteering(ref, playAreaSize, 0.9)
     const gltf = useGLTF("./space_shooter_enemy_snake.glb")
+    
 
     useFrame(() => {
         ref.current.applyImpulse(wanderSteering.steeringForceRef.current.add(centralSteering.steeringForceRef.current))
@@ -37,6 +38,7 @@ function SnakeHead( {ref, position, playAreaSize, debug, removeParentSnake} ) {
 
     const handleHit = (collider) => {
         if (collider.rigidBody?.userData?.type === 'bullet') {
+            
             removeParentSnake()
         }
         
