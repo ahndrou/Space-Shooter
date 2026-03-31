@@ -5,8 +5,9 @@ import useWanderSteering from "../hooks/useWanderSteering";
 import { useFrame } from "@react-three/fiber";
 import useCentralSteering from "../hooks/useCentralSteering";
 import { COLLISION_GROUPS } from "../constants";
+import { useGLTF } from "@react-three/drei";
 
-const SEGMENT_DISTANCE = 1.5
+const SEGMENT_DISTANCE = 2
 const WANDER_RADIUS = 5
 const WANDER_OFFSET = 6
 
@@ -28,6 +29,7 @@ export function SnakeEnemy({ position, segments, playAreaSize, id, removeSelf}) 
 function SnakeHead( {ref, position, playAreaSize, debug, removeParentSnake} ) {
     const wanderSteering = useWanderSteering(ref, WANDER_RADIUS, WANDER_OFFSET)
     const centralSteering = useCentralSteering(ref, playAreaSize, 0.9)
+    const gltf = useGLTF("./space_shooter_enemy_snake.glb")
 
     useFrame(() => {
         ref.current.applyImpulse(wanderSteering.steeringForceRef.current.add(centralSteering.steeringForceRef.current))
@@ -52,10 +54,14 @@ function SnakeHead( {ref, position, playAreaSize, debug, removeParentSnake} ) {
             onCollisionEnter={handleHit}
         >
             <BallCollider args={[1.2]} />
-            <mesh>
-                <boxGeometry args={[2, 2, 2]}/>
-                <meshBasicMaterial color="red" />
-            </mesh>
+            <group scale={1}>
+                <mesh geometry={gltf.meshes["Head_Base"].geometry}>
+                    <meshBasicMaterial transparent opacity={0.4} color="blue" />
+                </mesh>
+                <mesh geometry={gltf.meshes["Head_Wireframe"].geometry}>
+                    <meshBasicMaterial color={[0.4, 0.4, 0.4]} />
+                </mesh>
+            </group>
         </RigidBody>
         
         {debug && <>
@@ -88,6 +94,7 @@ function DebugSphere({posRef, r=1, color="grey"}) {
 function BodySegment({ parentRef, index, max, position }) {
     const segment = useRef()
     const mesh = useRef()
+    const gltf = useGLTF("./space_shooter_enemy_snake.glb")
 
     useSphericalJoint(parentRef, segment, [
         [0, 0, SEGMENT_DISTANCE],
@@ -108,10 +115,15 @@ function BodySegment({ parentRef, index, max, position }) {
             colliders={false}
             collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS, COLLISION_GROUPS.INNER_OBJECTS)} 
         >
-            <mesh ref={mesh}>
-                <boxGeometry args={[1, 1, 1]}/>
-                <meshBasicMaterial color="blue" />
-            </mesh>
+            <group rotation={[0, Math.PI / 2, 0]}>
+                <mesh ref={mesh} geometry={gltf.meshes["Body_Base"].geometry}>
+                    <meshBasicMaterial transparent opacity={0.4} color="blue" />
+                </mesh>
+                <mesh ref={mesh} geometry={gltf.meshes["Body_Wireframe"].geometry}>
+                    <meshBasicMaterial color={[0.4, 0.4, 0.4]} />
+                </mesh>
+            </group>
+            
             <BallCollider args={[0.6]}/>
         </RigidBody>
 

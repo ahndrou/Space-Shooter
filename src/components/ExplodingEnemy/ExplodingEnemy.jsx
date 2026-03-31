@@ -51,7 +51,7 @@ function ExplodingEnemyRigidBody ({ position, size, setExplosionPos }) {
                 userData={{type: 'exploding enemy'}}
             >
                 <BallCollider
-                    args={[size * 0.97]}
+                    args={[size * 1.1]}
                     onCollisionEnter={() => setIsHit(true)} 
                 />
                 <AnimatedMesh isHit={isHit} size={size} triggerExplosion={triggerExplosion}/>
