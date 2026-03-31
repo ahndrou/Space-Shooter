@@ -1,15 +1,17 @@
 import { useKeyboardControls } from "@react-three/drei"
-import { useEffect, useState } from "react"
-import { Euler, Quaternion, Vector3 } from "three"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { Quaternion, Vector3 } from "three"
 import { generateUUID } from "three/src/math/MathUtils.js"
 import Bullet from "./Bullet"
+import * as THREE from 'three'
+import { useThree } from "@react-three/fiber"
 
 const BULLET_LIFETIME = 5000
 
 export default function Weapon({ship}) {
     const [bullets, setBullets] = useState([])
-
     const [subscribe] = useKeyboardControls()
+    const getCrosshairIntersection = useCrosshairIntersection()
 
     useEffect(() => {
         function updateBullets() {
@@ -34,43 +36,68 @@ export default function Weapon({ship}) {
             (spacePressed) => 
             {
                 if (spacePressed && ship.current) {
-                    const position = new Vector3(
+                    const initialPosition = new Vector3(
                         ship.current.translation().x,
                         ship.current.translation().y,
                         ship.current.translation().z
                     )
 
-                    const q = new Quaternion(
+                    const shipOrientation = new Quaternion(
                         ship.current.rotation().x,
                         ship.current.rotation().y,
                         ship.current.rotation().z,
                         ship.current.rotation().w
                     )
 
-                    const offset = new Vector3(0, 0 , -2)
-                    offset.applyQuaternion(q)
-                    position.add(offset)
+                    const offset = new Vector3(0, 0, -2)
+                    offset.applyQuaternion(shipOrientation)
 
-                    const rotation = new Euler().setFromQuaternion(q)
+                    initialPosition.add(offset)
+
+                    const crosshairPosition = getCrosshairIntersection()
+
+                    const direction = crosshairPosition.sub(initialPosition)
+                    direction.normalize()
 
                     const newBullet = 
                         {
                             id: generateUUID(),
                             creationTime: Date.now(),
-                            initialPosition: position,
-                            rotation: rotation
+                            initialPosition: initialPosition,
+                            direction: direction
 
                         }
                     setBullets([...bullets, newBullet])
                 }
             })
-    }, [subscribe, bullets, ship])
+    }, [subscribe, bullets, ship, getCrosshairIntersection])
 
     return bullets.map(bulletData => (
         <Bullet 
             key={bulletData.id}
             position={bulletData.initialPosition}
-            rotation={bulletData.rotation}    
+            rotation={bulletData.rotation}
+            direction={bulletData.direction}    
         />
     ))
+}
+
+function useCrosshairIntersection() {
+    const {scene, camera} = useThree()
+
+    const raycasterRef = useRef(new THREE.Raycaster())
+
+    const getCrosshairIntersection = useCallback(() => {
+        raycasterRef.current.setFromCamera(new THREE.Vector2(0, 0), camera)
+        const intersections = raycasterRef.current.intersectObjects(scene.children)
+
+        if (intersections.length > 0) {
+            return intersections[0].point
+        } else {
+            console.log(raycasterRef.current.ray)
+            return raycasterRef.current.ray.direction.clone().normalize().multiplyScalar(100000)
+        }
+    }, [scene, camera])
+
+    return getCrosshairIntersection
 }

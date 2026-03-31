@@ -1,21 +1,18 @@
 import { RigidBody } from "@react-three/rapier";
 import React, { useEffect, useRef } from "react";
-import { Quaternion, Vector3 } from "three";
 import { Trail } from "@react-three/drei";
+
+const INITIAL_SPEED = 120
 
 export default React.memo(Bullet)
 
-export function Bullet({position, rotation}) {
-    const INITIAL_SPEED = 120
+export function Bullet({position, direction}) {
     const rb = useRef();
 
     useEffect(() => {
-        const velocity = new Vector3(0, 0, -INITIAL_SPEED)
-        const q = new Quaternion().setFromEuler(rotation)
-        velocity.applyQuaternion(q)
+        const velocity = direction.clone().multiplyScalar(INITIAL_SPEED)
         rb.current.setLinvel(velocity)
-
-    }, [rotation])
+    }, [direction])
 
 
     return (
@@ -32,7 +29,6 @@ export function Bullet({position, rotation}) {
                 ref={rb}
                 type="dynamic"
                 position={position}
-                rotation={rotation}
                 userData={{type: 'bullet'}}
             >
                 <mesh>

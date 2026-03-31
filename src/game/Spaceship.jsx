@@ -7,7 +7,7 @@ import Weapon from "./Weapon/Weapon";
 import useCentralSteering from "./hooks/useCentralSteering";
 
 export default function Spaceship({ rigidBodyRef, playAreaSize}) {
-    const MAX_ANGULAR_FORCE = 0.25
+    const MAX_ANGULAR_FORCE = 0.15
     const MAX_LINEAR_FORCE = 0.5
     const POINTER_LOWER_BOUND = 0.3
     const LINEAR_DAMPING = 0.4

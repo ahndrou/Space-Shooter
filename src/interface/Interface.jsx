@@ -1,8 +1,12 @@
 import { useScoreStore } from "../stores/useScoreStore"
+import Crosshair from "./Crosshair"
 
 export default function Interface() {
     return (
-        <ScoreCounter />
+        <div className='interface'>
+            <Crosshair />
+            <ScoreCounter />
+        </div>
     )
 }
 
