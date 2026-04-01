@@ -10,7 +10,7 @@ import Collectable from "./Collectable";
 import { useScoreStore } from "../stores/useScoreStore";
 
 const ENEMY_SIZE = 4
-const SNAKE_COUNT = 10
+const SNAKE_COUNT = 5
 const EXPLODING_ENEMY_COUNT = 40
 const BASIC_ENEMY_COUNT = 100
 const COLLECTABLES_COUNT = 10

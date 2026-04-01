@@ -25,7 +25,7 @@ export default function Experience() {
                     {name: 'space', keys: ['Space']},
                 ]}>
                 <Canvas> 
-                    <Perf />
+                    <Perf position='bottom-right' />
                     <Physics gravity={[0, 0, 0]} timeStep={1/200}>
                         <Spaceship rigidBodyRef={spaceshipRb} playAreaSize={PLAY_AREA_SIZE}/>
                         <Level playAreaSize={PLAY_AREA_SIZE} spaceshipRb={spaceshipRb} />

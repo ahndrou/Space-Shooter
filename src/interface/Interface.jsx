@@ -1,11 +1,17 @@
 import { useScoreStore } from "../stores/useScoreStore"
 import Crosshair from "./Crosshair"
+import HealthIndicator from "./HealthIndicator"
+import Title from "./Title"
 
 export default function Interface() {
     return (
-        <div className='interface'>
+        <div className="interface">
             <Crosshair />
-            <ScoreCounter />
+            <div className='infoBar'>
+                <ScoreCounter />
+                <Title />
+                <HealthIndicator />
+            </div>
         </div>
     )
 }
