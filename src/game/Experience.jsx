@@ -8,6 +8,7 @@ import Skybox from "./Skybox";
 import { Perf } from "r3f-perf";
 import { useRef } from "react";
 import Interface from "../interface/Interface";
+import { Bloom, DepthOfField, EffectComposer, Glitch, LensFlare, Pixelation, Scanline } from "@react-three/postprocessing";
 
 const PLAY_AREA_SIZE = 175
 
@@ -32,6 +33,14 @@ export default function Experience() {
                         <PlayArea size={PLAY_AREA_SIZE} />
                     </Physics>
                     <Skybox />
+                    <EffectComposer>
+                        {/* <Pixelation granularity={3}/> */}
+                        {/* <Scanline density={1.1} /> */}
+                        <Bloom luminanceThreshold={0.4} intensity={0.8} luminanceSmoothing={0.6} />
+                        {/* <Pixelation granularity={4}/> */}
+                        {/* <DepthOfField bokehScale={3} focusDistance={0.0}/> */}
+                    
+                    </EffectComposer>
                 </Canvas>
             </KeyboardControls>
             <Interface />
