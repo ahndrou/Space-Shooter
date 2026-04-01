@@ -66,13 +66,13 @@ body,
   min-width: 0px;
   fill: rgb(0, 255, 255);
   stroke-width: 5px;
-  stroke: grey;
+  stroke: rgb(108, 126, 163);
 
   transition: fill 1s;
 }
 
 .healthIndicator .increment.increment__empty {
-  fill: rgb(0, 255, 255, 0);
+  fill: rgb(0, 255, 255, 0.2);
 }
 
 @media (width <= 1200px) {

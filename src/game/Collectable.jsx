@@ -1,5 +1,5 @@
 import { useGLTF } from "@react-three/drei";
-import { RigidBody } from "@react-three/rapier";
+import { BallCollider, RigidBody } from "@react-three/rapier";
 import useCentralSteering from "./hooks/useCentralSteering";
 import { useRef, useState } from "react";
 import useRandomTorque from "./hooks/useRandomTorque";
@@ -64,8 +64,10 @@ function CollectableRigidBody({position, rotation, size, setExplosionPos, playAr
             position={position} 
             rotation={rotation} 
             scale={size}
+            colliders={false}
             onCollisionEnter={handleCollision}
         >
+            <BallCollider args={[size * 0.15]}/>
             <mesh geometry={gltf.meshes['Base'].geometry}>
                 <meshBasicMaterial transparent opacity={0.6} color='red' />
             </mesh>

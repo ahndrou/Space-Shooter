@@ -1,4 +1,4 @@
-import { BallCollider, CuboidCollider, interactionGroups, RigidBody, useSphericalJoint } from "@react-three/rapier";
+import { BallCollider, CapsuleCollider, CuboidCollider, interactionGroups, RigidBody, useSphericalJoint } from "@react-three/rapier";
 import React, { useRef } from "react";
 import { Vector3 } from "three";
 import useWanderSteering from "./hooks/useWanderSteering";
@@ -55,7 +55,7 @@ function SnakeHead( {ref, position, playAreaSize, debug, removeParentSnake} ) {
             collisionGroups={interactionGroups(COLLISION_GROUPS.INNER_OBJECTS)}
             onCollisionEnter={handleHit}
         >
-            <BallCollider args={[1.2]} />
+            <CapsuleCollider args={[0.5, 1.5]} rotation={[Math.PI / 2, 0, 0 ]} position={[0, 0, -1]}/>
             <group scale={1}>
                 <mesh geometry={gltf.meshes["Head_Base"].geometry}>
                     <meshBasicMaterial transparent opacity={0.6} color="blue" />
@@ -126,7 +126,7 @@ function BodySegment({ parentRef, index, max, position }) {
                 </mesh>
             </group>
             
-            <BallCollider args={[0.6]}/>
+            <BallCollider args={[0.9]}/>
         </RigidBody>
 
         {(index + 1) < max && (
