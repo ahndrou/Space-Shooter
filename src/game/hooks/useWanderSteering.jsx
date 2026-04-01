@@ -5,7 +5,7 @@ import { Quaternion, Vector3 } from "three"
 const WANDER_RANGE_MAGNITUDE = 0.19
 const MAX_FORCE = 2
 
-export default function useWanderSteering( headRef, wanderRadius, wanderOffset ) {
+export default function useWanderSteering( rigidBodyRef, wanderRadius, wanderOffset ) {
     const targetCenterRef = useRef(new Vector3())
     const targetOuterRef = useRef(new Vector3())
     const wanderDisplacement = useRef(new Vector3())
@@ -16,19 +16,21 @@ export default function useWanderSteering( headRef, wanderRadius, wanderOffset )
     const steeringForceRef = useRef(new Vector3())
 
     useFrame(() => {
+        if (!rigidBodyRef.current) return
+        
         headQuaternion.current.set(
-            headRef.current.rotation().x,
-            headRef.current.rotation().y,
-            headRef.current.rotation().z,
-            headRef.current.rotation().w,
+            rigidBodyRef.current.rotation().x,
+            rigidBodyRef.current.rotation().y,
+            rigidBodyRef.current.rotation().z,
+            rigidBodyRef.current.rotation().w,
         )
 
         wanderDisplacement.current.set(0, 0, -wanderOffset).applyQuaternion(headQuaternion.current)
 
         currentPosition.current.set(
-            headRef.current.translation().x,
-            headRef.current.translation().y, 
-            headRef.current.translation().z
+            rigidBodyRef.current.translation().x,
+            rigidBodyRef.current.translation().y, 
+            rigidBodyRef.current.translation().z
         )
 
         targetCenterRef.current.copy(currentPosition.current).add(wanderDisplacement.current)

@@ -10,7 +10,7 @@ import { useHealthStore } from "../stores/useHealthStore";
 export default function Spaceship({ rigidBodyRef, playAreaSize}) {
     const MAX_ANGULAR_FORCE = 0.15
     const MAX_LINEAR_FORCE = 0.5
-    const POINTER_LOWER_BOUND = 0.3
+    const POINTER_LOWER_BOUND = 0.
     const LINEAR_DAMPING = 0.4
     const ANGULAR_DAMPING = 6
     const CAMERA_DELAY = 19
@@ -46,6 +46,8 @@ export default function Spaceship({ rigidBodyRef, playAreaSize}) {
     const linearForce = useRef(new Vector3(0, 0, 0))
 
     useFrame((state, delta) => {
+        if (!rigidBodyRef.current) return
+        
         // rigidBodyRef.current.rotation() returns a plain object, not an instance
         // of the quaternion class.
         worldSpaceRotation.current.set(

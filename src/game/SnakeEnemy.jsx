@@ -1,4 +1,4 @@
-import { BallCollider, CapsuleCollider, CuboidCollider, interactionGroups, RigidBody, useSphericalJoint } from "@react-three/rapier";
+import { BallCollider, CapsuleCollider, interactionGroups, RigidBody, useSphericalJoint } from "@react-three/rapier";
 import React, { useRef } from "react";
 import { Vector3 } from "three";
 import useWanderSteering from "./hooks/useWanderSteering";
@@ -33,15 +33,15 @@ function SnakeHead( {ref, position, playAreaSize, debug, removeParentSnake} ) {
     
 
     useFrame(() => {
+        if (!ref.current) return
+
         ref.current.applyImpulse(wanderSteering.steeringForceRef.current.add(centralSteering.steeringForceRef.current))
     })
 
     const handleHit = (collider) => {
         if (collider.rigidBody?.userData?.type === 'bullet') {
-            
             removeParentSnake()
         }
-        
     }
 
     return <>

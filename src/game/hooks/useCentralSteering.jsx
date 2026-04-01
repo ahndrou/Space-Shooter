@@ -13,6 +13,8 @@ export default function useCentralSteering(rigidBodyRef, playAreaSize, threshold
     const originDirection = useRef(new Vector3())
 
     useFrame(() => {
+        if (!rigidBodyRef.current) return;
+        
         position.current.set(
             rigidBodyRef.current.translation().x,
             rigidBodyRef.current.translation().y,

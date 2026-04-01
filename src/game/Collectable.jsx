@@ -52,7 +52,6 @@ function CollectableRigidBody({position, rotation, size, setExplosionPos, playAr
         if (collisionPayload.other.rigidBody?.userData?.type === 'player'
             || collisionPayload.other.rigidBody?.userData?.type === 'bullet'
         ) {
-            console.log("trigger")
             incrementScore(2)
             triggerExplosion()
         }
