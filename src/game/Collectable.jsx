@@ -67,10 +67,10 @@ function CollectableRigidBody({position, rotation, size, setExplosionPos, playAr
             onCollisionEnter={handleCollision}
         >
             <mesh geometry={gltf.meshes['Base'].geometry}>
-                <meshBasicMaterial transparent opacity={0.5} color='red' />
+                <meshBasicMaterial transparent opacity={0.6} color='red' />
             </mesh>
             <mesh geometry={gltf.meshes['Wireframe'].geometry}>
-                <meshBasicMaterial color='white' />
+                <meshBasicMaterial color={[1.4, 1.4, 1.4]} />
             </mesh>
         </RigidBody>
     )

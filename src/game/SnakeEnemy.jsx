@@ -58,10 +58,10 @@ function SnakeHead( {ref, position, playAreaSize, debug, removeParentSnake} ) {
             <BallCollider args={[1.2]} />
             <group scale={1}>
                 <mesh geometry={gltf.meshes["Head_Base"].geometry}>
-                    <meshBasicMaterial transparent opacity={0.4} color="blue" />
+                    <meshBasicMaterial transparent opacity={0.6} color="blue" />
                 </mesh>
                 <mesh geometry={gltf.meshes["Head_Wireframe"].geometry}>
-                    <meshBasicMaterial color={[0.4, 0.4, 0.4]} />
+                    <meshBasicMaterial color={[1.4, 1.4, 1.4]} />
                 </mesh>
             </group>
         </RigidBody>
@@ -119,10 +119,10 @@ function BodySegment({ parentRef, index, max, position }) {
         >
             <group rotation={[0, Math.PI / 2, 0]}>
                 <mesh ref={mesh} geometry={gltf.meshes["Body_Base"].geometry}>
-                    <meshBasicMaterial transparent opacity={0.4} color="blue" />
+                    <meshBasicMaterial transparent opacity={0.6} color="blue" />
                 </mesh>
                 <mesh ref={mesh} geometry={gltf.meshes["Body_Wireframe"].geometry}>
-                    <meshBasicMaterial color={[0.4, 0.4, 0.4]} />
+                    <meshBasicMaterial color={[0.8, 0.8, 0.8]} />
                 </mesh>
             </group>
             

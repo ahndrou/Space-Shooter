@@ -13,7 +13,7 @@ const ENEMY_SIZE = 4
 const SNAKE_COUNT = 5
 const EXPLODING_ENEMY_COUNT = 40
 const BASIC_ENEMY_COUNT = 100
-const COLLECTABLES_COUNT = 10
+const COLLECTABLES_COUNT = 30
 
 function createEnemyPosition(playAreaSize, enemySize) {
     let x = (Math.random() - 0.5) * (playAreaSize - enemySize / 2)
@@ -197,7 +197,7 @@ export default function Level({playAreaSize, spaceshipRb}) {
                     position={enemyData.position}
                     rotation={enemyData.rotation}
                     removeEnemy={removeExplodingEnemy}
-                    size={ENEMY_SIZE}
+                    size={ENEMY_SIZE * 0.7}
                 />
             )
         })}
@@ -210,7 +210,7 @@ export default function Level({playAreaSize, spaceshipRb}) {
                     position={enemyData.position}
                     rotation={enemyData.rotation}
                     playAreaSize={playAreaSize}
-                    size={ENEMY_SIZE}
+                    size={ENEMY_SIZE * 1.5}
                     removeCollectable={removeCollectable}
                 />
             )

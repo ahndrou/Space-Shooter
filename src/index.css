@@ -64,6 +64,15 @@ body,
 .healthIndicator .increment {
   flex-basis: 30px;
   min-width: 0px;
+  fill: rgb(0, 255, 255);
+  stroke-width: 5px;
+  stroke: grey;
+
+  transition: fill 1s;
+}
+
+.healthIndicator .increment.increment__empty {
+  fill: rgb(0, 255, 255, 0);
 }
 
 @media (width <= 1200px) {
