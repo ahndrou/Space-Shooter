@@ -6,7 +6,6 @@ import { Quaternion, Vector3 } from "three";
 import Weapon from "./Weapon/Weapon";
 import useCentralSteering from "./hooks/useCentralSteering";
 import { useHealthStore } from "../stores/useHealthStore";
-import { useGameStateStore } from "../stores/useGameStateStore";
 
 export default function Spaceship({ rigidBodyRef, playAreaSize}) {
     const MAX_ANGULAR_FORCE = 0.15
@@ -21,9 +20,6 @@ export default function Spaceship({ rigidBodyRef, playAreaSize}) {
     const gltf = useGLTF("./player_spaceship.glb")
 
     const decrementHealth = useHealthStore(state => state.decrement)
-    const health = useHealthStore(state => state.health)
-    const resetHealth = useHealthStore(state => state.reset)
-    const restartGame = useGameStateStore(state => state.newGame)
 
     const centralSteering = useCentralSteering(rigidBodyRef, playAreaSize, 0.86, 2)
 
@@ -95,15 +91,6 @@ export default function Spaceship({ rigidBodyRef, playAreaSize}) {
 
     })
 
-    function handleCollision() {
-        decrementHealth()
-
-        if (health === 1) {
-            restartGame()
-            resetHealth()
-        }
-    }
-
     return <>
         <Weapon ship={rigidBodyRef} />
         <RigidBody 
@@ -114,7 +101,7 @@ export default function Spaceship({ rigidBodyRef, playAreaSize}) {
             angularDamping={ANGULAR_DAMPING}
             canSleep={false}
             userData={{type: 'player'}}
-            onCollisionEnter={handleCollision}
+            onCollisionEnter={decrementHealth}
         >
             <CuboidCollider args={[1.9, 0.3, 1.5]} />
             <group 

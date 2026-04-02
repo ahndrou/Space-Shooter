@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 export const useHealthStore = create((set) => ({
-    health: 5,
+    health: 0,
     decrement: () => {
         set((state) => ({health: state.health - 1}))
     },

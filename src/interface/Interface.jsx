@@ -1,17 +1,22 @@
+import { useHealthStore } from "../stores/useHealthStore"
 import { useScoreStore } from "../stores/useScoreStore"
 import Crosshair from "./Crosshair"
+import GameOverDisplay from "./GameOverDisplay"
 import HealthIndicator from "./HealthIndicator"
 import Title from "./Title"
 
 export default function Interface() {
+    const health = useHealthStore(state => state.health)
+
     return (
         <div className="interface">
-            <Crosshair />
             <div className='infoBar'>
                 <ScoreCounter />
                 <Title />
                 <HealthIndicator />
             </div>
+            {health > 0 && <Crosshair />}
+            {health === 0 && <GameOverDisplay />}
         </div>
     )
 }
