@@ -40,25 +40,25 @@ body,
 
 .infoBar {
   display: flex;
-  justify-content: space-between;
   margin: 0.5rem;
 }
 
 .scoreCounter {
   padding: 0;
   margin: 0;
+  flex: 1;
 }
 
 .title {
   margin: 0;
   padding: 0;
+  flex: 0 0 auto;
 }
 
 .healthIndicator {
   display: flex;
   flex-direction: row-reverse;
-  flex-shrink: 0;
-  flex-basis: 300px;
+  flex: 1;
 }
 
 .healthIndicator .increment {
@@ -105,15 +105,16 @@ body,
   font-size: 0.8em;
   background-color: rgba(32, 32, 32, 0.7);
   border: 2px solid transparent;
+  border-color: rgb(0, 255, 255, 0.2);
   padding: 0.75rem 1.4rem;
 }
 
 .gameOverSection button:active {
   transform: scale(0.95);
-  border-color: rgb(0, 255, 255, 0.7);
+  border-color: rgb(0, 255, 255, 0.4);
 }
 
-@media (width <= 1200px) {
+@media (width <= 900px) {
   .title {
     display: none;
   }
