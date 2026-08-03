@@ -7,72 +7,94 @@ import Explosion from "./ExplodingEnemy/Explosion";
 import { Vector3 } from "three";
 import { useScoreStore } from "../stores/useScoreStore";
 
-export default function Collectable({position, rotation, removeCollectable, id, size, playAreaSize}) {
-    const [explosionPos, setExplosionPos] = useState(null)
-    const explosionActive = explosionPos !== null
-    
-    const removeSelf = () => removeCollectable(id)
+export default function Collectable({
+  position,
+  rotation,
+  removeCollectable,
+  id,
+  size,
+  playAreaSize,
+}) {
+  const [explosionPos, setExplosionPos] = useState(null);
+  const explosionActive = explosionPos !== null;
 
-    return <>
-        { !explosionActive && 
-            <CollectableRigidBody 
-                position={position}
-                rotation={rotation} 
-                size={size} 
-                playAreaSize={playAreaSize}
-                setExplosionPos={setExplosionPos}
-            />
-        }
+  const removeSelf = () => removeCollectable(id);
 
-        { explosionActive && (
-            <Explosion position={explosionPos} color={'red'} removeParentEnemy={removeSelf} />
-        )}
+  return (
+    <>
+      {!explosionActive && (
+        <CollectableRigidBody
+          position={position}
+          rotation={rotation}
+          size={size}
+          playAreaSize={playAreaSize}
+          setExplosionPos={setExplosionPos}
+        />
+      )}
+
+      {explosionActive && (
+        <Explosion
+          position={explosionPos}
+          color={"red"}
+          removeParentEnemy={removeSelf}
+        />
+      )}
     </>
+  );
 }
 
-function CollectableRigidBody({position, rotation, size, setExplosionPos, playAreaSize}) {
-    const gltf = useGLTF("./space_shooter_collectable.glb")
-    const rbRef = useRef()
+function CollectableRigidBody({
+  position,
+  rotation,
+  size,
+  setExplosionPos,
+  playAreaSize,
+}) {
+  const gltf = useGLTF("./space_shooter_collectable.glb");
+  const rbRef = useRef();
 
-    // Don't want to get the collectables stuck where the player can't reach.
-    useCentralSteering(rbRef, playAreaSize, 0.9, 20)
-    useRandomTorque(10, 20, rbRef)
+  // Don't want to get the collectables stuck where the player can't reach.
+  useCentralSteering(rbRef, playAreaSize, 0.9, 20);
+  useRandomTorque(10, 20, rbRef);
 
-    const incrementScore = useScoreStore(state => state.increment)
+  const incrementScore = useScoreStore((state) => state.increment);
 
-    const triggerExplosion = () => {
-        setExplosionPos(new Vector3(
-            rbRef.current.translation().x,
-            rbRef.current.translation().y,
-            rbRef.current.translation().z
-        ))
+  const triggerExplosion = () => {
+    setExplosionPos(
+      new Vector3(
+        rbRef.current.translation().x,
+        rbRef.current.translation().y,
+        rbRef.current.translation().z,
+      ),
+    );
+  };
+
+  const handleCollision = (collisionPayload) => {
+    if (
+      collisionPayload.other.rigidBody?.userData?.type === "player" ||
+      collisionPayload.other.rigidBody?.userData?.type === "bullet"
+    ) {
+      incrementScore(2);
+      triggerExplosion();
     }
+  };
 
-    const handleCollision = (collisionPayload) => {
-        if (collisionPayload.other.rigidBody?.userData?.type === 'player'
-            || collisionPayload.other.rigidBody?.userData?.type === 'bullet'
-        ) {
-            incrementScore(2)
-            triggerExplosion()
-        }
-    }
-
-    return (
-        <RigidBody 
-            ref={rbRef} 
-            position={position} 
-            rotation={rotation} 
-            scale={size}
-            colliders={false}
-            onCollisionEnter={handleCollision}
-        >
-            <BallCollider args={[size * 0.15]}/>
-            <mesh geometry={gltf.meshes['Base'].geometry}>
-                <meshBasicMaterial transparent opacity={0.6} color='red' />
-            </mesh>
-            <mesh geometry={gltf.meshes['Wireframe'].geometry}>
-                <meshBasicMaterial color={[1.4, 1.4, 1.4]} />
-            </mesh>
-        </RigidBody>
-    )
+  return (
+    <RigidBody
+      ref={rbRef}
+      position={position}
+      rotation={rotation}
+      scale={size}
+      colliders={false}
+      onCollisionEnter={handleCollision}
+    >
+      <BallCollider args={[size * 0.15]} />
+      <mesh geometry={gltf.meshes["Base"].geometry}>
+        <meshBasicMaterial transparent opacity={0.6} color="red" />
+      </mesh>
+      <mesh geometry={gltf.meshes["Wireframe"].geometry}>
+        <meshBasicMaterial color={[1.4, 1.4, 1.4]} />
+      </mesh>
+    </RigidBody>
+  );
 }

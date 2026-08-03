@@ -1,50 +1,48 @@
-import { useFrame } from "@react-three/fiber"
-import { useRef } from "react"
+import { useFrame } from "@react-three/fiber";
+import { useRef } from "react";
 
-const TIME_TO_SCALE_UP = 2
-const TIME_TO_SCALE_DOWN = 0.2
-const TOTAL_ANIMATION_LENGTH = TIME_TO_SCALE_UP + TIME_TO_SCALE_DOWN
+const TIME_TO_SCALE_UP = 2;
+const TIME_TO_SCALE_DOWN = 0.2;
+const TOTAL_ANIMATION_LENGTH = TIME_TO_SCALE_UP + TIME_TO_SCALE_DOWN;
 
-const SCALE_UP_FACTOR = 1.5
+const SCALE_UP_FACTOR = 1.5;
 
-export default function AnimatedMaterial(
-    {
-        color, 
-        transparent, 
-        opacity, 
-        animationActive, 
-        triggerExplosion
-    }) {
-    const customUniforms = useRef({
-        uTime: {value: 0}
-    })
-    
-    useFrame((state, delta) => {
-        if (animationActive) {
-        
-            if (customUniforms.current.uTime.value < TOTAL_ANIMATION_LENGTH) {
-                customUniforms.current.uTime.value += delta
-            } else {
-                triggerExplosion()
-            }
-        }
-    })
+export default function AnimatedMaterial({
+  color,
+  transparent,
+  opacity,
+  animationActive,
+  triggerExplosion,
+}) {
+  const customUniforms = useRef({
+    uTime: { value: 0 },
+  });
 
-    return (
-        <meshBasicMaterial
-            color={color} 
-            transparent={transparent} 
-            opacity={opacity} 
-            onBeforeCompile={(shader) => modifyShader(shader, customUniforms)}
-        />
-    )
+  useFrame((state, delta) => {
+    if (animationActive) {
+      if (customUniforms.current.uTime.value < TOTAL_ANIMATION_LENGTH) {
+        customUniforms.current.uTime.value += delta;
+      } else {
+        triggerExplosion();
+      }
+    }
+  });
+
+  return (
+    <meshBasicMaterial
+      color={color}
+      transparent={transparent}
+      opacity={opacity}
+      onBeforeCompile={(shader) => modifyShader(shader, customUniforms)}
+    />
+  );
 }
-
 
 // Injects GLSL code into the existing shader. Looks bad without syntax highlighting.
 const modifyShader = (shader, customUniforms) => {
-    // Injecting in global scope. This is where we add uniforms and such.
-    shader.vertexShader = shader.vertexShader.replace("#include <common>", 
+  // Injecting in global scope. This is where we add uniforms and such.
+  shader.vertexShader = shader.vertexShader.replace(
+    "#include <common>",
     `
     #include <common>
     uniform float uTime; 
@@ -54,18 +52,19 @@ const modifyShader = (shader, customUniforms) => {
         return destinationMin + (value - originMin) * (destinationMax - destinationMin) / (originMax - originMin);
     }
 
+    `,
+  );
+
+  // Set up uniforms
+  // Notice we send the object rather than the value, so the uniform stores a reference
+  // rather than a value. Even if we update value, the object reference remains the same.
+  // We can update value from outside and the object allows us to keep a persistent reference to it.
+  shader.uniforms.uTime = customUniforms.current.uTime;
+
+  // Injecting inside the 'main' function.
+  shader.vertexShader = shader.vertexShader.replace(
+    "#include <begin_vertex>",
     `
-    )
-
-    // Set up uniforms
-    // Notice we send the object rather than the value, so the uniform stores a reference
-    // rather than a value. Even if we update value, the object reference remains the same.
-    // We can update value from outside and the object allows us to keep a persistent reference to it.
-    shader.uniforms.uTime = customUniforms.current.uTime
-
-    // Injecting inside the 'main' function.
-    shader.vertexShader = shader.vertexShader.replace("#include <begin_vertex>", 
-        `
         #include <begin_vertex>
 
         float openingProgress = remap(
@@ -82,7 +81,7 @@ const modifyShader = (shader, customUniforms) => {
         // Here for example, closingProgress would be < 1.0 before the starting point given.
         float closingProgress = remap(
             uTime, 
-            ${(TIME_TO_SCALE_UP).toFixed(1)}, 
+            ${TIME_TO_SCALE_UP.toFixed(1)}, 
             ${TOTAL_ANIMATION_LENGTH.toFixed(1)}, 
             0.0, 
             1.0
@@ -102,9 +101,9 @@ const modifyShader = (shader, customUniforms) => {
 
         transformed *= scale;
 
-        `
-    )
-}
+        `,
+  );
+};
 
 /*
 ----- INSIGHTS -----
