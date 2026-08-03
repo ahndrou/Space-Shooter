@@ -8,11 +8,11 @@ import useCentralSteering from "./hooks/useCentralSteering";
 import { useHealthStore } from "../stores/useHealthStore";
 
 export default function Spaceship({ rigidBodyRef, playAreaSize }) {
-  const MAX_ANGULAR_FORCE = 0.15;
-  const MAX_LINEAR_FORCE = 0.5;
-  const POINTER_LOWER_BOUND = 0;
-  const LINEAR_DAMPING = 0.4;
-  const ANGULAR_DAMPING = 6;
+  const MAX_ANGULAR_FORCE = 0.05;
+  const MAX_LINEAR_FORCE = 0.2;
+  const POINTER_LOWER_BOUND = 0.1;
+  const LINEAR_DAMPING = 0.5;
+  const ANGULAR_DAMPING = 2;
   const CAMERA_DELAY = 19;
 
   const pointerActive = useRef(true);
@@ -75,26 +75,31 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
     // INPUT HANDLING
     const keys = getKeys();
 
-    let yawForce = 0;
+    let yaw = 0;
     if (
       pointerActive.current &&
       Math.abs(state.pointer.x) > POINTER_LOWER_BOUND
     ) {
-      yawForce = -state.pointer.x;
+      yaw = -state.pointer.x;
     }
-    let pitchForce = 0;
+    let pitch = 0;
     if (
       pointerActive.current &&
       Math.abs(state.pointer.y) > POINTER_LOWER_BOUND
     ) {
-      pitchForce = state.pointer.y;
+      pitch = state.pointer.y;
     }
-    const rollForce = (keys.leftward ? 1 : 0) + (keys.rightward ? -1 : 0);
+    const roll = (keys.leftward ? 1 : 0) + (keys.rightward ? -1 : 0);
 
     angularForce.current
-      .set(pitchForce, yawForce, rollForce)
-      .normalize()
+      .set(pitch, yaw, roll)
       .multiplyScalar(MAX_ANGULAR_FORCE);
+
+    console.log(
+      angularForce.current.x,
+      angularForce.current.y,
+      angularForce.current.z,
+    );
     angularForce.current.applyQuaternion(worldSpaceRotation.current);
 
     linearForce.current.set(0, 0, keys.forward ? -MAX_LINEAR_FORCE : 0);
