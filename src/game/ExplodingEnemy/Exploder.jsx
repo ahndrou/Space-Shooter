@@ -13,13 +13,9 @@ export function Exploder({ color = "pink", onExplosionCompletion, children }) {
   const rigidBodyRef = useRef();
 
   const triggerExplosion = () => {
-    setExplosionPos(
-      new Vector3(
-        rigidBodyRef.current.translation().x,
-        rigidBodyRef.current.translation().y,
-        rigidBodyRef.current.translation().z,
-      ),
-    );
+    const { x, y, z } = rigidBodyRef.current.translation();
+
+    setExplosionPos(new Vector3(x, y, z));
   };
 
   return (
