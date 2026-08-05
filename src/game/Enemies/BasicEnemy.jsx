@@ -2,9 +2,12 @@ import { BallCollider, RigidBody } from "@react-three/rapier";
 import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import useRandomTorque from "../hooks/useRandomTorque";
+import useRandomImpulse from "../hooks/useRandomImpulse";
 
 const MIN_TORQUE = 7;
 const MAX_TORQUE = 12;
+const MIN_FORCE = 3000;
+const MAX_FORCE = 3000;
 
 export default React.memo(BasicEnemy);
 
@@ -12,6 +15,7 @@ export function BasicEnemy({ position, size }) {
   const gltf = useGLTF("./space_shooter_enemy_basic.glb");
   const rb = useRef();
 
+  useRandomImpulse(rb, MIN_FORCE, MAX_FORCE);
   useRandomTorque(MIN_TORQUE, MAX_TORQUE, rb);
 
   return (
