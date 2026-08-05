@@ -14,16 +14,7 @@ const EXPLODING_ENEMY_COUNT = 40;
 const COLLECTABLES_COUNT = 30;
 
 export function BasicEnemySet() {
-  const findInitialSpawnPosition = useSpawnManager();
-
-  // Position & rotation get mutated. These are just initial values.
-  const [enemies, setEnemies] = useState(() =>
-    Array.from({ length: BASIC_ENEMY_COUNT }, () => ({
-      id: generateUUID(),
-      position: findInitialSpawnPosition(ENEMY_SIZE),
-      rotation: createRandom3DRotation(),
-    })),
-  );
+  const { enemies, removeEnemy } = useEnemySet(BASIC_ENEMY_COUNT);
 
   return enemies.map((enemyData) => (
     <BasicEnemy
@@ -35,23 +26,7 @@ export function BasicEnemySet() {
 }
 
 export function SnakeEnemySet({ playAreaSize, spaceshipRb }) {
-  const findInitialSpawnPosition = useSpawnManager();
-
-  // Position & rotation get mutated. These are just initial values.
-  const [enemies, setEnemies] = useState(() =>
-    Array.from({ length: SNAKE_COUNT }, () => ({
-      id: generateUUID(),
-      position: findInitialSpawnPosition(ENEMY_SIZE),
-      rotation: createRandom3DRotation(),
-    })),
-  );
-
-  const removeSnake = useCallback(
-    (enemyId) => {
-      setEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyId));
-    },
-    [setEnemies],
-  );
+  const { enemies, removeEnemy } = useEnemySet(SNAKE_COUNT);
 
   return enemies.map((enemyData) => (
     <SnakeEnemy
@@ -60,29 +35,14 @@ export function SnakeEnemySet({ playAreaSize, spaceshipRb }) {
       segments={15}
       spaceshipRb={spaceshipRb}
       playAreaSize={playAreaSize}
-      onDeath={removeSnake}
+      id={enemyData.id}
+      onDeath={removeEnemy}
     />
   ));
 }
 
 export function ExplodingEnemySet() {
-  const findInitialSpawnPosition = useSpawnManager();
-
-  // Position & rotation get mutated. These are just initial values.
-  const [enemies, setEnemies] = useState(() =>
-    Array.from({ length: EXPLODING_ENEMY_COUNT }, () => ({
-      id: generateUUID(),
-      position: findInitialSpawnPosition(ENEMY_SIZE),
-      rotation: createRandom3DRotation(),
-    })),
-  );
-
-  const removeExplodingEnemy = useCallback(
-    (enemyId) => {
-      setEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyId));
-    },
-    [setEnemies],
-  );
+  const { enemies, removeEnemy } = useEnemySet(EXPLODING_ENEMY_COUNT);
 
   return enemies.map((enemyData) => {
     return (
@@ -92,30 +52,14 @@ export function ExplodingEnemySet() {
         position={enemyData.position}
         rotation={enemyData.rotation}
         size={ENEMY_SIZE * 0.7}
-        onDeath={removeExplodingEnemy}
+        onDeath={removeEnemy}
       />
     );
   });
 }
 
 export function CollectableEnemySet({ playAreaSize }) {
-  const findInitialSpawnPosition = useSpawnManager();
-
-  // Position & rotation get mutated. These are just initial values.
-  const [enemies, setEnemies] = useState(() =>
-    Array.from({ length: COLLECTABLES_COUNT }, () => ({
-      id: generateUUID(),
-      position: findInitialSpawnPosition(ENEMY_SIZE),
-      rotation: createRandom3DRotation(),
-    })),
-  );
-
-  const removeCollectableEnemy = useCallback(
-    (enemyId) => {
-      setEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyId));
-    },
-    [setEnemies],
-  );
+  const { enemies, removeEnemy } = useEnemySet(COLLECTABLES_COUNT);
 
   return enemies.map((enemyData) => {
     return (
@@ -126,8 +70,30 @@ export function CollectableEnemySet({ playAreaSize }) {
         rotation={enemyData.rotation}
         size={ENEMY_SIZE * 1.5}
         playAreaSize={playAreaSize}
-        onDeath={removeCollectableEnemy}
+        onDeath={removeEnemy}
       />
     );
   });
+}
+
+function useEnemySet(count) {
+  const findInitialSpawnPosition = useSpawnManager();
+
+  // Position & rotation get mutated during the game. These are just initial values.
+  const [enemies, setEnemies] = useState(() =>
+    Array.from({ length: count }, () => ({
+      id: generateUUID(),
+      position: findInitialSpawnPosition(ENEMY_SIZE),
+      rotation: createRandom3DRotation(),
+    })),
+  );
+
+  const removeEnemy = useCallback(
+    (enemyId) => {
+      setEnemies((enemies) => enemies.filter((enemy) => enemy.id !== enemyId));
+    },
+    [setEnemies],
+  );
+
+  return { enemies, removeEnemy };
 }
