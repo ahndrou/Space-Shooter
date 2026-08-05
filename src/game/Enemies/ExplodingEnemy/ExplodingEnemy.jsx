@@ -1,5 +1,5 @@
 import { BallCollider, RigidBody } from "@react-three/rapier";
-import AnimatedScaleMesh from "./AnimatedScaleMesh";
+import EnemyMesh from "./EnemyMesh";
 import React, { createContext, useContext, useRef, useState } from "react";
 import useRandomTorque from "../../hooks/useRandomTorque";
 import Explosion from "../../Exploder/Explosion";
@@ -48,7 +48,7 @@ function EnemyRigidBody({ position, rotation, size }) {
           setIsHit(true);
         }}
       />
-      <AnimatedScaleMesh
+      <EnemyMesh
         size={size}
         color={COLOR}
         animationActive={isHit}
