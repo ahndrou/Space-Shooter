@@ -6,6 +6,7 @@ import useRandomTorque from "./hooks/useRandomTorque";
 import Explosion from "./ExplodingEnemy/Explosion";
 import { Vector3 } from "three";
 import { useScoreStore } from "../stores/useScoreStore";
+import { Exploder, useExploder } from "./ExplodingEnemy/Exploder";
 
 export default function Collectable({
   position,
@@ -19,53 +20,27 @@ export default function Collectable({
   const explosionActive = explosionPos !== null;
 
   return (
-    <>
-      {!explosionActive && (
-        <CollectableRigidBody
-          position={position}
-          rotation={rotation}
-          size={size}
-          playAreaSize={playAreaSize}
-          setExplosionPos={setExplosionPos}
-        />
-      )}
-
-      {explosionActive && (
-        <Explosion
-          position={explosionPos}
-          color={"red"}
-          onExplosionCompletion={() => onDeath(id)}
-        />
-      )}
-    </>
+    <Exploder onExplosionCompletion={() => onDeath(id)}>
+      <CollectableRigidBody
+        position={position}
+        rotation={rotation}
+        size={size}
+        playAreaSize={playAreaSize}
+        setExplosionPos={setExplosionPos}
+      />
+    </Exploder>
   );
 }
 
-function CollectableRigidBody({
-  position,
-  rotation,
-  size,
-  setExplosionPos,
-  playAreaSize,
-}) {
+function CollectableRigidBody({ position, rotation, size, playAreaSize }) {
   const gltf = useGLTF("./space_shooter_collectable.glb");
-  const rbRef = useRef();
+  const { rigidBodyRef, triggerExplosion } = useExploder();
 
   // Don't want to get the collectables stuck where the player can't reach.
-  useCentralSteering(rbRef, playAreaSize, 0.9, 20);
-  useRandomTorque(10, 20, rbRef);
+  useCentralSteering(rigidBodyRef, playAreaSize, 0.9, 20);
+  useRandomTorque(10, 20, rigidBodyRef);
 
   const incrementScore = useScoreStore((state) => state.increment);
-
-  const triggerExplosion = () => {
-    setExplosionPos(
-      new Vector3(
-        rbRef.current.translation().x,
-        rbRef.current.translation().y,
-        rbRef.current.translation().z,
-      ),
-    );
-  };
 
   const handleCollision = (collisionPayload) => {
     if (
@@ -79,7 +54,7 @@ function CollectableRigidBody({
 
   return (
     <RigidBody
-      ref={rbRef}
+      ref={rigidBodyRef}
       position={position}
       rotation={rotation}
       scale={size}

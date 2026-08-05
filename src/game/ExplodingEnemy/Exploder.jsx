@@ -2,6 +2,10 @@ import { createContext, useContext, useRef, useState } from "react";
 import { Vector3 } from "three";
 import Explosion from "./Explosion";
 
+// Replaces any rigid body with an explosion effect. The rigid body component
+// has access to a trigger provided by the useExploder hook. The rigid body must also
+// link up the rigidBodyRef from the hook to work.
+
 export function Exploder({ onExplosionCompletion, children }) {
   const [explosionPos, setExplosionPos] = useState(null);
   const explosionActive = explosionPos !== null;
@@ -25,7 +29,7 @@ export function Exploder({ onExplosionCompletion, children }) {
         triggerExplosion,
       }}
     >
-      {children}
+      {!explosionActive && children}
 
       {explosionActive && (
         <Explosion
