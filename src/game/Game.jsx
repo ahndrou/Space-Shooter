@@ -1,9 +1,9 @@
 import { useRef } from "react";
-import Spaceship from "./Spaceship";
-import Level from "./Level";
-import PlayArea from "./PlayArea";
 import { useGameStateStore } from "../stores/useGameStateStore";
 import { Physics } from "@react-three/rapier";
+import Spaceship from "./Spaceship";
+import Level from "./Level/Level";
+import PlayArea from "./PlayArea";
 
 const PLAY_AREA_SIZE = 175;
 
