@@ -3,10 +3,10 @@ import { BallCollider, RigidBody } from "@react-three/rapier";
 import useCentralSteering from "./hooks/useCentralSteering";
 import { useRef, useState } from "react";
 import useRandomTorque from "./hooks/useRandomTorque";
-import Explosion from "./ExplodingEnemy/Explosion";
+import Explosion from "./Exploder/Explosion";
 import { Vector3 } from "three";
 import { useScoreStore } from "../stores/useScoreStore";
-import { Exploder, useExploder } from "./ExplodingEnemy/Exploder";
+import { Exploder, useExploder } from "./Exploder/Exploder";
 
 const COLOR = "orange";
 
