@@ -10,6 +10,7 @@ export default function useWanderSteering(
   wanderRadius,
   wanderOffset,
 ) {
+  // Refs are used to prevent the creation of new variables every frame.
   const targetCenterRef = useRef(new Vector3());
   const targetOuterRef = useRef(new Vector3());
   const wanderDisplacement = useRef(new Vector3());
@@ -22,22 +23,14 @@ export default function useWanderSteering(
   useFrame(() => {
     if (!rigidBodyRef.current) return;
 
-    headQuaternion.current.set(
-      rigidBodyRef.current.rotation().x,
-      rigidBodyRef.current.rotation().y,
-      rigidBodyRef.current.rotation().z,
-      rigidBodyRef.current.rotation().w,
-    );
+    const rotation = rigidBodyRef.current.rotation();
+    headQuaternion.current.set(rotation.x, rotation.y, rotation.z, rotation.w);
+    const translation = rigidBodyRef.current.translation();
+    currentPosition.current.set(translation.x, translation.y, translation.z);
 
     wanderDisplacement.current
       .set(0, 0, -wanderOffset)
       .applyQuaternion(headQuaternion.current);
-
-    currentPosition.current.set(
-      rigidBodyRef.current.translation().x,
-      rigidBodyRef.current.translation().y,
-      rigidBodyRef.current.translation().z,
-    );
 
     targetCenterRef.current
       .copy(currentPosition.current)
