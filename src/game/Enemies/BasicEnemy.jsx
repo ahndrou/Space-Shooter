@@ -6,8 +6,8 @@ import useRandomImpulse from "../hooks/useRandomImpulse";
 
 const MIN_TORQUE = 7;
 const MAX_TORQUE = 12;
-const MIN_FORCE = 3000;
-const MAX_FORCE = 3000;
+const MIN_FORCE = 3500;
+const MAX_FORCE = 5000;
 
 export default React.memo(BasicEnemy);
 
@@ -26,9 +26,10 @@ export function BasicEnemy({ position, size }) {
       colliders={false}
       canSleep={false}
       angularDamping={0.4}
+      linearDamping={0}
       userData={{ type: "basic enemy" }}
     >
-      <BallCollider args={[size * 0.97]} />
+      <BallCollider args={[size * 0.97]} restitution={1} />
       <group scale={size}>
         <mesh geometry={gltf.meshes.Icosphere_1.geometry}>
           <meshBasicMaterial color="green" transparent opacity={0.6} />

@@ -47,6 +47,7 @@ function EnemyRigidBody({ position, rotation, size }) {
         onCollisionEnter={() => {
           setIsHit(true);
         }}
+        restitution={1}
       />
       <EnemyMesh
         size={size}

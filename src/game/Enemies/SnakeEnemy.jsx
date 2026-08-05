@@ -80,6 +80,7 @@ function SnakeHead({ ref, position, playAreaSize, debug, removeParentSnake }) {
           args={[0.5, 1.5]}
           rotation={[Math.PI / 2, 0, 0]}
           position={[0, 0, -1]}
+          restitution={1}
         />
         <group scale={1}>
           <mesh geometry={gltf.meshes["Head_Base"].geometry}>

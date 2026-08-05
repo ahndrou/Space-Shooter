@@ -119,6 +119,7 @@ function BoundaryWall({ orientation, size }) {
       )}
       userData={{ type: "wall" }}
       onCollisionEnter={handleCollision}
+      restitution={1}
     >
       <mesh ref={meshRef} renderOrder={-1}>
         <boxGeometry args={dimensions} />

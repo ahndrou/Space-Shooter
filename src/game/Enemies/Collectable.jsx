@@ -59,7 +59,7 @@ function CollectableRigidBody({ position, rotation, size, playAreaSize }) {
       colliders={false}
       onCollisionEnter={handleCollision}
     >
-      <BallCollider args={[size * 0.15]} />
+      <BallCollider args={[size * 0.15]} restitution={1} />
       <mesh geometry={gltf.meshes["Base"].geometry}>
         <meshBasicMaterial transparent opacity={0.6} color={COLOR} />
       </mesh>
