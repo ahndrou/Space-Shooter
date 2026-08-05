@@ -13,6 +13,14 @@ export function Exploder({ color = "pink", onExplosionCompletion, children }) {
   const rigidBodyRef = useRef();
 
   const triggerExplosion = () => {
+    const rigidBody = rigidBodyRef.current;
+
+    if (!rigidBody) {
+      throw new Error(
+        "Cannot trigger explosion: rigidBodyRef returned by the useExploder hook is not attached to a RigidBody.",
+      );
+    }
+
     const { x, y, z } = rigidBodyRef.current.translation();
 
     setExplosionPos(new Vector3(x, y, z));
