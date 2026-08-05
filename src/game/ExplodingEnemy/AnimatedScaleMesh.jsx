@@ -1,11 +1,11 @@
 import { useGLTF } from "@react-three/drei";
-import AnimatedMaterial from "./AnimatedMaterial";
+import AnimatedScaleMaterial from "./AnimatedScaleMaterial";
 
 export default function AnimatedMesh({
-  isHit,
   size,
   color = "purple",
-  triggerExplosion,
+  animationActive,
+  onAnimationCompletion,
 }) {
   const gltf = useGLTF("./space_shooter_enemy_explosive.glb");
 
@@ -13,19 +13,19 @@ export default function AnimatedMesh({
     <>
       <group scale={size}>
         <mesh geometry={gltf.meshes.Base.geometry}>
-          <AnimatedMaterial
+          <AnimatedScaleMaterial
             color={color}
             transparent={true}
             opacity={0.6}
-            animationActive={isHit}
-            triggerExplosion={triggerExplosion}
+            animationActive={animationActive}
+            onAnimationCompletion={onAnimationCompletion}
           />
         </mesh>
         <mesh geometry={gltf.meshes.Wireframe.geometry}>
-          <AnimatedMaterial
+          <AnimatedScaleMaterial
             color={[1, 1, 1]}
-            animationActive={isHit}
-            triggerExplosion={triggerExplosion}
+            animationActive={animationActive}
+            onAnimationCompletion={onAnimationCompletion}
           />
         </mesh>
       </group>

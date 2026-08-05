@@ -7,12 +7,12 @@ const TOTAL_ANIMATION_LENGTH = TIME_TO_SCALE_UP + TIME_TO_SCALE_DOWN;
 
 const SCALE_UP_FACTOR = 1.5;
 
-export default function AnimatedMaterial({
+export default function AnimatedScaleMaterial({
   color,
   transparent,
   opacity,
   animationActive,
-  triggerExplosion,
+  onAnimationCompletion,
 }) {
   const customUniforms = useRef({
     uTime: { value: 0 },
@@ -23,7 +23,7 @@ export default function AnimatedMaterial({
       if (customUniforms.current.uTime.value < TOTAL_ANIMATION_LENGTH) {
         customUniforms.current.uTime.value += delta;
       } else {
-        triggerExplosion();
+        onAnimationCompletion();
       }
     }
   });
