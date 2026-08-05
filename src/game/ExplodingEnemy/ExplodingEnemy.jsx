@@ -14,18 +14,29 @@ export function ExplodingEnemy({ position, rotation, removeEnemy, id, size }) {
   const [explosionPos, setExplosionPos] = useState(null);
   const explosionActive = explosionPos !== null;
 
+  const rbRef = useRef();
+
+  const triggerExplosion = () => {
+    setExplosionPos(
+      new Vector3(
+        rbRef.current.translation().x,
+        rbRef.current.translation().y,
+        rbRef.current.translation().z,
+      ),
+    );
+  };
+
   const removeSelf = () => removeEnemy(id);
 
   return (
     <>
-      {!explosionActive && (
-        <ExplodingEnemyRigidBody
-          position={position}
-          rotation={rotation}
-          size={size}
-          setExplosionPos={setExplosionPos}
-        />
-      )}
+      <ExplodingEnemyRigidBody
+        position={position}
+        rotation={rotation}
+        rbRef={rbRef}
+        size={size}
+        onDestroyed={triggerExplosion}
+      />
 
       {explosionActive && (
         <Explosion
@@ -42,20 +53,10 @@ function ExplodingEnemyRigidBody({
   position,
   rotation,
   size,
-  setExplosionPos,
+  rbRef,
+  onDestroyed,
 }) {
-  const rbRef = useRef();
   const [isHit, setIsHit] = useState(false);
-
-  const triggerExplosion = () => {
-    setExplosionPos(
-      new Vector3(
-        rbRef.current.translation().x,
-        rbRef.current.translation().y,
-        rbRef.current.translation().z,
-      ),
-    );
-  };
 
   useRandomTorque(MIN_TORQUE, MAX_TORQUE, rbRef);
 
@@ -71,12 +72,14 @@ function ExplodingEnemyRigidBody({
     >
       <BallCollider
         args={[size * 1.1]}
-        onCollisionEnter={() => setIsHit(true)}
+        onCollisionEnter={() => {
+          setIsHit(true);
+        }}
       />
       <AnimatedScaleMesh
         size={size}
         animationActive={isHit}
-        onAnimationCompletion={triggerExplosion}
+        onAnimationCompletion={onDestroyed}
       />
     </RigidBody>
   );
