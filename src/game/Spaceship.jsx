@@ -95,11 +95,6 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
       .set(pitch, yaw, roll)
       .multiplyScalar(MAX_ANGULAR_FORCE);
 
-    console.log(
-      angularForce.current.x,
-      angularForce.current.y,
-      angularForce.current.z,
-    );
     angularForce.current.applyQuaternion(worldSpaceRotation.current);
 
     linearForce.current.set(0, 0, keys.forward ? -MAX_LINEAR_FORCE : 0);
