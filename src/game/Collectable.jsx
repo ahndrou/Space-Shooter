@@ -11,14 +11,11 @@ import { Exploder, useExploder } from "./ExplodingEnemy/Exploder";
 export default function Collectable({
   position,
   rotation,
-  id,
   size,
   playAreaSize,
+  id,
   onDeath,
 }) {
-  const [explosionPos, setExplosionPos] = useState(null);
-  const explosionActive = explosionPos !== null;
-
   return (
     <Exploder onExplosionCompletion={() => onDeath(id)}>
       <CollectableRigidBody
@@ -26,7 +23,6 @@ export default function Collectable({
         rotation={rotation}
         size={size}
         playAreaSize={playAreaSize}
-        setExplosionPos={setExplosionPos}
       />
     </Exploder>
   );
