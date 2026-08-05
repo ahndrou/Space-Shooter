@@ -1,62 +1,35 @@
 import { BallCollider, RigidBody } from "@react-three/rapier";
 import AnimatedScaleMesh from "./AnimatedScaleMesh";
-import React, { useRef, useState } from "react";
+import React, { createContext, useContext, useRef, useState } from "react";
 import useRandomTorque from "../hooks/useRandomTorque";
 import Explosion from "./Explosion";
 import { Vector3 } from "three";
+import { Exploder, useExploder } from "./Exploder";
 
 const MIN_TORQUE = 20;
 const MAX_TORQUE = 35;
 
 export default React.memo(ExplodingEnemy);
 
-export function ExplodingEnemy({ position, rotation, size, id, onDeath }) {
-  const [explosionPos, setExplosionPos] = useState(null);
-  const explosionActive = explosionPos !== null;
+// Stores the rbRef to get the mutated position to give the explosion.
+// All this needs is to somehow get a rbRef for a position.
+// Should be able to explode any child as long as it has its rbRef.
 
-  const rbRef = useRef();
-
-  const triggerExplosion = () => {
-    setExplosionPos(
-      new Vector3(
-        rbRef.current.translation().x,
-        rbRef.current.translation().y,
-        rbRef.current.translation().z,
-      ),
-    );
-  };
-
+// Think of a better name for this - it is not just defined by it exploding.
+export function ExplodingEnemy({ id, onDeath, position, rotation, size }) {
   return (
-    <>
-      <ExplodingEnemyRigidBody
-        position={position}
-        rotation={rotation}
-        rbRef={rbRef}
-        size={size}
-        onDestroyed={triggerExplosion}
-      />
-
-      {explosionActive && (
-        <Explosion
-          position={explosionPos}
-          color={"purple"}
-          onExplosionCompletion={() => onDeath(id)}
-        />
-      )}
-    </>
+    <Exploder onExplosionCompletion={() => onDeath(id)}>
+      <EnemyRigidBody position={position} rotation={rotation} size={size} />
+    </Exploder>
   );
 }
 
-function ExplodingEnemyRigidBody({
-  position,
-  rotation,
-  size,
-  rbRef,
-  onDestroyed,
-}) {
+function EnemyRigidBody({ position, rotation, size }) {
   const [isHit, setIsHit] = useState(false);
 
-  useRandomTorque(MIN_TORQUE, MAX_TORQUE, rbRef);
+  const { rigidBodyRef, triggerExplosion } = useExploder();
+
+  useRandomTorque(MIN_TORQUE, MAX_TORQUE, rigidBodyRef);
 
   return (
     <RigidBody
@@ -64,7 +37,7 @@ function ExplodingEnemyRigidBody({
       position={position}
       rotation={rotation}
       canSleep={false}
-      ref={rbRef}
+      ref={rigidBodyRef}
       angularDamping={0.4}
       userData={{ type: "exploding enemy" }}
     >
@@ -77,7 +50,7 @@ function ExplodingEnemyRigidBody({
       <AnimatedScaleMesh
         size={size}
         animationActive={isHit}
-        onAnimationCompletion={onDestroyed}
+        onAnimationCompletion={triggerExplosion}
       />
     </RigidBody>
   );
