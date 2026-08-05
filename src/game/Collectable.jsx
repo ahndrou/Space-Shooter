@@ -8,6 +8,8 @@ import { Vector3 } from "three";
 import { useScoreStore } from "../stores/useScoreStore";
 import { Exploder, useExploder } from "./ExplodingEnemy/Exploder";
 
+const COLOR = "orange";
+
 export default function Collectable({
   position,
   rotation,
@@ -17,7 +19,7 @@ export default function Collectable({
   onDeath,
 }) {
   return (
-    <Exploder onExplosionCompletion={() => onDeath(id)}>
+    <Exploder color={COLOR} onExplosionCompletion={() => onDeath(id)}>
       <CollectableRigidBody
         position={position}
         rotation={rotation}
@@ -59,7 +61,7 @@ function CollectableRigidBody({ position, rotation, size, playAreaSize }) {
     >
       <BallCollider args={[size * 0.15]} />
       <mesh geometry={gltf.meshes["Base"].geometry}>
-        <meshBasicMaterial transparent opacity={0.6} color="red" />
+        <meshBasicMaterial transparent opacity={0.6} color={COLOR} />
       </mesh>
       <mesh geometry={gltf.meshes["Wireframe"].geometry}>
         <meshBasicMaterial color={[1.4, 1.4, 1.4]} />

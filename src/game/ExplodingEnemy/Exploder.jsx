@@ -6,7 +6,7 @@ import Explosion from "./Explosion";
 // has access to a trigger provided by the useExploder hook. The rigid body must also
 // link up the rigidBodyRef from the hook to work.
 
-export function Exploder({ onExplosionCompletion, children }) {
+export function Exploder({ color = "pink", onExplosionCompletion, children }) {
   const [explosionPos, setExplosionPos] = useState(null);
   const explosionActive = explosionPos !== null;
 
@@ -34,7 +34,7 @@ export function Exploder({ onExplosionCompletion, children }) {
       {explosionActive && (
         <Explosion
           position={explosionPos}
-          color={"purple"}
+          color={color}
           onExplosionCompletion={() => onExplosionCompletion()}
         />
       )}

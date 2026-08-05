@@ -8,6 +8,7 @@ import { Exploder, useExploder } from "./Exploder";
 
 const MIN_TORQUE = 20;
 const MAX_TORQUE = 35;
+const COLOR = "yellow";
 
 export default React.memo(ExplodingEnemy);
 
@@ -18,7 +19,7 @@ export default React.memo(ExplodingEnemy);
 // Think of a better name for this - it is not just defined by it exploding.
 export function ExplodingEnemy({ id, onDeath, position, rotation, size }) {
   return (
-    <Exploder onExplosionCompletion={() => onDeath(id)}>
+    <Exploder color={COLOR} onExplosionCompletion={() => onDeath(id)}>
       <EnemyRigidBody position={position} rotation={rotation} size={size} />
     </Exploder>
   );
@@ -49,6 +50,7 @@ function EnemyRigidBody({ position, rotation, size }) {
       />
       <AnimatedScaleMesh
         size={size}
+        color={COLOR}
         animationActive={isHit}
         onAnimationCompletion={triggerExplosion}
       />
