@@ -1,10 +1,10 @@
 import { BallCollider, RigidBody } from "@react-three/rapier";
 import AnimatedScaleMesh from "./AnimatedScaleMesh";
 import React, { createContext, useContext, useRef, useState } from "react";
-import useRandomTorque from "../hooks/useRandomTorque";
-import Explosion from "../Exploder/Explosion";
+import useRandomTorque from "../../hooks/useRandomTorque";
+import Explosion from "../../Exploder/Explosion";
 import { Vector3 } from "three";
-import { Exploder, useExploder } from "../Exploder/Exploder";
+import { Exploder, useExploder } from "../../Exploder/Exploder";
 
 const MIN_TORQUE = 20;
 const MAX_TORQUE = 35;

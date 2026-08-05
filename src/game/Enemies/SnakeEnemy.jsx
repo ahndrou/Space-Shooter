@@ -7,10 +7,10 @@ import {
 } from "@react-three/rapier";
 import React, { useRef } from "react";
 import { Vector3 } from "three";
-import useWanderSteering from "./hooks/useWanderSteering";
+import useWanderSteering from "../hooks/useWanderSteering";
 import { useFrame } from "@react-three/fiber";
-import useCentralSteering from "./hooks/useCentralSteering";
-import { COLLISION_GROUPS } from "../constants";
+import useCentralSteering from "../hooks/useCentralSteering";
+import { COLLISION_GROUPS } from "../../constants";
 import { useGLTF } from "@react-three/drei";
 
 const SEGMENT_DISTANCE = 2;

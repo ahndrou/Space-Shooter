@@ -1,13 +1,13 @@
 import { useCallback, useRef, useState } from "react";
-import BasicEnemy from "./BasicEnemy";
 import { Quaternion, Vector3 } from "three";
 import { generateUUID } from "three/src/math/MathUtils.js";
 import { useRapier } from "@react-three/rapier";
-import SnakeEnemy from "./SnakeEnemy";
-import ExplodingEnemy from "./ExplodingEnemy/ExplodingEnemy";
 import { useFrame } from "@react-three/fiber";
-import Collectable from "./Collectable";
 import { useScoreStore } from "../stores/useScoreStore";
+import BasicEnemy from "./Enemies/BasicEnemy";
+import SnakeEnemy from "./Enemies/SnakeEnemy";
+import ExplodingEnemy from "./Enemies/ExplodingEnemy/ExplodingEnemy";
+import Collectable from "./Enemies/Collectable";
 
 const ENEMY_SIZE = 4;
 const SNAKE_COUNT = 5;
