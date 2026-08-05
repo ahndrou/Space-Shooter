@@ -27,13 +27,15 @@ export function Exploder({ color = "pink", onExplosionCompletion, children }) {
   };
 
   return (
-    <ExploderContext.Provider
-      value={{
-        rigidBodyRef,
-        triggerExplosion,
-      }}
-    >
-      {!explosionActive && children}
+    <>
+      <ExploderContext.Provider
+        value={{
+          rigidBodyRef,
+          triggerExplosion,
+        }}
+      >
+        {!explosionActive && children}
+      </ExploderContext.Provider>
 
       {explosionActive && (
         <Explosion
@@ -42,7 +44,7 @@ export function Exploder({ color = "pink", onExplosionCompletion, children }) {
           onExplosionCompletion={() => onExplosionCompletion()}
         />
       )}
-    </ExploderContext.Provider>
+    </>
   );
 }
 
