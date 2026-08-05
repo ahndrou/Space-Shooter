@@ -203,7 +203,7 @@ export default function Level({ playAreaSize, spaceshipRb }) {
             spaceshipRb={spaceshipRb}
             segments={15}
             playAreaSize={playAreaSize}
-            removeSelf={removeSnakeEnemy}
+            onDeath={removeSnakeEnemy}
           />
         );
       })}
@@ -215,8 +215,8 @@ export default function Level({ playAreaSize, spaceshipRb }) {
             id={enemyData.id}
             position={enemyData.position}
             rotation={enemyData.rotation}
-            removeEnemy={removeExplodingEnemy}
             size={ENEMY_SIZE * 0.7}
+            onDeath={removeExplodingEnemy}
           />
         );
       })}
@@ -230,7 +230,7 @@ export default function Level({ playAreaSize, spaceshipRb }) {
             rotation={enemyData.rotation}
             playAreaSize={playAreaSize}
             size={ENEMY_SIZE * 1.5}
-            removeCollectable={removeCollectable}
+            onDeath={removeCollectable}
           />
         );
       })}

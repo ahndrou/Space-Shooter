@@ -84,7 +84,7 @@ export default function Explosion({
   particleSize = 1,
   color,
   position,
-  removeParentEnemy,
+  onExplosionCompletion,
 }) {
   const [particlePositions] = useState(() => createParticlePositionsArray(1));
   const [particleSizes] = useState(() => createSizesArray());
@@ -108,7 +108,7 @@ export default function Explosion({
     uniforms.current.uTime.value += delta;
 
     if (uniforms.current.uTime.value >= EXPLOSION_DURATION) {
-      removeParentEnemy();
+      onExplosionCompletion();
     }
   });
 

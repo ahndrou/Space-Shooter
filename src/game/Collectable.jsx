@@ -10,15 +10,13 @@ import { useScoreStore } from "../stores/useScoreStore";
 export default function Collectable({
   position,
   rotation,
-  removeCollectable,
   id,
   size,
   playAreaSize,
+  onDeath,
 }) {
   const [explosionPos, setExplosionPos] = useState(null);
   const explosionActive = explosionPos !== null;
-
-  const removeSelf = () => removeCollectable(id);
 
   return (
     <>
@@ -36,7 +34,7 @@ export default function Collectable({
         <Explosion
           position={explosionPos}
           color={"red"}
-          removeParentEnemy={removeSelf}
+          onExplosionCompletion={() => onDeath(id)}
         />
       )}
     </>

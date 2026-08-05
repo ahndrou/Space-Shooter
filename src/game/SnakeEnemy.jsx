@@ -19,13 +19,7 @@ const WANDER_OFFSET = 6;
 
 export default React.memo(SnakeEnemy);
 
-export function SnakeEnemy({
-  position,
-  segments,
-  playAreaSize,
-  id,
-  removeSelf,
-}) {
+export function SnakeEnemy({ position, segments, playAreaSize, onDeath, id }) {
   const head = useRef();
 
   const nextSegmentPosition = new Vector3().copy(position);
@@ -37,7 +31,7 @@ export function SnakeEnemy({
         ref={head}
         position={position}
         playAreaSize={playAreaSize}
-        removeParentSnake={() => removeSelf(id)}
+        removeParentSnake={() => onDeath(id)}
       />
       <BodySegment
         parentRef={head}

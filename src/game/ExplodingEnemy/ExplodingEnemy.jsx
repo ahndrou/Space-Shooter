@@ -10,7 +10,7 @@ const MAX_TORQUE = 35;
 
 export default React.memo(ExplodingEnemy);
 
-export function ExplodingEnemy({ position, rotation, removeEnemy, id, size }) {
+export function ExplodingEnemy({ position, rotation, size, id, onDeath }) {
   const [explosionPos, setExplosionPos] = useState(null);
   const explosionActive = explosionPos !== null;
 
@@ -26,8 +26,6 @@ export function ExplodingEnemy({ position, rotation, removeEnemy, id, size }) {
     );
   };
 
-  const removeSelf = () => removeEnemy(id);
-
   return (
     <>
       <ExplodingEnemyRigidBody
@@ -42,7 +40,7 @@ export function ExplodingEnemy({ position, rotation, removeEnemy, id, size }) {
         <Explosion
           position={explosionPos}
           color={"purple"}
-          removeParentEnemy={removeSelf}
+          onExplosionCompletion={() => onDeath(id)}
         />
       )}
     </>
