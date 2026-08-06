@@ -1,3 +1,3 @@
 export default function Title() {
-  return <div className="title">Space Shooter</div>;
+  return <div className="title">Asteroid Field</div>;
 }
