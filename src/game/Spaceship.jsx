@@ -10,7 +10,6 @@ import { useHealthStore } from "../stores/useHealthStore";
 export default function Spaceship({ rigidBodyRef, playAreaSize }) {
   const LINEAR_DAMPING = 0.5;
   const ANGULAR_DAMPING = 2;
-  const CAMERA_DELAY = 19;
 
   const gltf = useGLTF("./player_spaceship.glb");
 
@@ -23,9 +22,10 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
   );
 
   const worldSpaceRotationRef = useWorldSpaceRotation(rigidBodyRef);
+  const worldSpacePositionRef = useWorldSpacePosition(rigidBodyRef);
   const userInputForces = useShipControls(worldSpaceRotationRef);
 
-  const cameraOffset = useRef(new Vector3());
+  useFollowCamera(worldSpaceRotationRef, worldSpacePositionRef);
 
   useFrame((state, delta) => {
     if (!rigidBodyRef.current) return;
@@ -43,16 +43,6 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
       ),
       true,
     );
-
-    // CAMERA SETUP
-    cameraOffset.current.set(0, 3, 7);
-    // Quaternion transforms from local space to world space.
-    cameraOffset.current.applyQuaternion(worldSpaceRotationRef.current);
-    cameraOffset.current.add(rigidBodyRef.current.translation());
-
-    // The slight lag from LERP gives the user a nice indication that they are turning.
-    state.camera.position.lerp(cameraOffset.current, CAMERA_DELAY * delta);
-    state.camera.rotation.setFromQuaternion(worldSpaceRotationRef.current);
   });
 
   return (
@@ -161,7 +151,7 @@ function useWorldSpaceRotation(rigidBodyRef) {
   const worldSpaceRotation = useRef(new Quaternion());
 
   useFrame(() => {
-    if (!rigidBodyRef) return;
+    if (!rigidBodyRef.current) return;
 
     // rigidBodyRef.current.rotation() returns a plain object, not an instance
     // of the quaternion class.
@@ -174,4 +164,40 @@ function useWorldSpaceRotation(rigidBodyRef) {
   });
 
   return worldSpaceRotation;
+}
+
+function useWorldSpacePosition(rigidBodyRef) {
+  const position = useRef();
+
+  useFrame(() => {
+    if (!rigidBodyRef.current) return;
+
+    position.current = rigidBodyRef.current.translation();
+  });
+
+  return position;
+}
+
+function useFollowCamera(targetRotationRef, targetPositionRef) {
+  const CAMERA_DELAY = 19;
+
+  const cameraPositionTarget = useRef(new Vector3());
+
+  useFrame((state, delta) => {
+    if (!targetPositionRef.current || !targetRotationRef.current) return;
+
+    cameraPositionTarget.current.set(0, 3, 7);
+    // Quaternion transforms from local space to world space.
+    cameraPositionTarget.current.applyQuaternion(targetRotationRef.current);
+    cameraPositionTarget.current.add(targetPositionRef.current);
+
+    // The slight lag from LERP gives the user a nice indication that they are turning.
+    state.camera.position.lerp(
+      cameraPositionTarget.current,
+      CAMERA_DELAY * delta,
+    );
+    state.camera.rotation.setFromQuaternion(targetRotationRef.current);
+  });
+
+  return null;
 }
