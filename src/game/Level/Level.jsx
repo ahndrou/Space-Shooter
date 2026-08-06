@@ -16,7 +16,7 @@ import {
 } from "./EnemySets";
 import { SpawnProvider } from "./SpawnProvider";
 
-export default function Level({ playAreaSize, spaceshipRb }) {
+export default function Level({ playAreaSize }) {
   return (
     <SpawnProvider playAreaSize={playAreaSize}>
       <BasicEnemySet />

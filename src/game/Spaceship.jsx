@@ -6,6 +6,7 @@ import { Quaternion, Vector3 } from "three";
 import Weapon from "./Weapon/Weapon";
 import useCentralSteering from "./hooks/useCentralSteering";
 import { useHealthStore } from "../stores/useHealthStore";
+import { useGameStateStore } from "../stores/useGameStateStore";
 
 export default function Spaceship({ rigidBodyRef, playAreaSize }) {
   const LINEAR_DAMPING = 0.5;
@@ -13,7 +14,12 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
 
   const gltf = useGLTF("./player_spaceship.glb");
 
+  const playerHealth = useHealthStore((state) => state.health);
   const decrementHealth = useHealthStore((state) => state.decrement);
+
+  const worldSpaceRotationRef = useWorldSpaceRotation(rigidBodyRef);
+  const worldSpacePositionRef = useWorldSpacePosition(rigidBodyRef);
+  const userInputForces = useShipControls(worldSpaceRotationRef);
   const centralSteering = useCentralSteering(
     rigidBodyRef,
     playAreaSize,
@@ -21,14 +27,12 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
     2,
   );
 
-  const worldSpaceRotationRef = useWorldSpaceRotation(rigidBodyRef);
-  const worldSpacePositionRef = useWorldSpacePosition(rigidBodyRef);
-  const userInputForces = useShipControls(worldSpaceRotationRef);
-
   useFollowCamera(worldSpaceRotationRef, worldSpacePositionRef);
 
+  const gamePaused = useGameStateStore((state) => state.paused);
+
   useFrame((state, delta) => {
-    if (!rigidBodyRef.current) return;
+    if (!rigidBodyRef.current || playerHealth === 0) return;
 
     // Need to add all forces together
     rigidBodyRef.current.applyTorqueImpulse(
