@@ -14,9 +14,6 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
 
   const gltf = useGLTF("./player_spaceship.glb");
 
-  // For re-use in useFrame.
-  const worldSpaceRotation = useRef(new Quaternion());
-
   const decrementHealth = useHealthStore((state) => state.decrement);
   const centralSteering = useCentralSteering(
     rigidBodyRef,
@@ -25,21 +22,13 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
     2,
   );
 
-  const userInputForces = useShipControls(worldSpaceRotation);
+  const worldSpaceRotationRef = useWorldSpaceRotation(rigidBodyRef);
+  const userInputForces = useShipControls(worldSpaceRotationRef);
 
   const cameraOffset = useRef(new Vector3());
 
   useFrame((state, delta) => {
     if (!rigidBodyRef.current) return;
-
-    // rigidBodyRef.current.rotation() returns a plain object, not an instance
-    // of the quaternion class.
-    worldSpaceRotation.current.set(
-      rigidBodyRef.current.rotation().x,
-      rigidBodyRef.current.rotation().y,
-      rigidBodyRef.current.rotation().z,
-      rigidBodyRef.current.rotation().w,
-    );
 
     // Need to add all forces together
     rigidBodyRef.current.applyTorqueImpulse(
@@ -58,12 +47,12 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
     // CAMERA SETUP
     cameraOffset.current.set(0, 3, 7);
     // Quaternion transforms from local space to world space.
-    cameraOffset.current.applyQuaternion(worldSpaceRotation.current);
+    cameraOffset.current.applyQuaternion(worldSpaceRotationRef.current);
     cameraOffset.current.add(rigidBodyRef.current.translation());
 
     // The slight lag from LERP gives the user a nice indication that they are turning.
     state.camera.position.lerp(cameraOffset.current, CAMERA_DELAY * delta);
-    state.camera.rotation.setFromQuaternion(worldSpaceRotation.current);
+    state.camera.rotation.setFromQuaternion(worldSpaceRotationRef.current);
   });
 
   return (
@@ -165,4 +154,24 @@ function usePointerActiveListener() {
   }, []);
 
   return pointerActive;
+}
+
+function useWorldSpaceRotation(rigidBodyRef) {
+  // For re-use in useFrame.
+  const worldSpaceRotation = useRef(new Quaternion());
+
+  useFrame(() => {
+    if (!rigidBodyRef) return;
+
+    // rigidBodyRef.current.rotation() returns a plain object, not an instance
+    // of the quaternion class.
+    worldSpaceRotation.current.set(
+      rigidBodyRef.current.rotation().x,
+      rigidBodyRef.current.rotation().y,
+      rigidBodyRef.current.rotation().z,
+      rigidBodyRef.current.rotation().w,
+    );
+  });
+
+  return worldSpaceRotation;
 }
