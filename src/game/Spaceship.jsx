@@ -10,6 +10,23 @@ import { useGameStateStore } from "../stores/useGameStateStore";
 import useWorldSpaceRotation from "./hooks/useWorldSpaceRotation";
 
 export default function Spaceship({ rigidBodyRef, playAreaSize }) {
+  return (
+    <>
+      <Weapon ship={rigidBodyRef} />
+      <SpaceshipRigidBody
+        rigidBodyRef={rigidBodyRef}
+        playAreaSize={playAreaSize}
+      />
+    </>
+  );
+}
+
+function SpaceshipRigidBody({ rigidBodyRef, playAreaSize }) {
+  const LINEAR_DAMPING = 0.5;
+  const ANGULAR_DAMPING = 2;
+
+  const decrementHealth = useHealthStore((state) => state.decrement);
+
   const worldSpaceRotationRef = useWorldSpaceRotation(rigidBodyRef);
   const userInputForces = useShipControls(worldSpaceRotationRef);
   const centralSteering = useCentralSteering(
@@ -36,20 +53,6 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
       true,
     );
   });
-
-  return (
-    <>
-      <Weapon ship={rigidBodyRef} />
-      <SpaceshipRigidBody rigidBodyRef={rigidBodyRef} />
-    </>
-  );
-}
-
-function SpaceshipRigidBody({ rigidBodyRef }) {
-  const LINEAR_DAMPING = 0.5;
-  const ANGULAR_DAMPING = 2;
-
-  const decrementHealth = useHealthStore((state) => state.decrement);
 
   return (
     <>
