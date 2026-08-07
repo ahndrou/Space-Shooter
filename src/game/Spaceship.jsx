@@ -7,10 +7,10 @@ import Weapon from "./Weapon/Weapon";
 import useCentralSteering from "./hooks/useCentralSteering";
 import { useHealthStore } from "../stores/useHealthStore";
 import { useGameStateStore } from "../stores/useGameStateStore";
+import useWorldSpaceRotation from "./hooks/useWorldSpaceRotation";
 
 export default function Spaceship({ rigidBodyRef, playAreaSize }) {
   const worldSpaceRotationRef = useWorldSpaceRotation(rigidBodyRef);
-  const worldSpacePositionRef = useWorldSpacePosition(rigidBodyRef);
   const userInputForces = useShipControls(worldSpaceRotationRef);
   const centralSteering = useCentralSteering(
     rigidBodyRef,
@@ -18,8 +18,6 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
     0.86,
     2,
   );
-
-  useFollowCamera(worldSpaceRotationRef, worldSpacePositionRef);
 
   useFrame((state, delta) => {
     if (!rigidBodyRef.current) return;
@@ -159,60 +157,4 @@ function usePointerActiveListener() {
   }, []);
 
   return pointerActive;
-}
-
-function useWorldSpaceRotation(rigidBodyRef) {
-  // For re-use in useFrame.
-  const worldSpaceRotation = useRef(new Quaternion());
-
-  useFrame(() => {
-    if (!rigidBodyRef.current) return;
-
-    // rigidBodyRef.current.rotation() returns a plain object, not an instance
-    // of the quaternion class.
-    worldSpaceRotation.current.set(
-      rigidBodyRef.current.rotation().x,
-      rigidBodyRef.current.rotation().y,
-      rigidBodyRef.current.rotation().z,
-      rigidBodyRef.current.rotation().w,
-    );
-  });
-
-  return worldSpaceRotation;
-}
-
-function useWorldSpacePosition(rigidBodyRef) {
-  const position = useRef();
-
-  useFrame(() => {
-    if (!rigidBodyRef.current) return;
-
-    position.current = rigidBodyRef.current.translation();
-  });
-
-  return position;
-}
-
-function useFollowCamera(targetRotationRef, targetPositionRef) {
-  const CAMERA_DELAY = 19;
-
-  const cameraPositionTarget = useRef(new Vector3());
-
-  useFrame((state, delta) => {
-    if (!targetPositionRef.current || !targetRotationRef.current) return;
-
-    cameraPositionTarget.current.set(0, 3, 7);
-    // Quaternion transforms from local space to world space.
-    cameraPositionTarget.current.applyQuaternion(targetRotationRef.current);
-    cameraPositionTarget.current.add(targetPositionRef.current);
-
-    // The slight lag from LERP gives the user a nice indication that they are turning.
-    state.camera.position.lerp(
-      cameraPositionTarget.current,
-      CAMERA_DELAY * delta,
-    );
-    state.camera.rotation.setFromQuaternion(targetRotationRef.current);
-  });
-
-  return null;
 }
