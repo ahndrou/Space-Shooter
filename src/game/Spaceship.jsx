@@ -14,7 +14,6 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
 
   const gltf = useGLTF("./player_spaceship.glb");
 
-  const playerHealth = useHealthStore((state) => state.health);
   const decrementHealth = useHealthStore((state) => state.decrement);
 
   const worldSpaceRotationRef = useWorldSpaceRotation(rigidBodyRef);
@@ -32,7 +31,7 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
   const gamePaused = useGameStateStore((state) => state.paused);
 
   useFrame((state, delta) => {
-    if (!rigidBodyRef.current || playerHealth === 0) return;
+    if (!rigidBodyRef.current) return;
 
     // Need to add all forces together
     rigidBodyRef.current.applyTorqueImpulse(
