@@ -8,8 +8,24 @@ import useCentralSteering from "./hooks/useCentralSteering";
 import { useHealthStore } from "../stores/useHealthStore";
 import { useGameStateStore } from "../stores/useGameStateStore";
 import useWorldSpaceRotation from "./hooks/useWorldSpaceRotation";
+import { Exploder, useExploder } from "./Exploder/Exploder";
 
 export default function Spaceship({ rigidBodyRef, playAreaSize }) {
+  const gameOver = useHealthStore((state) => state.health <= 0);
+  const triggerExplosion = useExploder();
+
+  useEffect(() => {
+    if (gameOver) {
+      triggerExplosion(
+        new Vector3(
+          rigidBodyRef.current.translation().x,
+          rigidBodyRef.current.translation().y,
+          rigidBodyRef.current.translation().z,
+        ),
+      );
+    }
+  });
+
   return (
     <>
       <Weapon ship={rigidBodyRef} />
@@ -66,8 +82,12 @@ function SpaceshipRigidBody({ rigidBodyRef, playAreaSize }) {
         userData={{ type: "player" }}
         onCollisionEnter={decrementHealth}
       >
-        <CuboidCollider args={[1.9, 0.3, 1.5]} />
-        <SpaceshipMesh />
+        {/* Exploder used here to keep RigidBody mounted. The Rapier RB ref is currently used in the parent, so if 
+        Spaceship dismounts, null pointer errors appear in the parent. */}
+        <Exploder>
+          <CuboidCollider args={[1.9, 0.3, 1.5]} />
+          <SpaceshipMesh />
+        </Exploder>
       </RigidBody>
     </>
   );

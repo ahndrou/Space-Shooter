@@ -7,16 +7,21 @@ import useWorldSpacePosition from "./hooks/useWorldSpacePosition";
 import useWorldSpaceRotation from "./hooks/useWorldSpaceRotation";
 
 export default function Player({ playAreaSize }) {
-  const playerHealth = useHealthStore((state) => state.health);
-  const spaceshipRb = useRef();
+  return (
+    <Exploder>
+      <CameraTrackedVehicle playAreaSize={playAreaSize} />
+    </Exploder>
+  );
+}
 
-  const worldSpacePositionRef = useWorldSpacePosition(spaceshipRb);
-  const worldSpaceRotationRef = useWorldSpaceRotation(spaceshipRb);
+// Separated like this because the RB ref is here. Conditionally rendering just
+// Spaceship with Exploder leads to using a reference to a destroyed Rapier RB,
+// causing a Rapier null access error.
+function CameraTrackedVehicle({ playAreaSize }) {
+  const vehicle = useRef();
+  const worldSpacePositionRef = useWorldSpacePosition(vehicle);
+  const worldSpaceRotationRef = useWorldSpaceRotation(vehicle);
   useFollowCamera(worldSpaceRotationRef, worldSpacePositionRef);
 
-  return (
-    playerHealth > 0 && (
-      <Spaceship rigidBodyRef={spaceshipRb} playAreaSize={playAreaSize} />
-    )
-  );
+  return <Spaceship rigidBodyRef={vehicle} playAreaSize={playAreaSize} />;
 }
