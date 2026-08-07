@@ -2,38 +2,21 @@ import { createContext, useContext, useRef, useState } from "react";
 import { Vector3 } from "three";
 import Explosion from "./Explosion";
 
-// Replaces any rigid body with an explosion effect. The rigid body component
-// has access to a trigger provided by the useExploder hook. The rigid body must also
-// link up the rigidBodyRef from the hook to work.
-
+/** 
+Create an explosion in place of the given child components. Trigger provided
+by the useExploder context.
+*/
 export function Exploder({ color = "pink", onExplosionCompletion, children }) {
   const [explosionPos, setExplosionPos] = useState(null);
   const explosionActive = explosionPos !== null;
 
-  const rigidBodyRef = useRef();
-
-  const triggerExplosion = () => {
-    const rigidBody = rigidBodyRef.current;
-
-    if (!rigidBody) {
-      throw new Error(
-        "Cannot trigger explosion: rigidBodyRef returned by the useExploder hook is not attached to a RigidBody.",
-      );
-    }
-
-    const { x, y, z } = rigidBodyRef.current.translation();
-
-    setExplosionPos(new Vector3(x, y, z));
+  const triggerExplosion = (position) => {
+    setExplosionPos(position);
   };
 
   return (
     <>
-      <ExploderContext.Provider
-        value={{
-          rigidBodyRef,
-          triggerExplosion,
-        }}
-      >
+      <ExploderContext.Provider value={triggerExplosion}>
         {!explosionActive && children}
       </ExploderContext.Provider>
 
@@ -41,7 +24,7 @@ export function Exploder({ color = "pink", onExplosionCompletion, children }) {
         <Explosion
           position={explosionPos}
           color={color}
-          onExplosionCompletion={() => onExplosionCompletion()}
+          onExplosionCompletion={onExplosionCompletion}
         />
       )}
     </>

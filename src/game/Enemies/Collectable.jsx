@@ -32,11 +32,12 @@ export default function Collectable({
 
 function CollectableRigidBody({ position, rotation, size, playAreaSize }) {
   const gltf = useGLTF("./space_shooter_collectable.glb");
-  const { rigidBodyRef, triggerExplosion } = useExploder();
+  const triggerExplosion = useExploder();
+  const rigidBody = useRef();
 
   // Don't want to get the collectables stuck where the player can't reach.
-  useCentralSteering(rigidBodyRef, playAreaSize, 0.9, 20);
-  useRandomTorque(10, 20, rigidBodyRef);
+  useCentralSteering(rigidBody, playAreaSize, 0.9, 20);
+  useRandomTorque(10, 20, rigidBody);
 
   const incrementScore = useScoreStore((state) => state.increment);
 
@@ -46,13 +47,19 @@ function CollectableRigidBody({ position, rotation, size, playAreaSize }) {
       collisionPayload.other.rigidBody?.userData?.type === "bullet"
     ) {
       incrementScore(2);
-      triggerExplosion();
+      triggerExplosion(
+        new Vector3(
+          rigidBody.current.translation().x,
+          rigidBody.current.translation().y,
+          rigidBody.current.translation().z,
+        ),
+      );
     }
   };
 
   return (
     <RigidBody
-      ref={rigidBodyRef}
+      ref={rigidBody}
       position={position}
       rotation={rotation}
       scale={size}

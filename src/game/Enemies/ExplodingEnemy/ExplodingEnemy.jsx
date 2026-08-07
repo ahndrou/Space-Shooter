@@ -28,9 +28,10 @@ export function ExplodingEnemy({ id, onDeath, position, rotation, size }) {
 function EnemyRigidBody({ position, rotation, size }) {
   const [isHit, setIsHit] = useState(false);
 
-  const { rigidBodyRef, triggerExplosion } = useExploder();
+  const triggerExplosion = useExploder();
+  const rigidBody = useRef();
 
-  useRandomTorque(MIN_TORQUE, MAX_TORQUE, rigidBodyRef);
+  useRandomTorque(MIN_TORQUE, MAX_TORQUE, rigidBody);
 
   return (
     <RigidBody
@@ -38,7 +39,7 @@ function EnemyRigidBody({ position, rotation, size }) {
       position={position}
       rotation={rotation}
       canSleep={false}
-      ref={rigidBodyRef}
+      ref={rigidBody}
       angularDamping={0.4}
       userData={{ type: "exploding enemy" }}
     >
@@ -53,7 +54,15 @@ function EnemyRigidBody({ position, rotation, size }) {
         size={size}
         color={COLOR}
         animationActive={isHit}
-        onAnimationCompletion={triggerExplosion}
+        onAnimationCompletion={() =>
+          triggerExplosion(
+            new Vector3(
+              rigidBody.current.translation().x,
+              rigidBody.current.translation().y,
+              rigidBody.current.translation().z,
+            ),
+          )
+        }
       />
     </RigidBody>
   );
