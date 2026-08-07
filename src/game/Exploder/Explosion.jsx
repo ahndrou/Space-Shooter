@@ -107,7 +107,10 @@ export default function Explosion({
   useFrame((state, delta) => {
     uniforms.current.uTime.value += delta;
 
-    if (uniforms.current.uTime.value >= EXPLOSION_DURATION) {
+    if (
+      onExplosionCompletion &&
+      uniforms.current.uTime.value >= EXPLOSION_DURATION
+    ) {
       onExplosionCompletion();
     }
   });
