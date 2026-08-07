@@ -9,13 +9,6 @@ import { useHealthStore } from "../stores/useHealthStore";
 import { useGameStateStore } from "../stores/useGameStateStore";
 
 export default function Spaceship({ rigidBodyRef, playAreaSize }) {
-  const LINEAR_DAMPING = 0.5;
-  const ANGULAR_DAMPING = 2;
-
-  const gltf = useGLTF("./player_spaceship.glb");
-
-  const decrementHealth = useHealthStore((state) => state.decrement);
-
   const worldSpaceRotationRef = useWorldSpaceRotation(rigidBodyRef);
   const worldSpacePositionRef = useWorldSpacePosition(rigidBodyRef);
   const userInputForces = useShipControls(worldSpaceRotationRef);
@@ -27,8 +20,6 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
   );
 
   useFollowCamera(worldSpaceRotationRef, worldSpacePositionRef);
-
-  const gamePaused = useGameStateStore((state) => state.paused);
 
   useFrame((state, delta) => {
     if (!rigidBodyRef.current) return;
@@ -51,6 +42,19 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
   return (
     <>
       <Weapon ship={rigidBodyRef} />
+      <SpaceshipRigidBody rigidBodyRef={rigidBodyRef} />
+    </>
+  );
+}
+
+function SpaceshipRigidBody({ rigidBodyRef }) {
+  const LINEAR_DAMPING = 0.5;
+  const ANGULAR_DAMPING = 2;
+
+  const decrementHealth = useHealthStore((state) => state.decrement);
+
+  return (
+    <>
       <RigidBody
         ref={rigidBodyRef}
         colliders={false}
@@ -62,25 +66,33 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
         onCollisionEnter={decrementHealth}
       >
         <CuboidCollider args={[1.9, 0.3, 1.5]} />
-        <group rotation={[0, Math.PI / 2, 0]} scale={0.4}>
-          <mesh geometry={gltf.meshes["Base"].geometry}>
-            <meshBasicMaterial color={"green"} transparent opacity={0.6} />
-          </mesh>
-
-          <mesh geometry={gltf.meshes["Wireframe"].geometry}>
-            <meshBasicMaterial color={"white"} />
-          </mesh>
-
-          <mesh geometry={gltf.meshes["Thruster_L"].geometry}>
-            <meshBasicMaterial color={"orange"} />
-          </mesh>
-
-          <mesh geometry={gltf.meshes["Thruster_R"].geometry}>
-            <meshBasicMaterial color={"orange"} />
-          </mesh>
-        </group>
+        <SpaceshipMesh />
       </RigidBody>
     </>
+  );
+}
+
+function SpaceshipMesh() {
+  const gltf = useGLTF("./player_spaceship.glb");
+
+  return (
+    <group rotation={[0, Math.PI / 2, 0]} scale={0.4}>
+      <mesh geometry={gltf.meshes["Base"].geometry}>
+        <meshBasicMaterial color={"green"} transparent opacity={0.6} />
+      </mesh>
+
+      <mesh geometry={gltf.meshes["Wireframe"].geometry}>
+        <meshBasicMaterial color={"white"} />
+      </mesh>
+
+      <mesh geometry={gltf.meshes["Thruster_L"].geometry}>
+        <meshBasicMaterial color={"orange"} />
+      </mesh>
+
+      <mesh geometry={gltf.meshes["Thruster_R"].geometry}>
+        <meshBasicMaterial color={"orange"} />
+      </mesh>
+    </group>
   );
 }
 
