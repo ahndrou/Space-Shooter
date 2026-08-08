@@ -3,12 +3,13 @@ import { useFrame } from "@react-three/fiber";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
-import Weapon from "./Weapon/Weapon";
-import useCentralSteering from "./hooks/useCentralSteering";
-import { useHealthStore } from "../stores/useHealthStore";
-import { useGameStateStore } from "../stores/useGameStateStore";
-import useWorldSpaceRotation from "./hooks/useWorldSpaceRotation";
-import { Exploder, useExploder } from "./Exploder/Exploder";
+import Weapon from "../Weapon/Weapon";
+import useCentralSteering from "../hooks/useCentralSteering";
+import { useHealthStore } from "../../stores/useHealthStore";
+import { useGameStateStore } from "../../stores/useGameStateStore";
+import useWorldSpaceRotation from "../hooks/useWorldSpaceRotation";
+import { Exploder, useExploder } from "../Exploder/Exploder";
+import Thruster from "./Thruster";
 
 export default function Spaceship({ rigidBodyRef, playAreaSize }) {
   const gameOver = useHealthStore((state) => state.health <= 0);
@@ -29,10 +30,13 @@ export default function Spaceship({ rigidBodyRef, playAreaSize }) {
   return (
     <>
       <Weapon ship={rigidBodyRef} />
-      <SpaceshipRigidBody
-        rigidBodyRef={rigidBodyRef}
-        playAreaSize={playAreaSize}
-      />
+      <group>
+        <SpaceshipRigidBody
+          rigidBodyRef={rigidBodyRef}
+          playAreaSize={playAreaSize}
+        />
+        <Thruster />
+      </group>
     </>
   );
 }

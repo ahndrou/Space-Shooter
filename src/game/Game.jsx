@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useGameStateStore } from "../stores/useGameStateStore";
 import { Physics } from "@react-three/rapier";
-import Spaceship from "./Spaceship";
+import Spaceship from "./Spaceship/Spaceship";
 import Level from "./Level/Level";
 import PlayArea from "./PlayArea";
 import { useHealthStore } from "../stores/useHealthStore";

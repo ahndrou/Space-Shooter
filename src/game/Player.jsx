@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useHealthStore } from "../stores/useHealthStore";
-import Spaceship from "./Spaceship";
+import Spaceship from "./Spaceship/Spaceship";
 import { Exploder } from "./Exploder/Exploder";
 import useFollowCamera from "./hooks/useFollowCamera";
 import useWorldSpacePosition from "./hooks/useWorldSpacePosition";
